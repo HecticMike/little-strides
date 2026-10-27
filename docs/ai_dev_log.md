@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-27 - Visual refinement
+
+- Goal: preserve approved art while improving real asset separation, mobile composition and editability. Little Strides only; no image generation, dependencies or RPG systems added.
+- Audit: character/gear and foreground masks are layered; terrain/lodge, Today/workout backdrops and legacy strips remain flattened. Export now records actual source dimensions, layer names and nontransparent pixel counts in art/source-inventory.json.
+- Assets: workshop removed from the base; independent shared approach/tools/fence context and original/restored roof, wall, chimney, canvas/banner layers. Original reconstruction is pixel-exact; alpha masks have no overlap/holes; 28,054 structural pixels change after restoration without changing neighbours. Empty state-only layers removed. Normal export preserves edits; old import refuses to flatten refined masters.
+- Presentation: Today heading/hero reduced, Start precedes secondary copy and remains visible at 375x568; keyed tab content fixes inherited scroll/clipped headings while retaining duration choice. Workout character enlarged beside a prominent timer; march/reach reviewed in mobile screenshots. Village avatar uses coherent half-resolution sampling and foot anchor; two existing contact keys alternate with neutral, shadows stay grounded. Subtle anchored lantern light replaces duplicate rectangle smoke.
+- Checks: 29 unit/art and complete 64-test mobile suite PASS (WebKit/Chromium, 6m), including 7/10/15/20 sessions, entire 10-minute flow, scheduling/recovery, interruption, sound, persistence/PWA, all stages, real restoration, navigation reset, viewport bounds and pixel reconstruction. Build PASS. Runtime art about 685 KB. Character masters/PNGs and engine/catalogue/scheduler/storage/audio/wake/SW/dependency lockfile unchanged. Screenshots reviewed under screenshots/refinement; existing visual captures refreshed by regression tests.
+- Files: relevant scene/React/style/art contract, workshop/background masters and exports, export/audit/separation scripts, factual art README/inventory, focused tests and screenshots. No other project or unrelated log modified.
+- Remaining/next: walking weight transfer, cloth fit and exercise anatomy/heel-contact need manual art review; illustrations remain unvalidated and exercise locks/opt-ins unchanged. Terrain/lodge/backdrops are not a fully separated tile pack. Physical iPhone/Android readability, safe areas, audio/calls and wake-lock acceptance remain.
+
 ## 2026-10-27 ? Approved character and village art integration
 
 - Goal: implement the user-approved character/courtyard direction in Little Strides without RPG expansion or changes to workout/recovery/persistence/PWA systems.

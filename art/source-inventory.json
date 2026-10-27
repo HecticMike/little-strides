@@ -1,0 +1,12 @@
+[
+  {"asset":"hero-body","width":960,"height":128,"mode":"RGBA","layers":["Outfit and boots","Skin and face","Chestnut hair"],"visiblePixels":[15074,5995,2049]},
+  {"asset":"hero-equipment","width":960,"height":256,"mode":"RGBA","layers":["Veteran cloak behind silhouette","Leather pack and straps","Shaded ochre scarf"],"visiblePixels":[4508,1296,4396]},
+  {"asset":"village-ground","width":640,"height":576,"mode":"indexed","layers":["Painted terrain and lodge - workshop removed"],"visiblePixels":[284640]},
+  {"asset":"workshop-context","width":280,"height":300,"mode":"indexed","layers":["Approach terrain and foliage","Workbench tools and barrels","Front fence and stored stone"],"visiblePixels":[33621,4526,12598]},
+  {"asset":"buildings","width":840,"height":300,"mode":"indexed","layers":["Lodge reference - not used at runtime","Original - Roof","Original - Walls and doorway","Original - Chimney","Original - Timber and canvas","Restored - Roof","Restored - Walls and doorway","Restored - Chimney","Restored - Window and banner"],"visiblePixels":[84000,8581,10770,3106,10798,18320,7699,3106,4130]},
+  {"asset":"village-foreground","width":640,"height":576,"mode":"indexed","layers":["Canopy occlusion","Garden fence occlusion"],"visiblePixels":[50901,926]},
+  {"asset":"vista","width":640,"height":288,"mode":"indexed","layers":["Courtyard entrance"],"visiblePixels":[184320]},
+  {"asset":"training","width":640,"height":448,"mode":"indexed","layers":["Quiet courtyard crop"],"visiblePixels":[286720]},
+  {"asset":"tiles","width":128,"height":16,"mode":"RGBA","layers":["Layer"],"visiblePixels":[2048]},
+  {"asset":"icons","width":96,"height":16,"mode":"RGBA","layers":["Layer"],"visiblePixels":[741]}
+]

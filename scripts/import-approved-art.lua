@@ -1,3 +1,6 @@
+-- Current masters have lossless workshop layers; never flatten them accidentally.
+local protected=io.open("art/source/workshop-context.aseprite","rb")
+if protected then protected:close();error("Approved sources are already refined. Edit existing masters; use art:export.") end
 -- Approved concept import. Explicit, destructive bootstrap: never called by art:export.
 -- All raster processing happens in Aseprite. Preserve generated originals in art/direction.
 local pc=app.pixelColor

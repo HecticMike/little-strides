@@ -7,21 +7,22 @@ export async function createVillage(parent, stage, completed, onInteract, initia
   const atlas = await avatarAtlas(), reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   class Village extends Phaser.Scene {
     preload() {
-      for (const name of ['village-ground','village-foreground']) this.load.image(name,`./art/${name}.png`);
+      for (const name of ['village-ground','village-foreground','workshop-context']) this.load.image(name,`./art/${name}.png`);
       this.load.spritesheet('buildings','./art/buildings.png',{ frameWidth:WORLD.buildingFrameWidth,frameHeight:WORLD.buildingFrameHeight });
       this.load.spritesheet('icons','./art/icons.png',{ frameWidth:16,frameHeight:16 });
     }
     create() {
       this.add.image(0,0,'village-ground').setOrigin(0).setScale(1/WORLD.textureScale);
-      // The lodge is baked into the painted base; workshop patches share its exact registration.
+      // Workshop terrain and structure have disjoint pixels; the original is absent from the base.
+      this.add.image(WORLD.workshopX,WORLD.workshopY,'workshop-context').setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1);
       this.workshopStage = initialWorkshopStage;
-      this.workshop = this.add.image(WORLD.workshopX,WORLD.workshopY,'buildings',initialWorkshopStage ? 2 : 1).setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1);
+      this.workshop = this.add.image(WORLD.workshopX,WORLD.workshopY,'buildings',initialWorkshopStage ? 2 : 1).setOrigin(0).setScale(1/WORLD.textureScale).setDepth(2);
       this.add.image(0,0,'village-foreground').setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1000);
       for (let i=0;i<Math.min(12,completed);i++) this.add.image(43+i%6*8,209+Math.floor(i/6)*8,'icons',4).setScale(.5).setDepth(260);
       const texture = this.textures.addCanvas('hero',atlas);
       POSES.forEach(pose=>{const f=avatarFrame(pose,stage);texture.add(pose,0,f.x,f.y,f.w,f.h);});
-      this.player = this.add.image(168,216,'hero','stand').setOrigin(.5,1).setScale(.375).setDepth(216);
-      this.shadow=this.add.ellipse(168,214,20,5,0x183732,.28).setDepth(215);
+      this.player = this.add.image(168,216,'hero','stand').setOrigin(.5,CHARACTER.feetY/CHARACTER.frameHeight).setScale(1/WORLD.textureScale).setDepth(216);
+      this.shadow=this.add.ellipse(168,216,22,5,0x183732,.28).setDepth(215);
       this.marker = this.add.image(228,104,'icons',0).setScale(.7).setDepth(510);
       this.focus = this.add.graphics().setDepth(505);
       this.path=[];this.pending=null;
@@ -38,13 +39,10 @@ export async function createVillage(parent, stage, completed, onInteract, initia
         this.publish();
       });
       if(!reduced){
-        for(const [x,y] of [[142,95],[212,96],[131,195]]){
-          const light=this.add.rectangle(x,y,2,2,0xfff0c2,.6).setDepth(500);
-          this.tweens.add({targets:light,alpha:.2,y:y-3,duration:2400,yoyo:true,repeat:-1});
-        }
-        for(let i=0;i<3;i++){
-          const smoke=this.add.rectangle(65+i*2,29-i*4,3,2,0x9b9f9a,.3).setDepth(151);
-          this.tweens.add({targets:smoke,x:smoke.x+5,y:smoke.y-12,alpha:0,duration:3200,delay:i*900,repeat:-1});
+        // Light flickers at the painted lanterns; no duplicate smoke/prop sprites.
+        for(const [x,y] of [[142,95],[224,94]]){
+          const glow=this.add.ellipse(x,y,7,8,0xffd172,.1).setDepth(500);
+          this.tweens.add({targets:glow,alpha:.23,duration:1900,yoyo:true,repeat:-1});
         }
       }
       parent.dataset.avatarId=CHARACTER.id;parent.dataset.avatarStage=CHARACTER.stages[stage].id;
@@ -52,6 +50,7 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       parent.dataset.ready='true';this.publish();onInteract({place:'Training green',phase:'idle'});
     }
     publish(){
+      this.shadow?.setPosition(this.player.x,this.player.y).setDepth(Math.round(this.player.y)-1);
       const values={playerX:String(Math.round(this.player.x)),playerY:String(Math.round(this.player.y)),motion:this.path.length?'walking':'idle',animationFrame:this.player.frame.name};
       for(const [key,value] of Object.entries(values))if(parent.dataset[key]!==value)parent.dataset[key]=value;
     }
@@ -85,13 +84,12 @@ export async function createVillage(parent, stage, completed, onInteract, initia
     }
     update(time,delta){
       if(!this.player)return;
-      this.shadow.setPosition(this.player.x,this.player.y-1).setDepth(Math.round(this.player.y)-1);
       if(!this.path.length){this.player.setFrame(!reduced&&time%3800>3630?'idle-blink':'stand');this.arrive();this.publish();return;}
       const [x,y]=this.path[0],dx=x-this.player.x,dy=y-this.player.y,distance=Math.hypot(dx,dy),step=Math.min(delta,50)*.11;
       if(distance<=step||reduced){this.player.setPosition(x,y);this.path.shift();}
       else{this.player.x+=dx/distance*step;this.player.y+=dy/distance*step;}
       if(Math.abs(dx)>1)this.player.setFlipX(dx<0);
-      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':Math.floor(time/180)%2?'walk-a':'walk-b');
+      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':['walk-a','stand','walk-b','stand'][Math.floor(time/135)%4]);
       this.publish();
     }
   }

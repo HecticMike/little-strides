@@ -36,3 +36,15 @@ test('approved master layers remain editable and withheld poses are never advert
   assert.equal(new Set(metadata.palette).size,metadata.palette.length);
   assert.ok(metadata.palette.length>=32);
 });
+
+test('workshop context and structure have independently editable component layers',()=>{
+  const audit=JSON.parse(readFileSync('art/source-inventory.json','utf8'));
+  const building=audit.find(a=>a.asset==='buildings'),context=audit.find(a=>a.asset==='workshop-context');
+  for(const name of ['Original - Roof','Original - Walls and doorway','Restored - Roof','Restored - Window and banner']) assert.ok(building.layers.includes(name));
+  assert.deepEqual(context.layers,['Approach terrain and foliage','Workbench tools and barrels','Front fence and stored stone']);
+  assert.deepEqual(dimensions('workshop-context'),[WORLD.buildingFrameWidth,WORLD.buildingFrameHeight]);
+  assert.ok(existsSync('art/source/workshop-context.aseprite'));
+  assert.ok(building.visiblePixels.every(n=>n>0));
+  assert.ok(context.visiblePixels.every(n=>n>0));
+  assert.equal(CHARACTER.feetY,120);
+});
