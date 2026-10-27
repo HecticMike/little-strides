@@ -1,31 +1,35 @@
+import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts } from './gameplay.mjs';
+export const EXERCISE_REVIEW_VERSION = 1;
 export const MINUTES = [7, 10, 15, 20];
 export const EXERCISES = [
-  { id: 'march', name: 'Easy march', group: 'mobility', pose: 'march', cue: 'Stand tall. Step gently in place.', alternative: 'reach' },
-  { id: 'squat', name: 'Shallow squat', group: 'legs', pose: 'squat', cue: 'Feet apart. Sit back a little. Rise slowly.', alternative: 'calf' },
-  { id: 'push', name: 'Wall push', group: 'upper', pose: 'push', cue: 'Hands on a wall. Bend elbows, then press away.', alternative: 'reach' },
-  { id: 'calf', name: 'Calf raise', group: 'legs', pose: 'calf', cue: 'Hold support if needed. Lift heels, lower slowly.', alternative: 'march' },
-  { id: 'reach', name: 'Gentle reach', group: 'mobility', pose: 'reach', cue: 'Reach up comfortably, then lower your arms.', alternative: 'march' },
+  { id: 'march', name: 'Easy march', reviewStatus: 'unreviewed', group: 'mobility', pose: 'march', cue: 'Stand tall. Step gently in place.', alternative: 'reach' },
+  { id: 'squat', name: 'Shallow squat', reviewStatus: 'unreviewed', group: 'legs', pose: 'squat', cue: 'Feet apart. Sit back a little. Rise slowly.', alternative: 'calf' },
+  { id: 'push', name: 'Wall push', reviewStatus: 'unreviewed', group: 'upper', pose: 'push', cue: 'Hands on a wall. Bend elbows, then press away.', alternative: 'reach' },
+  { id: 'calf', name: 'Calf raise', reviewStatus: 'unreviewed', group: 'legs', pose: 'calf', cue: 'Hold support if needed. Lift heels, lower slowly.', alternative: 'march' },
+  { id: 'reach', name: 'Gentle reach', reviewStatus: 'unreviewed', group: 'mobility', pose: 'reach', cue: 'Reach up comfortably, then lower your arms.', alternative: 'march' },
 ];
 export const exercise = id => EXERCISES.find(e => e.id === id);
-export const freshState = () => ({ schemaVersion: 1, deviceId: crypto.randomUUID(), active: null, history: [], settings: { muted: false, volume: 0.45 }, updatedAt: Date.now(), lastExportAt: null });
+export const freshState = () => ({ schemaVersion: 1, deviceId: crypto.randomUUID(), active: null, history: [], world: emptyWorld(), settings: { muted: false, volume: 0.45 }, updatedAt: Date.now(), lastExportAt: null });
 export function recovery(history, now = Date.now()) {
   const until = {};
-  for (const h of history) for (const group of h.groups) {
+  for (const h of history.filter(h => h.mode !== 'preview')) for (const group of h.groups) {
     if (group !== 'mobility') until[group] = Math.max(until[group] || 0, h.endedAt + 24 * 3600_000);
   }
   return { until, resting: Object.keys(until).filter(g => until[g] > now) };
 }
-export function createSession(minutes, history = [], now = Date.now()) {
+export function createSession(minutes, history = [], now = Date.now(), { mode = 'workout' } = {}) {
+  if (!['workout', 'preview'].includes(mode)) throw new Error('Unknown session mode.');
   if (!MINUTES.includes(minutes)) throw new Error('Choose 7, 10, 15 or 20 minutes.');
   const resting = recovery(history, now).resting;
-  const pool = EXERCISES.filter(e => !resting.includes(e.group));
+  const pool = EXERCISES.filter(e => e.reviewStatus !== 'blocked' && !resting.includes(e.group));
+  if (!pool.length) throw new Error('No eligible exercises available.');
   const segments = [];
   for (let i = 0; i < minutes; i++) {
     const e = pool[i % pool.length];
     segments.push({ exerciseId: e.id, kind: 'work', durationMs: 45_000 });
     segments.push({ exerciseId: e.id, kind: 'rest', durationMs: 15_000 });
   }
-  return { id: crypto.randomUUID(), minutes, startedAt: now, segments, elapsedMs: 0, runningSince: now, checkpointAt: now, status: 'running', reason: null, events: [] };
+  return { id: crypto.randomUUID(), mode, minutes, startedAt: now, segments, elapsedMs: 0, runningSince: now, checkpointAt: now, status: 'running', reason: null, events: [] };
 }
 export const duration = s => s.segments.reduce((n, b) => n + b.durationMs, 0);
 export const elapsed = (s, now = Date.now()) => Math.min(duration(s), Math.max(0, s.elapsedMs + (s.status === 'running' ? Math.max(0, now - s.runningSince) : 0)));
@@ -74,10 +78,10 @@ export function finish(state, completed, now = Date.now()) {
     }
     start += b.durationMs;
   }
-  const record = { schemaVersion: 1, id: s.id, deviceId: state.deviceId, startedAt: s.startedAt, endedAt: now, minutes: s.minutes, elapsedMs: consumed, activeMs, completed, groups: [...groups], segments: s.segments, events: s.events };
+  const record = { schemaVersion: 1, id: s.id, deviceId: state.deviceId, startedAt: s.startedAt, endedAt: now, minutes: s.minutes, elapsedMs: consumed, activeMs, mode: s.mode || 'workout', completed: completed && consumed === duration(s), groups: [...groups], segments: s.segments, events: s.events };
   return { ...state, active: null, history: [...state.history.filter(h => h.id !== s.id), record], updatedAt: now };
 }
-export const progress = history => history.filter(h => h.completed && h.activeMs >= 30_000).length;
+export const progress = history => rewardedWorkouts(history).length;
 export function validateBackup(input) {
   const fail = () => { throw new Error('This is not a valid Little Strides backup. Your current data is unchanged.'); };
   const num = n => Number.isFinite(n) && n >= 0;
@@ -89,12 +93,15 @@ export function validateBackup(input) {
   if (!s || s.schemaVersion !== 1 || typeof s.deviceId !== 'string' || s.deviceId.length > 100 || !num(s.updatedAt) || !(s.lastExportAt === null || num(s.lastExportAt)) || !s.settings || typeof s.settings.muted !== 'boolean' || !num(s.settings.volume) || s.settings.volume > 1 || !Array.isArray(s.history) || s.history.length > 100_000) fail();
   const ids = new Set();
   for (const h of s.history) {
-    if (!identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility'].includes(g)) || !segmentsOk(h.segments, h.minutes) || !eventsOk(h.events, h.segments.length)) fail();
+    if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility'].includes(g)) || !segmentsOk(h.segments, h.minutes) || !eventsOk(h.events, h.segments.length)) fail();
     ids.add(h.id);
   }
   if (s.active !== null) {
     const a = s.active;
-    if (!identity(a) || ids.has(a.id) || !MINUTES.includes(a.minutes) || !num(a.startedAt) || !num(a.checkpointAt) || a.checkpointAt < a.startedAt || !num(a.elapsedMs) || a.elapsedMs > a.minutes * 60_000 || !['running', 'paused'].includes(a.status) || !(a.reason === null || ['paused', 'interrupted'].includes(a.reason)) || (a.status === 'running' ? !num(a.runningSince) || a.runningSince > a.checkpointAt : a.runningSince !== null) || !segmentsOk(a.segments, a.minutes) || !eventsOk(a.events, a.segments.length)) fail();
+    if (!(a.mode === undefined || ['workout', 'preview'].includes(a.mode)) || !identity(a) || ids.has(a.id) || !MINUTES.includes(a.minutes) || !num(a.startedAt) || !num(a.checkpointAt) || a.checkpointAt < a.startedAt || !num(a.elapsedMs) || a.elapsedMs > a.minutes * 60_000 || !['running', 'paused'].includes(a.status) || !(a.reason === null || ['paused', 'interrupted'].includes(a.reason)) || (a.status === 'running' ? !num(a.runningSince) || a.runningSince > a.checkpointAt : a.runningSince !== null) || !segmentsOk(a.segments, a.minutes) || !eventsOk(a.events, a.segments.length)) fail();
   }
-  return structuredClone(s);
+  if (!(s.settings.exerciseReviewVersion === undefined || Number.isInteger(s.settings.exerciseReviewVersion) && s.settings.exerciseReviewVersion >= 1 && s.settings.exerciseReviewVersion <= EXERCISE_REVIEW_VERSION)) fail();
+  const world = migrateWorld(s);
+  if (!validWorld(world, s.history)) fail();
+  return structuredClone({ ...s, world });
 }

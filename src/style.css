@@ -118,3 +118,23 @@ small, .small { font-size: 11px; }
   .recovery { font-size: 10px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior: auto!important; animation: none!important; transition: none!important; } }
+.exercise-review { width:min(94vw,440px); max-height:calc(100dvh - 40px); overflow:auto; border:2px solid #b6b879; border-radius:6px; padding:18px; color:#f0d4a0; background:#25333d; }
+.exercise-review::backdrop { background:#101921db; }
+.exercise-review h2 { font-size:20px; margin-bottom:10px; }
+.exercise-review p,.exercise-review li { font-size:12px; line-height:1.45; }
+.exercise-review ul { padding-left:18px; margin-block:12px; }
+.exercise-review li { margin:9px 0; }
+.exercise-review li span { display:block; color:#b6b89e; }
+.exercise-review button { width:100%; margin-top:10px; }
+.offline-warning { border:1px solid #bd7c40; background:#514632; padding:10px; margin-bottom:12px; font-size:12px; line-height:1.4; }
+.offline-warning button { display:block; margin-top:8px; }
+.workshop-balance { color:#e4ad55; font-weight:700; }
+.workshop-card button { width:100%; }
+.milestone { min-height:32px; color:#d3b879; }
+.home-scene { height:112px; margin-block:12px; }
+.home-scene .avatar { height:106px; width:80px; left:calc(50% - 40px); }
+.workshop-card-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.workshop-card-heading h2 { margin:0; }
+.workshop-card-heading .text-button { width:auto; min-width:44px; }
+.workshop-panel { position:fixed; z-index:8; bottom:calc(76px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(340px,calc(100vw - 28px)); max-height:47dvh; overflow:auto; margin:0; padding:10px 14px; border-color:#b6b879; box-shadow:0 -3px 18px #10192199,inset 0 0 0 3px #293b40; }
+.workshop-panel p { font-size:12px; margin:6px 0; }

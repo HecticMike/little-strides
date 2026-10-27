@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-27 — Phase 3: first playable workshop loop
+
+- Goal: connect the existing fitness app to one playable village loop, within Little Strides only.
+- Completed: full workout -> one timber -> approach workshop -> explicit purchase -> saved restoration -> short construction effect. Unique completed workout IDs drive rewards; previews, partial/early-ended sessions and duplicate IDs do not grant extra timber. Failed purchase saves keep the timber and original building. Existing Phase 2 restorations migrate intact; JSON backups include the world ledger.
+- Village: collision-aware touch paths, arrival-gated interaction, visible workshop crest/destination, accessible building buttons and a compact closable workshop panel. Two walk keys and one blink derived from canonical Aseprite sheets preserve all three outfit stages; subtle chimney smoke and reduced-motion fallback. No regions, buildings, exercise types, tabs or dependencies added.
+- Workout audit: real 375x667 screen verified before gameplay work; existing poses, stage, timing, pacing, controls and Chromium audio/mute verified. Existing routines are explicitly labelled unreviewed and require a versioned acknowledgement before first Start/legacy Resume; this is not professional approval. Preview-only records also leave recovery unchanged. Session lengths, timer/pause rules and difficulty remain intact.
+- Offline: fixed unbounded waiting on serviceWorker.ready/cache-existence checks. A ready marker is written only after full precache; UI checks that marker and a controller. Registration rejection, real asset-cache failure and 20-second stalls show an actionable error/Retry; waiting updates have a separate status.
+- Checks: 15 unit/art tests and all 48 touch-enabled WebKit/Chromium mobile checks PASS, including an entire seven-minute workout advanced through browser time (no near-end checkpoint injection), spend/construction/offline persistence, failures, recovery and shared avatar stages. Active Workout, Today, Village and workshop before/after screenshots in screenshots/. Repeated motion/PNG exports are byte-identical. Final scene-load readiness safeguard verified separately before publication.
+- Files: gameplay/offline/path modules, existing engine/main/village/style/SW, canonical body/equipment masters + exports, motion Lua/export/capture scripts, tests, relevant READMEs and this log. Existing IndexedDB storage/audio/wake modules unchanged; no other project logs edited.
+- Limits/next: one restoration with the two existing building appearances. Rewards track logged time, not actual body movements. Exercise review and hand-polished wall-push/squat anatomy, lying study and walking weight transfer remain; physical iPhone/Android audio, calls, installation and power/storage acceptance still required.
 ## 2026-10-27 — Phase 2: Hearthwood visual and RPG upgrade
 
 - Goal: upgrade the existing mobile app's art and RPG identity without replacing its workout/persistence systems. Repository confirmed as C:/0. Miguel/1. VSCode/little-strides; no Pitch files changed.

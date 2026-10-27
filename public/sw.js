@@ -1,7 +1,11 @@
 const CACHE = 'little-strides-__CACHE_ID__';
 const ASSETS = /*__ASSETS__*/[];
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(ASSETS);
+    await cache.put(new URL('./__offline-ready__', self.registration.scope).href, new Response(JSON.stringify({ buildId: CACHE.slice('little-strides-'.length), assetCount: ASSETS.length }), { headers: { 'Content-Type': 'application/json' } }));
+  })());
   // Do not replace a worker while an active workout may be using its assets.
 });
 self.addEventListener('activate', event => {

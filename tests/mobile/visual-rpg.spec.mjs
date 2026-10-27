@@ -1,3 +1,4 @@
+import { startWorkout } from './helpers.mjs';
 import { test, expect } from '@playwright/test';
 import { freshState, createSession, finish } from '../../src/engine.mjs';
 const base = Date.now() - 7 * 86400_000;
@@ -45,7 +46,7 @@ test('canonical identity and stage match Today, Village and Workout for all thre
     await expect(village).toHaveAttribute('data-avatar-stage', stage);
     await expect(village).toHaveAttribute('data-avatar-fingerprint', fingerprint);
     await page.getByRole('button', { name: 'Today', exact: true }).tap();
-    await page.getByRole('button', { name: 'Start 10-minute session' }).tap();
+    await startWorkout(page, 10);
     const workout = page.locator('.exercise-art .avatar[data-ready=true]'); await expect(workout).toBeVisible();
     await expect(workout).toHaveAttribute('data-avatar-stage', stage);
     await expect(workout).toHaveAttribute('data-avatar-fingerprint', fingerprint);
@@ -55,7 +56,7 @@ test('canonical identity and stage match Today, Village and Workout for all thre
   expect(new Set(fingerprints).size).toBe(3);
 });
 test('all five exercise IDs render distinct matching poses', async ({ page }) => {
-  await page.goto('/'); await page.getByRole('button', { name: 'Start 10-minute session' }).tap();
+  await page.goto('/'); await startWorkout(page, 10);
   await page.getByRole('button', { name: 'Pause', exact: true }).tap();
   const frames = [];
   for (const [index, id] of ['march','squat','push','calf','reach'].entries()) {
@@ -74,12 +75,17 @@ test('first real workout reward visibly restores the workshop', async ({ page })
   for (const count of [0,1]) {
     await seed(page, count); await page.getByRole('button', { name: 'Village', exact: true }).tap();
     const village = page.locator('.village-canvas[data-ready=true]'); await expect(village).toBeVisible();
-    await expect(village).toHaveAttribute('data-building-stage', count ? 'restored' : 'original');
+    await expect(village).toHaveAttribute('data-building-stage', 'original');
+    if (count) {
+      await page.getByRole('button', { name: 'Workshop', exact: true }).tap();
+      await page.getByRole('button', { name: 'Restore workshop · 1 timber' }).tap();
+      await expect(village).toHaveAttribute('data-building-stage', 'restored');
+    }
     const canvas = await page.locator('.village-canvas canvas').boundingBox();
     const scale = canvas.width / 320;
     roofs.push(await page.screenshot({ clip: { x: canvas.x + 205 * scale, y: canvas.y + 60 * scale, width: 94 * scale, height: 90 * scale } }));
-    await page.getByRole('button', { name: 'Workshop', exact: true }).tap();
-    await expect(page.getByText(count ? /Restored! Your first stride/ : /Complete your first stride to restore it/)).toBeVisible();
+    if (!count) await page.getByRole('button', { name: 'Workshop', exact: true }).tap();
+    await expect(page.getByText(count ? /Workshop restored. A warm roof/ : /Cost: 1 timber earned/)).toBeVisible();
   }
   expect(roofs[0].equals(roofs[1])).toBe(false);
 });

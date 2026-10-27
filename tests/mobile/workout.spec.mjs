@@ -1,3 +1,4 @@
+import { startWorkout } from './helpers.mjs';
 import { test, expect } from '@playwright/test';
 async function open(page) {
   const errors = [];
@@ -18,7 +19,7 @@ for (const minutes of [7, 10, 15, 20]) test(`${minutes}-minute touch workout com
   await page.clock.install();
   const errors = await open(page);
   await page.getByRole('button', { name: `${minutes} MIN`, exact: true }).tap();
-  await page.getByRole('button', { name: `Start ${minutes}-minute session` }).tap();
+  await startWorkout(page, minutes);
   await expect(page.getByRole('heading', { name: 'Easy march' })).toBeVisible();
   await assertFits(page);
   await page.clock.runFor(3500);
@@ -37,7 +38,7 @@ for (const minutes of [7, 10, 15, 20]) test(`${minutes}-minute touch workout com
   await page.reload();
   await page.getByRole('button', { name: 'Resume', exact: true }).tap();
   await page.clock.runFor(1500);
-  await expect(page.getByText('Session complete. Your village has grown a little.')).toBeVisible();
+  await expect(page.getByText('Session complete. 1 timber earned. Visit the workshop when ready.')).toBeVisible();
   await page.getByRole('button', { name: 'Journal', exact: true }).tap();
   await expect(page.getByText(`${minutes}-minute stride`, { exact: true })).toBeVisible();
   await expect(page.getByText('Complete', { exact: true })).toBeVisible();
@@ -46,7 +47,7 @@ for (const minutes of [7, 10, 15, 20]) test(`${minutes}-minute touch workout com
 });
 test('pause, replacements, interruption, rotation and safe-area layout', async ({ page }) => {
   await page.clock.install(); await open(page);
-  await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await startWorkout(page, 7);
   await page.clock.runFor(3100);
   await page.getByRole('button', { name: 'Pause', exact: true }).tap();
   const countdown = await page.getByRole('timer').textContent();
@@ -68,7 +69,7 @@ test('pause, replacements, interruption, rotation and safe-area layout', async (
 });
 test('suspended timer gap freezes at last observed checkpoint', async ({ page }) => {
   await page.clock.install(); await open(page);
-  await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await startWorkout(page, 7);
   await page.clock.runFor(2000);
   const before = Number.parseInt(await page.getByRole('timer').textContent());
   await page.clock.fastForward(60_000);
@@ -81,7 +82,7 @@ test('suspended timer gap freezes at last observed checkpoint', async ({ page })
 test('offline first reload restores active session, village and sound assets', async ({ page, context }) => {
   const errors = await open(page);
   await expect(page.getByText('Offline ready', { exact: true })).toBeVisible({ timeout: 30000 });
-  await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await startWorkout(page, 7);
   await expect(page.getByRole('button', { name: 'Pause', exact: true })).toBeVisible();
   await page.waitForTimeout(1200);
   await context.setOffline(true); await page.reload();
@@ -93,6 +94,7 @@ test('offline first reload restores active session, village and sound assets', a
   const canvas = page.locator('.village-canvas canvas'), box = await canvas.boundingBox();
   await page.touchscreen.tap(box.x + box.width * .77, box.y + box.height * .48);
   await expect(page.getByRole('heading', { name: 'Workshop', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Close workshop' }).tap();
   await page.getByRole('button', { name: 'Garden', exact: true }).tap();
   await expect(page.getByRole('heading', { name: 'Garden', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).tap();
@@ -127,7 +129,7 @@ test('wake lock refusal retains usable workout and reduced-motion village loads'
   await page.getByRole('button', { name: 'Village', exact: true }).tap();
   await expect(page.locator('.village-canvas canvas')).toBeVisible();
   await page.getByRole('button', { name: 'Today', exact: true }).tap();
-  await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await startWorkout(page, 7);
   await expect(page.getByText(/Screen lock unavailable/)).toBeVisible(); await assertFits(page);
 });
 test('sound initialises by touch, volume applies, mute prevents cue playback', async ({ page }) => {
@@ -170,7 +172,7 @@ test('wake lock reacquires after release and visibility loss requires resume', a
       window.__lock = lock; return lock;
     } } });
   });
-  await open(page); await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await open(page); await startWorkout(page, 7);
   await expect.poll(() => page.evaluate(() => window.__locks)).toBe(1);
   await page.evaluate(() => window.__lock.release());
   await expect.poll(() => page.evaluate(() => window.__locks)).toBe(2);
@@ -193,7 +195,7 @@ test('failed local write pauses safely and retry preserves the session', async (
     };
   });
   await open(page); await page.evaluate(() => { window.__failSave = true; });
-  await page.getByRole('button', { name: 'Start 7-minute session' }).tap();
+  await startWorkout(page, 7);
   await expect(page.getByRole('alert')).toContainText('Local saving failed');
   await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeDisabled();
   await page.evaluate(() => { window.__failSave = false; });
