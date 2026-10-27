@@ -1,0 +1,15 @@
+{
+  "name": "little-strides",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build && node scripts/cache-manifest.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4197 --strictPort",
+    "test": "node --test tests/engine.test.mjs",
+    "test:mobile": "playwright test"
+  },
+  "dependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "phaser": "^3.90.0" },
+  "devDependencies": { "vite": "^7.1.12", "@playwright/test": "^1.56.1" }
+}
