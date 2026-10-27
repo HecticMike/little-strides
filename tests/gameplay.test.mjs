@@ -1,6 +1,7 @@
+import { testSession as createSession, TEST_SETTINGS } from './fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { freshState, createSession, finish, progress, recovery, validateBackup } from '../src/engine.mjs';
+import { freshState, finish, progress, recovery, validateBackup } from '../src/engine.mjs';
 import { workshopState, restoreWorkshop } from '../src/gameplay.mjs';
 import { route, walkable, destinations } from '../src/village-path.mjs';
 const at = 1_000_000;

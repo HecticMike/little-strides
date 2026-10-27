@@ -1,14 +1,15 @@
+import { testSession as createSession, TEST_SETTINGS } from './fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MINUTES, createSession, elapsed, position, freeze, resume, restore, skip, replace, finish, freshState, duration, recovery, progress, validateBackup } from '../src/engine.mjs';
+import { MINUTES, elapsed, position, freeze, resume, restore, skip, replace, finish, freshState, duration, recovery, progress, validateBackup } from '../src/engine.mjs';
 const start = 1_000_000;
 for (const minutes of MINUTES) {
   test(`${minutes} minutes: exact plan duration and every transition`, () => {
     const s = createSession(minutes, [], start);
     assert.equal(duration(s), minutes * 60_000);
-    for (let i = 0; i < minutes; i++) {
-      assert.equal(position(s, start + i * 60_000).kind, 'work');
-      assert.equal(position(s, start + i * 60_000 + 45_000).kind, 'rest');
+    for (let i = 0; i < minutes - 1; i++) {
+      assert.equal(position(s, start + 30_000 + i * 60_000).kind, 'work');
+      assert.equal(position(s, start + 30_000 + i * 60_000 + 45_000).kind, 'rest');
     }
     assert.equal(position(s, start + minutes * 60_000).done, true);
   });
@@ -23,22 +24,22 @@ test('pause excludes time away; restore freezes at durable checkpoint', () => {
   assert.equal(recovered.reason, 'interrupted');
 });
 test('skip and replace retain paused state and exact total duration', () => {
-  const s = freeze(createSession(7, [], start), start + 5000);
-  const replacement = replace(s, start + 6000);
-  assert.notEqual(replacement.segments[0].exerciseId, s.segments[0].exerciseId);
+  const s = freeze(createSession(7, [], start), start + 35000);
+  const replacement = replace(s, start + 36000, {settings:TEST_SETTINGS});
+  assert.notEqual(replacement.segments[1].exerciseId, s.segments[1].exerciseId);
   assert.equal(duration(replacement), duration(s));
-  assert.equal(position(skip(replacement, start + 7000), start + 7000).kind, 'rest');
+  assert.equal(position(skip(replacement, start + 37000), start + 7000).kind, 'rest');
   assert.equal(skip(replacement).status, 'paused');
 });
 test('finishing is idempotent, skipping earns no growth, recovery uses actual groups', () => {
-  let state = freshState(); state.active = createSession(7, [], start);
+  let state = freshState(); state.settings={...state.settings,...TEST_SETTINGS}; state.active = createSession(7, [], start);
   const done = finish(state, true, start + 7 * 60_000);
   assert.equal(done.history.length, 1); assert.equal(progress(done.history), 1);
   assert.deepEqual(finish(done, true), done);
   assert.ok(recovery(done.history, start + 8 * 60_000).resting.includes('legs'));
   const easy = createSession(7, done.history, start + 8 * 60_000);
-  assert.ok(easy.segments.every(b => ['march', 'reach'].includes(b.exerciseId)));
-  assert.equal(recovery(done.history, start + 25 * 3600_000).resting.length, 0);
+  assert.ok(easy.segments.every(b => b.kind!=='work'||['march', 'reach'].includes(b.exerciseId)));
+  assert.equal(recovery(done.history, start + 49 * 3600_000).resting.length, 0);
   while (!position(state.active, start).done) state.active = skip(state.active, start);
   assert.equal(progress(finish(state, true, start).history), 0);
 });

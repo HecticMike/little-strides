@@ -1,0 +1,62 @@
+import {test,expect} from '@playwright/test';
+import {mkdirSync} from 'node:fs';
+import {enableCandidates,startWorkout} from './helpers.mjs';
+import {freshState,finish,createSession} from '../../src/engine.mjs';
+const readState=page=>page.evaluate(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});const state=await new Promise(resolve=>{const r=db.transaction('state').objectStore('state').get('current');r.onsuccess=()=>resolve(r.result);});db.close();return state;});
+async function putState(page,state){await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);await page.reload();}
+test('individual opt-ins are persisted, provisional movements stay locked and disabling is immediate',async({page})=>{
+  await page.goto('/');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
+  const review=page.getByRole('dialog');await expect(review.getByRole('button',{name:'Use enabled movements'})).toBeDisabled();
+  for(const name of ['Wall push','Shallow squat'])await expect(review.getByRole('checkbox',{name:'Enable '+name,exact:true})).toBeDisabled();
+  await expect(review.getByRole('checkbox',{name:'Enable Easy march'})).not.toBeChecked();
+  await review.getByRole('checkbox',{name:'Enable Easy march'}).check();await review.getByRole('button',{name:'Go back'}).tap();
+  await expect(page.getByRole('timer')).toHaveCount(0);await page.getByRole('button',{name:'Review or disable movements'}).tap();
+  await review.getByRole('checkbox',{name:'Enable Easy march'}).uncheck();await review.getByRole('button',{name:'Save choices'}).tap();
+  await page.reload();expect((await readState(page)).settings.enabledExercises).toEqual([]);
+});
+test('entire ten-minute preparation/movement/rest/wind-down flow saves outcomes and comfort feedback',async({page},info)=>{
+  test.setTimeout(150000);mkdirSync('screenshots/phase4',{recursive:true});
+  const shot=name=>page.screenshot({path:`screenshots/phase4/${info.project.name}-${name}.png`});
+  await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
+  await shot('today');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
+  await enableCandidates(page);await shot('review');await page.getByRole('dialog').getByRole('button',{name:'Use enabled movements'}).tap();
+  await expect(page.getByRole('heading',{name:'Preparation',exact:true})).toBeVisible();await shot('preparation');
+  await page.clock.runFor(30_100);await expect(page.getByRole('heading',{name:'Easy march',exact:true})).toBeVisible();
+  await page.clock.runFor(3100);await expect(page.getByText('PACE 2 / 15',{exact:true})).toBeVisible();await shot('movement');
+  await page.getByRole('button',{name:'Mute sound'}).tap();await page.clock.runFor(42_100);
+  await expect(page.getByRole('heading',{name:'Take a breath',exact:true})).toBeVisible();await shot('rest');
+  await page.clock.runFor(495_000);await expect(page.getByRole('heading',{name:'Wind down',exact:true})).toBeVisible();await shot('wind-down');
+  await page.clock.runFor(30_500);await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();
+  await page.getByRole('button',{name:'Comfortable',exact:true}).tap();await expect(page.getByText('Feedback saved on this device.')).toBeVisible();
+  await shot('completion');await page.getByRole('button',{name:'Discomfort',exact:true}).tap();await page.getByRole('button',{name:'knees',exact:true}).tap();
+  await expect.poll(async()=>(await readState(page)).history[0].feedback.joints).toEqual(['knees']);
+  const stored=await readState(page),h=stored.history[0];expect(h.activeMs).toBe(405000);expect(h.movements.filter(m=>m.status==='completed')).toHaveLength(9);expect(h.movements.every(m=>m.repetitions===null)).toBe(true);
+  expect(h.movements.some(m=>['push','squat'].includes(m.exerciseId))).toBe(false);
+  await page.getByRole('button',{name:'Done',exact:true}).tap();await page.reload();
+  await page.getByRole('button',{name:'Journal',exact:true}).tap();await expect(page.getByText('Comfort: discomfort · knees')).toBeVisible();
+  await page.getByRole('button',{name:'Today',exact:true}).tap();await page.getByRole('button',{name:'Start 10-minute session'}).tap();
+  await page.clock.runFor(30_100);await expect(page.getByRole('heading',{name:'Gentle reach',exact:true})).toBeVisible();
+  expect((await readState(page)).active.segments.filter(b=>b.kind==='work').every(b=>b.exerciseId==='reach')).toBe(true);
+});
+test('insufficient eligible time offers shorter supported sessions or rest, never recovering filler',async({page})=>{
+  await page.goto('/');await page.getByRole('button',{name:'Review or disable movements'}).tap();
+  await page.getByRole('checkbox',{name:'Enable Easy march'}).check();await page.getByRole('button',{name:'Save choices'}).tap();
+  await page.getByRole('button',{name:'20 MIN',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 20-minute session'})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Use 10 minutes'})).toBeVisible();
+  const settings={muted:true,volume:.2,enabledExercises:['march']},at=Date.now()-700_000;
+  let state=freshState();state.settings=settings;state.active=createSession(10,[],at,{settings});state=finish(state,true,at+600_000);await putState(page,state);
+  await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();await expect(page.getByText(/Enabled movements are recovering, flagged, or at their rolling activity limit/)).toBeVisible();
+});
+test('partial skipped and replaced work is recorded honestly; pacing sound preference survives reload',async({page})=>{
+  await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Settings',exact:true}).tap();
+  await page.getByRole('checkbox',{name:'Pacing sound',exact:true}).uncheck();
+  await page.getByRole('button',{name:'Today',exact:true}).tap();await startWorkout(page,10);await page.clock.runFor(10_000);
+  await page.getByRole('button',{name:'Replace',exact:true}).tap();await page.clock.runFor(15_000);
+  await page.getByRole('button',{name:'Skip',exact:true}).tap();
+  page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();
+  await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();
+  const state=await readState(page),moves=state.history[0].movements.filter(m=>m.actualMs>0);
+  expect(moves.map(m=>m.exerciseId)).toEqual(['march','reach']);expect(moves[0].actualMs).toBeGreaterThanOrEqual(9900);expect(moves[0].actualMs).toBeLessThan(12000);expect(moves[1].skippedMs).toBeGreaterThan(15000);
+  expect(state.settings.paceMuted).toBe(true);expect(state.history[0].completed).toBe(false);
+  await page.reload();await page.getByRole('button',{name:'Settings',exact:true}).tap();await expect(page.getByRole('checkbox',{name:'Pacing sound'})).not.toBeChecked();
+});

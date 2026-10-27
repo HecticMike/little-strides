@@ -1,9 +1,10 @@
+import { testSession as createSession, TEST_SETTINGS } from '../fixtures.mjs';
 import { startWorkout } from './helpers.mjs';
 import { test, expect } from '@playwright/test';
-import { freshState, createSession, finish } from '../../src/engine.mjs';
+import { freshState, finish } from '../../src/engine.mjs';
 const base = Date.now() - 7 * 86400_000;
 function stateWithStrides(count) {
-  let state = freshState();
+  let state = freshState(); state.settings={...state.settings,...TEST_SETTINGS};
   for (let i = 0; i < count; i++) {
     const at = base + i * 600_000;
     state.active = createSession(7, [], at); state = finish(state, true, at + 420_000);
@@ -55,19 +56,19 @@ test('canonical identity and stage match Today, Village and Workout for all thre
   }
   expect(new Set(fingerprints).size).toBe(3);
 });
-test('all five exercise IDs render distinct matching poses', async ({ page }) => {
+test('enabled exercise IDs render distinct matching poses', async ({ page }) => {
   await page.goto('/'); await startWorkout(page, 10);
   await page.getByRole('button', { name: 'Pause', exact: true }).tap();
   const frames = [];
-  for (const [index, id] of ['march','squat','push','calf','reach'].entries()) {
+  for (const [index, id] of ['march','calf','reach'].entries()) {
     const avatar = page.locator('.exercise-art .avatar[data-ready=true]');
     await expect(avatar).toHaveAttribute('data-pose', id);
     // Wait for the actual rendered crop, rather than only the React attribute.
     await expect.poll(() => avatar.evaluate(c => c.toDataURL())).not.toBe(frames.at(-1) || '');
     frames.push(await avatar.evaluate(c => c.toDataURL()));
-    if (index < 4) { await page.getByRole('button', { name: 'Skip', exact: true }).tap(); await page.getByRole('button', { name: 'Skip', exact: true }).tap(); }
+    if (index < 2) { await page.getByRole('button', { name: 'Skip', exact: true }).tap(); await page.getByRole('button', { name: 'Skip', exact: true }).tap(); }
   }
-  expect(new Set(frames).size).toBe(5);
+  expect(new Set(frames).size).toBe(3);
 });
 test('first real workout reward visibly restores the workshop', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });

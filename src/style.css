@@ -138,3 +138,26 @@ small, .small { font-size: 11px; }
 .workshop-card-heading .text-button { width:auto; min-width:44px; }
 .workshop-panel { position:fixed; z-index:8; bottom:calc(76px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(340px,calc(100vw - 28px)); max-height:47dvh; overflow:auto; margin:0; padding:10px 14px; border-color:#b6b879; box-shadow:0 -3px 18px #10192199,inset 0 0 0 3px #293b40; }
 .workshop-panel p { font-size:12px; margin:6px 0; }
+.exercise-options article {border-bottom:1px solid #617064;padding:12px 0;}
+.exercise-options label {display:flex;align-items:center;gap:10px;min-height:44px;}
+.exercise-options input {width:22px;height:22px;accent-color:#e4ad55;}
+.exercise-options .pill {display:inline-block;margin:4px 0;}
+.exercise-review select {min-height:44px;width:100%;margin:6px 0;color:#fff0c2;background:#303d45;border:1px solid #718252;padding:6px;}
+.exercise-review summary,.movement-record summary,.completion summary {min-height:44px;padding-top:12px;cursor:pointer;}
+.comfort-options,.joint-options,.shorter-options {display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+.comfort-options button {flex:1;font-size:12px;padding:9px 6px;}
+.comfort-options [aria-pressed=true],.joint-options [aria-pressed=true] {background:#466b59;border-color:#e4ad55;}
+.completion>.primary {width:100%;margin-top:12px;}
+.movement-record {font-size:12px;margin:8px 0;}
+.movement-record ul {padding-left:15px;}
+.movement-record li {display:block;padding:8px 0;border-color:#4f5a55;}
+.movement-record li span {display:block;color:#b6b89e;font-size:11px;}
+.review-link {width:100%;text-align:center;}
+.history>li {align-items:flex-start;}.history>li>div {min-width:0;flex:1;}
+@media (min-height:601px) and (orientation:portrait) {
+  .exercise-heading h1 {font-size:28px;}
+  .workout-readout p {font-size:15px;min-height:40px;}
+  .workout-actions button {font-size:16px;}
+}
+.pace-option {display:flex;align-items:center;gap:9px;min-height:44px;font-size:12px;}
+.pace-option input {width:21px;height:21px;accent-color:#e4ad55;}

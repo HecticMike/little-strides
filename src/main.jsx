@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { EXERCISES, EXERCISE_REVIEW_VERSION, MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
+import { EXERCISES, EXERCISE_REVIEW_VERSION, planSession, eligibleExercises, performedMovements, setFeedback, MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
 import { loadState, saveState, backup } from './storage.mjs';
 import { avatarAtlas, avatarStage, avatarFrame, avatarFingerprint, CHARACTER } from './avatar.mjs';
 import { Cues } from './audio.mjs';
 import { ScreenLock } from './wake.mjs';
 import { workshopState, restoreWorkshop } from './gameplay.mjs';
 import { watchOffline } from './offline.mjs';
+import { ExerciseReview, SessionCompletion, MovementRecord } from './WorkoutQuality.jsx';
+import { enabledExercise } from './catalog.mjs';
 import './style.css';
 
 const cues = new Cues(), wake = new ScreenLock();
@@ -30,17 +32,6 @@ function Avatar({ pose = 'stand', stage = 0 }) {
     return () => { disposed = true; };
   }, [pose, stage]);
   return <><canvas className="avatar" ref={ref} width="48" height="64" role="img" data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
-}
-function ExerciseReview({ onAccept, onCancel, busy }) {
-  const ref = useRef();
-  useEffect(() => { ref.current.showModal(); }, []);
-  return <dialog ref={ref} className="exercise-review" aria-labelledby="review-title" onCancel={event => { event.preventDefault(); onCancel(); }}>
-    <h2 id="review-title">Review this unreviewed routine</h2>
-    <p>These existing exercises and stylised poses have not had a professional safety review. The wall-push and squat artwork is provisional. Use this routine only if these movements are appropriate for you.</p>
-    <ul>{EXERCISES.filter(e => e.reviewStatus !== 'blocked').map(e => <li key={e.id}><strong>{e.name}</strong><span>{e.cue}</span></li>)}</ul>
-    <p className="small muted">A game illustration is not a validated movement demonstration. Reviewing this list starts no timer and earns no rewards.</p>
-    <button disabled={busy} className="primary" onClick={onAccept}>Use this unreviewed routine</button><button disabled={busy} onClick={onCancel}>Go back</button>
-  </dialog>;
 }
 function Village({ completed, workshop, onRestore, busy }) {
   const ref = useRef(), gameRef = useRef();
@@ -84,6 +75,7 @@ function App() {
   const [offlineSetup, setOfflineSetup] = useState({ status: 'checking', message: '' }), [offlineAttempt, setOfflineAttempt] = useState(0), [install, setInstall] = useState(null);
   const cached = offlineSetup.status === 'ready';
   const [pendingReview, setPendingReview] = useState(null);
+  const [completionId,setCompletionId] = useState(null), [sessionWarning,setSessionWarning] = useState('');
   const finishing = useRef(false);
   const [busy, setBusy] = useState(false), busyRef = useRef(false), [otherTab, setOtherTab] = useState(false);
   const [saving, setSaving] = useState(false), writes = useRef(0);
@@ -160,7 +152,7 @@ function App() {
         finishing.current = true; wake.release(); cues.play('transition');
         const next = finish(s, true, t);
         void commit(next, false).then(saved => {
-          if (saved) setNotice(progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');
+          if (saved) {setCompletionId(s.active.id);setNotice(progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
           finishing.current = false;
         });
         return;
@@ -183,11 +175,14 @@ function App() {
     try { await fn(); } finally { busyRef.current = false; setBusy(false); }
   }
   async function begin() {
-    if (current.current.settings.exerciseReviewVersion !== EXERCISE_REVIEW_VERSION) { setPendingReview('start'); return; }
+    if (!(current.current.settings.enabledExercises||[]).length) { setPendingReview('start'); return; }
+    const proposal=planSession(minutes,current.current.history,Date.now(),current.current.settings);
+    if (!proposal.segments) {setNotice(proposal.reason);return;}
+    setCompletionId(null);setSessionWarning('');
     await cues.enable();
     cues.settings = current.current.settings;
     const t = Date.now(); lastTick.current = t; lastCue.current = '';
-    const saved = await commit({ ...current.current, active: createSession(minutes, current.current.history, t), updatedAt: t });
+    const saved = await commit({ ...current.current, active: createSession(minutes, current.current.history, t, {settings:current.current.settings}), updatedAt: t });
     if (saved) { cues.play('transition'); void wake.acquire(); }
   }
   async function toggle() {
@@ -195,7 +190,11 @@ function App() {
     if (s.active.status === 'running') {
       wake.release(); await commit({ ...s, active: freeze(s.active, t), updatedAt: t });
     } else {
-      if (s.settings.exerciseReviewVersion !== EXERCISE_REVIEW_VERSION) { setPendingReview('resume'); return; }
+      const remaining=s.active.segments.slice(position(s.active).index).filter(b=>b.kind==='work');
+      if (remaining.some(b=>!enabledExercise(b.exerciseId,s.settings))) {setSessionWarning('This saved plan contains disabled or pending-review movements. Skip or replace those blocks, or end it and start an eligible routine.');setPendingReview('resume');return;}
+      const eligible=new Set(eligibleExercises(s.history,t,s.settings).map(e=>e.id));
+      if(remaining.some(b=>!eligible.has(b.exerciseId))){setSessionWarning('A remaining movement is recovering, flagged or at its rolling limit. Replace or skip it, or end and generate a suitable routine.');return;}
+      setSessionWarning('');
       await cues.enable();
       lastTick.current = Date.now(); lastCue.current = '';
       if (await commit({ ...current.current, active: resume(current.current.active), updatedAt: Date.now() })) void wake.acquire();
@@ -205,8 +204,18 @@ function App() {
     await cues.enable();
     const purpose = pendingReview;
     const next = { ...current.current, settings: { ...current.current.settings, exerciseReviewVersion: EXERCISE_REVIEW_VERSION }, updatedAt: Date.now() };
-    if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') await toggle(); else await begin(); }
+    if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') {const remaining=next.active.segments.slice(position(next.active).index).filter(b=>b.kind==='work');if(remaining.every(b=>enabledExercise(b.exerciseId,next.settings)))await toggle();} else if(purpose!=='settings') await begin(); }
   }
+  async function endWorkout() {
+    if (!confirm('End this session and save it as partial?')) return;
+    const id=current.current.active.id;wake.release();
+    if(await commit(finish(current.current,false),false))setCompletionId(id);
+  }
+  async function replaceMovement() {
+    const next=replace(current.current.active,Date.now(),{history:current.current.history,settings:current.current.settings});
+    setSessionWarning(next.replacementMessage||'');await commit({...current.current,active:next});
+  }
+  async function feedback(id,comfort,joints) {await commit(setFeedback(current.current,id,comfort,joints),false);}
   async function restoreBuilding() {
     try {
       const next = restoreWorkshop(current.current);
@@ -240,39 +249,41 @@ function App() {
   cues.settings = data.settings;
   const count = progress(data.history), stage = avatarStage(count), s = data.active, workshop = workshopState(data);
   const p = s ? position(s, now) : null, e = p && !p.done ? exercise(p.exerciseId) : null;
-  const resting = recovery(data.history, now);
+  const resting = recovery(data.history, now,data.settings);
+  const proposal=planSession(minutes,data.history,now,data.settings), completedRecord=data.history.find(h=>h.id===completionId);
   const audioControls = <div className="audio-controls">
     <button disabled={saving} aria-label={data.settings.muted ? 'Unmute sound' : 'Mute sound'} aria-pressed={data.settings.muted} onClick={() => settings({ muted: !data.settings.muted })}>{data.settings.muted ? 'Sound off' : 'Sound on'}</button>
     <label>Volume<input aria-label="Cue volume" type="range" min="0" max="1" step="0.05" value={data.settings.volume} onChange={event => settings({ volume: Number(event.target.value) })} /></label>
   </div>;
   return <div className={`app ${s ? 'in-session' : ''}`}>
-    {pendingReview && <ExerciseReview busy={busy} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
+    {pendingReview && <ExerciseReview purpose={pendingReview} settings={data.settings} busy={busy||saving} onToggle={(id,on)=>settings({enabledExercises:on?[...new Set([...(current.current.settings.enabledExercises||[]),id])]:(current.current.settings.enabledExercises||[]).filter(x=>x!==id)})} onRecovery={value=>settings({recovery:value})} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
     {error && <div className="error" role="alert">{error}<div className="row"><button onClick={() => action(() => commit(current.current))}>Retry saving</button><button onClick={exportData}>Export backup</button></div></div>}
     {s ? <main className="workout">
       <header className="workout-heading"><span className="brand">{s.mode === 'preview' ? 'PREVIEW · NO REWARDS' : 'LITTLE STRIDES'}</span><span className="pill">{clock(duration(s) - elapsed(s, now))} left</span></header>
-      <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'rest' ? 'BREATHE & RESET' : `MOVE ${Math.floor((p?.index || 0) / 2) + 1} OF ${s.minutes}`}</p><h1>{p?.done ? 'All done' : p?.kind === 'rest' ? 'Take a breath' : e?.name}</h1></section>
-      <div className="exercise-art"><Avatar pose={p?.kind === 'rest' ? 'stand' : e?.pose || 'stand'} stage={stage} /><span className="pose-note">Stylised game pose · follow the written cue</span></div>
-      <section className="workout-readout" aria-label="Exercise timing"><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : 'REST · 15 SEC'}</span><p>{p?.kind === 'rest' ? 'Relax your shoulders. Get ready for the next move.' : e?.cue}</p></section>
+      <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'prepare' ? 'GET READY' : p?.kind === 'cooldown' ? 'WIND DOWN' : p?.kind === 'rest' ? 'REST / TRANSITION' : 'TIMED MOVEMENT'}</p><h1>{p?.done ? 'All done' : p?.kind === 'prepare' ? 'Preparation' : p?.kind === 'cooldown' ? 'Wind down' : p?.kind === 'rest' ? 'Take a breath' : e?.name}</h1></section>
+      <div className="exercise-art"><Avatar pose={p?.kind !== 'work' || e?.artStatus === 'provisional' ? 'stand' : e?.pose || 'stand'} stage={stage} /><span className="pose-note">{e?.artStatus==='provisional'?'Provisional artwork · demonstration withheld':'Stylised pose · timed activity, not measured repetitions'}</span></div>
+      <section className="workout-readout" aria-label="Exercise timing"><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : p?.kind === 'prepare' ? 'PREPARATION' : p?.kind === 'cooldown' ? 'WIND DOWN' : 'REST · 15 SEC'}</span><p>{p?.kind === 'prepare' ? 'Check your space. Get ready for ' + (exercise(s.segments.find(b=>b.kind==='work')?.exerciseId)?.name||'your next movement') + '.' : p?.kind === 'cooldown' ? 'The session is winding down. Stay comfortable.' : p?.kind === 'rest' ? 'Pause your movement. Next: ' + (exercise(s.segments.slice(p.index+1).find(b=>b.kind==='work')?.exerciseId)?.name||'wind down') + '.' : e?.cue}</p></section>
       <div className="workout-footer">
         {s.reason === 'interrupted' && <p className="recovery" role="status">Interrupted session saved. Time away was not counted. Resume when ready.</p>}
-        {audioControls}
-        <div className="workout-actions"><button disabled={busy || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(() => commit({ ...current.current, active: replace(current.current.active) }))}>Replace</button></div>
-        <div className="session-meta"><button className="text-button" onClick={() => action(async () => { if (confirm('End this session and save it as partial?')) { wake.release(); await commit(finish(current.current, false)); } })}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
+        {sessionWarning&&<p className="recovery" role="status">{sessionWarning}</p>}{audioControls}
+        <div className="workout-actions"><button disabled={busy || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(replaceMovement)}>Replace</button></div>
+        <div className="session-meta"><button className="text-button" onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
       </div>
     </main> : <>
       <header className="app-header"><a className="brand" href="./"><Icon index={0} />LITTLE STRIDES</a><span className="pill">{cached ? offline ? 'Offline' : 'Offline ready' : offlineSetup.status === 'error' ? 'Offline unavailable' : offlineSetup.status === 'update' ? 'Update ready' : 'Preparing offline'}</span></header>
       <main className="page">
         {offlineSetup.message && <div className="offline-warning" role="status">{offlineSetup.message}{offlineSetup.status === 'error' && <button onClick={() => setOfflineAttempt(n => n + 1)}>Retry offline setup</button>}</div>}
-        {notice && <div className="notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={() => setNotice('')}>×</button></div>}
+        {notice && !(tab==='Today'&&completedRecord) && <div className="notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={() => setNotice('')}>×</button></div>}
         {tab === 'Today' && <>
+          {completedRecord&&<SessionCompletion record={completedRecord} rewarded={completedRecord.completed&&completedRecord.mode!=='preview'&&completedRecord.activeMs>=30000} busy={busy||saving} onFeedback={(comfort,joints)=>action(()=>feedback(completedRecord.id,comfort,joints))} onDone={()=>{setCompletionId(null);setNotice('');}}/>}
           <h1>Your next stride</h1><p className="intro milestone">{workshop.stage ? stage === 2 ? 'Workshop restored · Veteran outfit unlocked.' : 'Workshop restored · Next outfit in ' + ((stage + 1) * 3 - count) + ' strides.' : workshop.balance ? workshop.balance + ' timber ready. Visit the workshop to restore it.' : 'Next: earn 1 timber and restore the workshop.'}</p>
           <div className="home-scene"><span className="scene-label">HEARTHWOOD · VILLAGE GREEN</span><Avatar stage={stage} /><span className="hero-stage"><Icon index={5} />{CHARACTER.stages[stage].name}</span></div>
-          <section className="plan"><div className="row between"><h2>Choose your quest</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><p className="muted plan-description">{resting.resting.length ? 'An easy mobility day. Recently used muscle groups are resting.' : 'Gentle full-body moves · 45 seconds on, 15 seconds rest'}</p><button className="primary start" disabled={busy || !!error} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><p className="small muted">Move within a comfortable range. Pause whenever you need.</p></section>
+          <section className="plan"><div className="row between"><h2>Choose your quest</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><p className="muted plan-description">{proposal.reason||'30s preparation · 45s movement / 15s rest · 30s wind-down'}</p><button className="primary start" disabled={busy || !!error || ((data.settings.enabledExercises||[]).length>0&&!proposal.segments)} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><button className="text-button review-link" onClick={()=>setPendingReview('settings')}>Review or disable movements</button>{!proposal.segments&&proposal.availableMinutes.filter(m=>m<minutes).length>0&&<div className="shorter-options">{proposal.availableMinutes.filter(m=>m<minutes).map(m=><button key={m} onClick={()=>setMinutes(m)}>Use {m} minutes</button>)}<p className="small muted">Or rest; no recovering movement is repeated to fill time.</p></div>}<p className="small muted">No equipment required. All current movements are standing; mat optional.</p></section>
           <div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{workshop.balance + ' timber available · ' + CHARACTER.stages[stage].name}</p></div><span className="stage">{stage + 1}/3</span></div>
         </>}
         {tab === 'Village' && <Village completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} />}
-        {tab === 'Journal' && <><p className="eyebrow">EVERY LITTLE STRIDE COUNTS</p><h1>Your journal</h1><article className="card"><h2>Suggested recovery</h2><p>{resting.resting.length ? 'Your next session uses easy mobility while these groups rest:' : 'Your next session includes a gentle mix of moves.'}</p>{resting.resting.map(g => <p key={g}>{g === 'legs' ? 'Legs' : 'Upper body'} · varied moves return {new Date(resting.until[g]).toLocaleDateString()} at {time(resting.until[g])}</p>)}<p className="small muted">A simple 24-hour variety rule, not a measure of physical readiness.</p></article><h2 className="section-title">Session history</h2>{data.history.length === 0 ? <p className="muted">Your first session will appear here.</p> : <ul className="history">{[...data.history].reverse().map(h => <li key={h.id}><div><strong>{h.minutes}-minute stride</strong><p>{new Date(h.endedAt).toLocaleDateString()} · {Math.floor(h.activeMs / 1000)} seconds moving</p></div><span className="pill">{h.mode === 'preview' ? 'Preview' : h.completed ? 'Complete' : 'Partial'}</span></li>)}</ul>}</>}
-        {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen. Android: Chrome menu → Install app / Add to Home screen.</p>}<p className="small muted">Use HTTPS on your phone. Screen lock and sounds depend on device and browser settings.</p></section></>}
+        {tab === 'Journal' && <><p className="eyebrow">EVERY LITTLE STRIDE COUNTS</p><h1>Your journal</h1><article className="card"><h2>Suggested recovery</h2><p>{resting.resting.length ? 'Your next session uses easy mobility while these groups rest:' : 'Your next session includes a gentle mix of moves.'}</p>{resting.resting.map(g => <p key={g}>{g === 'legs' ? 'Legs' : 'Upper body'} · varied moves return {new Date(resting.until[g]).toLocaleDateString()} at {time(resting.until[g])}</p>)}<p className="small muted">Rolling recovery and cumulative limits are configurable heuristics, not a guarantee of safety.</p></article><h2 className="section-title">Session history</h2>{data.history.length === 0 ? <p className="muted">Your first session will appear here.</p> : <ul className="history">{[...data.history].reverse().map(h => <li key={h.id}><div><strong>{h.minutes}-minute stride</strong><p>{new Date(h.endedAt).toLocaleDateString()} · {Math.floor(h.activeMs / 1000)} seconds timed</p><MovementRecord record={h}/>{h.feedback&&<p>Comfort: {h.feedback.comfort}{h.feedback.joints.length?' · '+h.feedback.joints.join(', '):''}</p>}</div><span className="pill">{h.mode === 'preview' ? 'Preview' : h.completed ? 'Complete' : 'Partial'}</span></li>)}</ul>}</>}
+        {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Exercises and recovery</h2><p>Unreviewed candidates require individual opt-in. Wall-push and squat are locked pending review.</p><button onClick={()=>setPendingReview('settings')}>Review or disable movements</button></section><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><label className="pace-option"><input aria-label="Pacing sound" type="checkbox" checked={!data.settings.paceMuted} onChange={event=>settings({paceMuted:!event.target.checked})}/>Pacing sound (transition cues stay on)</label><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen. Android: Chrome menu → Install app / Add to Home screen.</p>}<p className="small muted">Use HTTPS on your phone. Screen lock and sounds depend on device and browser settings.</p></section></>}
       </main>
       <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => { setTab(name); if (name === 'Village') setNotice(''); }}><Icon index={icon} />{name}</button>)}</nav>
     </>}

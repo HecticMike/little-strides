@@ -8,9 +8,10 @@ try {
   await page.getByText('Offline ready',{exact:true}).waitFor();await page.locator('.avatar[data-ready=true]').waitFor();
   await page.screenshot({path:'screenshots/today-375.png'});
   await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:'Start 7-minute session'}).tap();
-  await page.getByRole('dialog').getByRole('button',{name:'Use this unreviewed routine'}).tap();
+  for(const name of ['Easy march','Calf raise','Gentle reach'])await page.getByRole('checkbox',{name:'Enable '+name,exact:true}).check();
+  await page.getByRole('dialog').getByRole('button',{name:'Use enabled movements'}).tap();
   await page.locator('.workout-actions .primary:enabled').waitFor();await page.locator('.avatar[data-ready=true]').waitFor();
-  await page.clock.runFor(3200);await page.screenshot({path:'screenshots/workout-375.png'});
+  await page.clock.runFor(33200);await page.screenshot({path:'screenshots/workout-375.png'});
   await page.getByRole('button',{name:'Mute sound'}).tap();await page.clock.runFor(417500);
   await page.getByText('Session complete. 1 timber earned. Visit the workshop when ready.').waitFor();
   await page.getByRole('button',{name:'Village',exact:true}).tap();await page.locator('.village-canvas[data-ready=true]').waitFor();

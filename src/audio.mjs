@@ -25,7 +25,7 @@ export class Cues {
     } catch { this.status = 'Sound unavailable; visual cues stay on'; }
   }
   play(name) {
-    if (this.settings.muted || !this.context || this.context.state !== 'running' || !this.buffers[name]) return;
+    if (this.settings.muted || (name === 'pace' && this.settings.paceMuted) || !this.context || this.context.state !== 'running' || !this.buffers[name]) return;
     const node = this.context.createBufferSource(), gain = this.context.createGain();
     node.buffer = this.buffers[name]; gain.gain.value = this.settings.volume;
     node.connect(gain); gain.connect(this.context.destination); node.start();

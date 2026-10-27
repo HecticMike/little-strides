@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-27 — Phase 4: workout quality
+
+- Goal: practical recovery-aware short workouts; no RPG expansion or new dependencies.
+- Fixed: replaced blanket acknowledgement/round-robin prescription with individual candidate opt-ins, locked provisional wall-push/squat, exact 7/10/15/20-minute plans (10 default), 30-second preparation/wind-down and 45/15 movement/rest blocks. Only standing candidates exist; no equipment or floor transitions added.
+- Scheduling: actual timestamped work drives configurable rolling recovery/load budgets (48h strength default, 24h cumulative windows). Gentle aerobic/mobility can repeat within budgets; strengthening/flagged/disabled movements cannot fill a shortage. Offers only supported shorter durations or rest; permits multiple sessions when eligible time remains. Limits are heuristics, not clinical guarantees.
+- Records/UI: partial time before skip/replacement retained, original plan and per-movement outcomes stored, measured repetitions remain null, legacy records preserved without invented precision. Optional one-tap comfort and joint/area feedback saved automatically. Preparation/rest/wind-down audio, separate pacing mute, larger portrait instructions/controls and direct Done workflow; no required village visit.
+- Artwork: exercise-only canonical Aseprite refinements to wall contact/trunk inclination and squat knee/boot alignment, matching stage equipment; both remain provisional, locked and withheld as real demonstrations. Standing/village/walking identity preserved.
+- Checks: production build, 27 unit/art tests and complete 56-test WebKit/Chromium mobile suite PASS (4.5m). Existing scenarios retained with explicit opt-in/preparation-aware fixtures; corrected a helper readiness race. Entire 10-minute flow advanced through browser time in both engines, screenshots for review/preparation/movement/rest/wind-down/completion under screenshots/phase4. Audio behavior verified in Chromium; Windows WebKit fallback and physical-device limits retained.
+- Files: catalogue/scheduler/workout quality UI, engine/main/audio/styles, two canonical pose masters/exports and art metadata/export/refinement scripts, fixtures/tests and relevant documentation. Village/gameplay/storage/offline/wake modules, SW and dependency lockfile unchanged; no other repository/log edits.
+- Remaining/input: candidate catalogue and quantitative caps lack clinical validation; limited full-body strengthening until pending candidates receive exercise/art review. User must decide appropriate opt-ins/constraints. Physical iPhone/Android: real 10-minute flow, distance legibility, audio/silent/Bluetooth, calls/app switching, wake lock, feedback touch targets and airplane-mode restoration. See README for explicit checks and general context sources.
 ## 2026-10-27 — Phase 3: first playable workshop loop
 
 - Goal: connect the existing fitness app to one playable village loop, within Little Strides only.

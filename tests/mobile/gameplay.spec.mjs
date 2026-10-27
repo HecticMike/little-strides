@@ -1,10 +1,11 @@
+import { testSession as createSession, TEST_SETTINGS } from '../fixtures.mjs';
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { freshState, createSession, finish } from '../../src/engine.mjs';
+import { freshState, finish } from '../../src/engine.mjs';
 import { startWorkout } from './helpers.mjs';
 async function seed(page, count=1) {
   await page.goto('/');await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeEnabled();
-  let state=freshState();state.settings.exerciseReviewVersion=1;
+  let state=freshState();state.settings={...state.settings,...TEST_SETTINGS};
   for(let i=0;i<count;i++){const at=Date.now()-2*86400_000+i*600_000;state.active=createSession(7,[],at);state=finish(state,true,at+420_000);}
   await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);
   await page.reload();await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeEnabled();
@@ -14,7 +15,7 @@ async function mapTap(page,x,y){const b=await page.locator('.village-canvas canv
 test('unreviewed exercises require explicit review; a cancelled review earns nothing',async({page})=>{
   await page.goto('/');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
   const review=page.getByRole('dialog',{name:'Review this unreviewed routine'});await expect(review).toBeVisible();
-  await expect(review).toContainText('have not had a professional safety review');
+  await expect(review).toContainText('Nothing is enabled automatically');
   await expect(page.getByRole('timer')).toHaveCount(0);
   await review.getByRole('button',{name:'Go back'}).tap();
   const map=await village(page);await page.getByRole('button',{name:'Workshop',exact:true}).tap();
@@ -85,7 +86,7 @@ test('a failed asset precache never reports offline ready',async({page,context})
 });
 test('preview-only completion earns no timber and does not schedule recovery',async({page})=>{
   await page.clock.install();await seed(page,0);
-  const state=freshState();state.settings.exerciseReviewVersion=1;
+  const state=freshState();state.settings={...state.settings,...TEST_SETTINGS};
   const at=Date.now()-500_000;state.active=createSession(7,[],at,{mode:'preview'});
   state.active={...state.active,status:'paused',runningSince:null,elapsedMs:419_000,checkpointAt:at+419_000,reason:'paused'};
   await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);
