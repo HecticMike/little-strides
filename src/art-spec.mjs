@@ -1,6 +1,6 @@
 export const CHARACTER = {
   id: 'hearthwood-wayfarer', frameWidth: 96, frameHeight: 128, feetY: 120,
-  body: './art/hero-body.png', equipment: './art/hero-equipment.png',
+  body: './art/hero-body.png', equipment: './art/hero-equipment.png', trainingEquipment: './art/hero-training-outfit.png',
   poses: ['stand', 'march', 'squat', 'push', 'calf', 'reach', 'lying', 'walk-a', 'walk-b', 'idle-blink'],
   stages: [
     { id: 'beginner', name: 'Beginner', equipmentRow: null },

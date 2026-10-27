@@ -1,6 +1,6 @@
 # Hearthwood artwork
 
-The approved artwork is preserved. No image generation was used for this refinement.
+The approved village artwork is preserved. The focused character pass reused existing sprites and generated one provisional core-study seed.
 Runtime PNGs are exported from editable masters with `npm run art:export`.
 The export also refreshes [source-inventory.json](source-inventory.json), listing
 actual dimensions, layer names and nontransparent pixel counts.
@@ -44,8 +44,8 @@ walls and details while preserving the approved materials and perspective.
 
 ## Canonical character and exercises
 
-One shared 96x128 character body plus stage equipment supplies Today, Phaser and
-the workout canvas. The 960x384 composed atlas fits below 1024 on both edges.
+One shared 96x128 character body supplies Today, Phaser and the workout canvas.
+Adventure and light training equipment are separate overlays on that exact body. The 960x384 composed atlas fits below 1024 on both edges.
 The character uses the shared 45-colour palette; scenery uses 192 colours plus
 transparency. There are no external runtime images/fonts or new dependencies.
 
@@ -72,8 +72,8 @@ Exercise opt-ins, disabled/locked candidates and written cues are unchanged.
    in BOTH states and reviewing collision boundaries.
 3. Run `npm run art:export`. This preserves manual masters and refreshes PNGs,
    avatar metadata and the factual source inventory.
-4. Only when deliberately rederiving walk-b/blink, run `npm run art:motion`.
-   It preserves layers and exercise keys but overwrites manual walk-b/blink work.
+4. `npm run art:motion` refreshes blink only and preserves authored walk-a/b.
+   `npm run art:compare` recreates the labelled final character comparison.
 5. Run `npm test`, `npm run build`, start `npm run preview`, then run
    `npm run test:mobile`. Refinement screenshots are in `screenshots/refinement`.
    The pixel-reconstruction check deliberately guards the approved appearance;
@@ -89,3 +89,11 @@ runtime assets or production animation rigs.
 Remaining manual work: anatomical/heel-contact review; more natural walking weight
 transfer; cloak fitting; optional future separation of the flattened lodge,
 terrain and backgrounds. A full tilemap conversion is not required for this area.
+
+## Focused character pass
+
+See [the character audit](review/character-audit.md) for measured registration fixes,
+light outfit architecture, the review-only core study, exact manual frame/column
+corrections and reproduction commands. The old runtime lying slot remains withheld.
+New editable masters: `hero-training-outfit.aseprite` and `hero-core-study.aseprite`.
+Neither is a claim of clinically validated or finished professional anatomy.

@@ -1,5 +1,17 @@
 # Little Strides development log
 
+## 2026-10-27 - Focused character art pass
+
+- Goal: improve canonical character consistency, walking, marching, lying study and training clothing; preserve approved village art and all exercise locks.
+- Art: compared three stages/poses; fixed two-pixel head/face drift, hip-centre mirroring and mirrored hand fragments. Walk upper bodies/hands and ground baseline now match idle. Reused canonical sleeve/bicep pixels for opposed-arm march and removed a stray outline pixel. Existing two contact keys retained; motion command now preserves authored contacts and refreshes blink only.
+- Outfit/model: one body/face/palette feeds adventure and lightweight training equipment. Workouts omit scarf, pack and cloak; stage seam/cuff accents remain. Canonical-reference and actual-outfit fingerprints are separate; real rendered face pixels are also checked. Existing stages still share one physique; no body morphing or real-user measurements added.
+- Core: archived 48x64 lying study was cropped/old identity and runtime slot blank. One built-in image-generation seed using the approved character produced a wider 160x96 provisional core study, palette-matched and region-layered in Aseprite with shared base/hidden stage trims. Source and exact prompt saved in art/direction. Review export/comparison only; lying remains unavailable and unmapped in real sessions.
+- QA fix: verification exposed a late-checkpoint race after End. Manual End now freezes synchronously before the final durable save, and its button reflects busy state. Delayed-write regression proves the ended workout cannot reappear on reload; storage/scheduler/engine logic unchanged.
+- Checks: production build and 30 unit/art checks PASS; full 70-test WebKit/Chromium mobile suite PASS (5.6m). Exact head/upper-body registration, preserved forearms, common y=119 floor, no face-covering training pixels, direct Today/workout face equality for all stages, crisp native-size rendering and actual stage outfits verified. Existing session/recovery/offline/reward/backup tests pass. Approved village masters/exports and catalogue/scheduler/storage/SW/lockfile unchanged.
+- Files: canonical body/gear + new training/core masters/exports; avatar renderer/main/art contract; Aseprite pose/export/motion/study/compare scripts; package comparison command only (no dependencies); focused tests, screenshots/character-pass and art/review final comparison/audit. No other project/log modified.
+- Remaining/manual: hero-body columns 2/8/9 wrist/elbow and knee/ankle lighting/weight transfer; hero-core-study frame 1 head/back support, arm separation and sole contacts; hero-equipment Veteran cloak; hero-training-outfit cuff/trim finish. See art/review/character-audit.md for exact local regions. Art remains stylised/unvalidated; physical-phone acceptance and manual art review still required.
+- Next: review the single final comparison and hand-polish the named frames; do not unlock core or add new exercises/gameplay.
+
 ## 2026-10-27 - Visual refinement
 
 - Goal: preserve approved art while improving real asset separation, mobile composition and editability. Little Strides only; no image generation, dependencies or RPG systems added.

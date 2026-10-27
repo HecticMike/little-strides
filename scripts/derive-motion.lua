@@ -1,4 +1,4 @@
--- Derive two contact keys and a blink without flattening the editable masters.
+-- Refresh the blink only; preserve the registered, authored contact keys.
 -- Existing exercise columns and all artist layers are preserved. Safe to repeat.
 local pc=app.pixelColor
 local W,H=96,128
@@ -36,10 +36,6 @@ local function process(sprite,equipment)
    local result=Image(original)
    for row=0,(equipment and 1 or 0) do
     for y=0,H-1 do for x=0,W-1 do
-     local sx=(not equipment and y>=76) and W-1-x or x
-     local c=original:getPixel(7*W+sx,row*H+y)
-     if equipment and y>=76 and layer.name:find("cloak") and pc.rgbaA(composite:getPixel(8*W+x,y))>0 then c=0 end
-     result:drawPixel(8*W+x,row*H+y,c)
      result:drawPixel(9*W+x,row*H+y,original:getPixel(x,row*H+y))
     end end
    end
@@ -63,4 +59,4 @@ end
 process(body,false)
 body:close()
 local gear=app.open("art/source/hero-equipment.aseprite");process(gear,true);gear:close()
-print("Layer-preserving walk/blink derived. Eye-white clusters: "..#eyeBoxes)
+print("Authored contact keys preserved; blink refreshed. Eye-white clusters: "..#eyeBoxes)

@@ -5,6 +5,7 @@
   "feetY": 120,
   "body": "./art/hero-body.png",
   "equipment": "./art/hero-equipment.png",
+  "trainingEquipment": "./art/hero-training-outfit.png",
   "poses": [
     "stand",
     "march",

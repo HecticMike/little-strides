@@ -17,21 +17,22 @@ const time = ms => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute
 function Icon({ index, className = '' }) {
   return <span aria-hidden="true" className={'pixel-icon ' + className} style={{ '--icon': index }} />;
 }
-function Avatar({ pose = 'stand', stage = 0 }) {
+function Avatar({ pose = 'stand', stage = 0, outfit = 'adventure' }) {
   const ref = useRef(), [failed, setFailed] = useState(false);
   useEffect(() => {
     let disposed = false;
-    avatarAtlas().then(atlas => {
+    Promise.all([avatarAtlas(),avatarAtlas(outfit)]).then(([canonical,atlas]) => {
       if (disposed) return;
       const ctx = ref.current.getContext('2d'), frame = avatarFrame(pose, stage);
       ctx.clearRect(0, 0, CHARACTER.frameWidth, CHARACTER.frameHeight); ctx.imageSmoothingEnabled = false;
       ctx.drawImage(atlas, frame.x, frame.y, frame.w, frame.h, 0, 0, CHARACTER.frameWidth, CHARACTER.frameHeight);
-      ref.current.dataset.avatarFingerprint = avatarFingerprint(atlas, stage);
+      ref.current.dataset.avatarFingerprint = avatarFingerprint(canonical, stage);
+      ref.current.dataset.outfitFingerprint = avatarFingerprint(atlas, stage);
       ref.current.dataset.ready = 'true'; setFailed(false);
     }).catch(() => { if (!disposed) setFailed(true); });
     return () => { disposed = true; };
-  }, [pose, stage]);
-  return <><canvas className="avatar" ref={ref} width={CHARACTER.frameWidth} height={CHARACTER.frameHeight} role="img" data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
+  }, [pose, stage, outfit]);
+  return <><canvas className="avatar" ref={ref} width={CHARACTER.frameWidth} height={CHARACTER.frameHeight} role="img" data-outfit={outfit} data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
 }
 function Village({ completed, workshop, onRestore, busy }) {
   const ref = useRef(), gameRef = useRef();
@@ -208,8 +209,12 @@ function App() {
   }
   async function endWorkout() {
     if (!confirm('End this session and save it as partial?')) return;
-    const id=current.current.active.id;wake.release();
-    if(await commit(finish(current.current,false),false))setCompletionId(id);
+    const snapshot=current.current, at=Date.now(), id=snapshot.active.id;
+    // Freeze synchronously so neither the checkpoint timer nor visibility events
+    // can enqueue an old active snapshot after the final history write.
+    const stopped={...snapshot,active:freeze(snapshot.active,at),updatedAt:at};
+    set(stopped);wake.release();
+    if(await commit(finish(stopped,false,at),false))setCompletionId(id);
   }
   async function replaceMovement() {
     const next=replace(current.current.active,Date.now(),{history:current.current.history,settings:current.current.settings});
@@ -261,13 +266,13 @@ function App() {
     {s ? <main className="workout">
       <header className="workout-heading"><span className="brand">{s.mode === 'preview' ? 'PREVIEW · NO REWARDS' : 'LITTLE STRIDES'}</span><span className="pill">{clock(duration(s) - elapsed(s, now))} left</span></header>
       <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'prepare' ? 'GET READY' : p?.kind === 'cooldown' ? 'WIND DOWN' : p?.kind === 'rest' ? 'REST / TRANSITION' : 'TIMED MOVEMENT'}</p><h1>{p?.done ? 'All done' : p?.kind === 'prepare' ? 'Preparation' : p?.kind === 'cooldown' ? 'Wind down' : p?.kind === 'rest' ? 'Take a breath' : e?.name}</h1></section>
-      <div className="exercise-art"><Avatar pose={p?.kind !== 'work' || e?.artStatus === 'provisional' ? 'stand' : e?.pose || 'stand'} stage={stage} /><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="pose-note">{e?.artStatus==='provisional'?'Provisional artwork · demonstration withheld':'Stylised pose · timed activity, not measured repetitions'}</span></div>
+      <div className="exercise-art"><Avatar pose={p?.kind !== 'work' || e?.artStatus === 'provisional' ? 'stand' : e?.pose || 'stand'} stage={stage} outfit="training" /><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="pose-note">{e?.artStatus==='provisional'?'Provisional artwork · demonstration withheld':'Stylised pose · timed activity, not measured repetitions'}</span></div>
       <section className="workout-readout" aria-label="Exercise timing"><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : p?.kind === 'prepare' ? 'PREPARATION' : p?.kind === 'cooldown' ? 'WIND DOWN' : 'REST · 15 SEC'}</span><p>{p?.kind === 'prepare' ? 'Check your space. Get ready for ' + (exercise(s.segments.find(b=>b.kind==='work')?.exerciseId)?.name||'your next movement') + '.' : p?.kind === 'cooldown' ? 'The session is winding down. Stay comfortable.' : p?.kind === 'rest' ? 'Pause your movement. Next: ' + (exercise(s.segments.slice(p.index+1).find(b=>b.kind==='work')?.exerciseId)?.name||'wind down') + '.' : e?.cue}</p></section>
       <div className="workout-footer">
         {s.reason === 'interrupted' && <p className="recovery" role="status">Interrupted session saved. Time away was not counted. Resume when ready.</p>}
         {sessionWarning&&<p className="recovery" role="status">{sessionWarning}</p>}{audioControls}
         <div className="workout-actions"><button disabled={busy || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(replaceMovement)}>Replace</button></div>
-        <div className="session-meta"><button className="text-button" onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
+        <div className="session-meta"><button className="text-button" disabled={busy} onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
       </div>
     </main> : <>
       <header className="app-header"><a className="brand" href="./"><Icon index={0} />LITTLE STRIDES</a><span className="pill">{cached ? offline ? 'Offline' : 'Offline ready' : offlineSetup.status === 'error' ? 'Offline unavailable' : offlineSetup.status === 'update' ? 'Update ready' : 'Preparing offline'}</span></header>

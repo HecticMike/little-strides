@@ -48,3 +48,13 @@ test('workshop context and structure have independently editable component layer
   assert.ok(context.visiblePixels.every(n=>n>0));
   assert.equal(CHARACTER.feetY,120);
 });
+
+test('light outfit and review-only core use editable shared-model exports without scheduling lying',()=>{
+  assert.deepEqual(dimensions('hero-training-outfit'),[CHARACTER.poses.length*CHARACTER.frameWidth,3*CHARACTER.frameHeight]);
+  assert.equal(CHARACTER.trainingEquipment,'./art/hero-training-outfit.png');
+  const core=readFileSync('art/review/core-study.png');assert.equal(core.readUInt32BE(16),160);assert.equal(core.readUInt32BE(20),288);
+  const audit=JSON.parse(readFileSync('art/source-inventory.json','utf8'));
+  for(const name of ['hero-training-outfit','hero-core-study'])assert.ok(audit.find(a=>a.asset===name).layers.length>=2);
+  assert.ok(!EXERCISES.some(e=>e.id==='lying'||e.pose==='lying'));
+  assert.equal(JSON.parse(readFileSync('public/art/avatar.json','utf8')).frames.find(f=>f.id==='lying').available,false);
+});
