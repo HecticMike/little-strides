@@ -1,25 +1,29 @@
-export const POSES = ['stand', 'march', 'squat', 'push', 'calf', 'reach'];
-export const AVATAR = { hair: '#48342d', skin: '#e8b48b', shadow: '#b87c61', shirts: ['#f2c86a', '#8cd4be', '#b5a0e7'], trousers: '#314e53', boots: '#253736' };
-// One compact 192 × 120 atlas for every growth stage and exercise pose.
-export function avatarAtlas() {
-  const c = document.createElement('canvas'); c.width = 192; c.height = 120;
-  const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = false;
-  POSES.forEach((pose, frame) => AVATAR.shirts.forEach((shirt, stage) => {
-    const x = frame * 32, y = stage * 40;
-    const rect = (a, b, w, h, color) => { ctx.fillStyle = color; ctx.fillRect(x + a, y + b, w, h); };
-    const down = pose === 'squat' ? 5 : pose === 'calf' ? -2 : 0;
-    rect(7, 37, 19, 2, '#20443c');
-    rect(10, 5 + down, 13, 12, AVATAR.skin);
-    rect(9, 3 + down, 15, 6, AVATAR.hair); rect(9, 8 + down, 3, 5, AVATAR.hair);
-    rect(19, 10 + down, 2, 2, '#263d38'); rect(19, 14 + down, 3, 1, AVATAR.shadow);
-    rect(10, 18 + down, 13, 11, shirt); rect(10, 26 + down, 13, 3, '#d69d50');
-    if (pose === 'reach') { rect(6, 7 + down, 4, 15, AVATAR.skin); rect(23, 7 + down, 4, 15, AVATAR.skin); rect(6, 18 + down, 4, 5, shirt); rect(23, 18 + down, 4, 5, shirt); }
-    else if (pose === 'push') { rect(22, 19 + down, 9, 4, AVATAR.skin); rect(27, 12 + down, 4, 10, AVATAR.skin); rect(22, 18 + down, 4, 6, shirt); rect(5, 20 + down, 5, 5, AVATAR.skin); }
-    else { rect(6, 19 + down, 4, 6, shirt); rect(23, 19 + down, 4, 6, shirt); rect(6, 25 + down, 4, 5, AVATAR.skin); rect(23, pose === 'march' ? 19 : 25 + down, 4, 5, AVATAR.skin); }
-    if (pose === 'squat') { rect(6, 30, 9, 5, AVATAR.trousers); rect(19, 30, 9, 5, AVATAR.trousers); rect(6, 34, 4, 4, AVATAR.boots); rect(24, 34, 4, 4, AVATAR.boots); }
-    else { rect(11, 29 + down, 5, pose === 'march' ? 5 : 7, AVATAR.trousers); rect(18, 29 + down, 5, 7, AVATAR.trousers); rect(9, pose === 'march' ? 33 : 35 + down, 7, 3, AVATAR.boots); rect(18, 35 + down, 7, 3, AVATAR.boots); }
-    if (stage === 2) { rect(12, 1 + down, 2, 3, '#fff4b3'); rect(18, 1 + down, 2, 3, '#fff4b3'); }
-  }));
-  return c;
-}
+import { CHARACTER } from './art-spec.mjs';
+export { CHARACTER };
+export const POSES = CHARACTER.poses;
 export const avatarStage = completed => Math.min(2, Math.floor(completed / 3));
+let atlasPromise;
+const loadImage = url => new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(`Artwork unavailable: ${url}`)); image.src = url; });
+// Both renderers consume this exact atlas, assembled once from the common body
+// and stage equipment. There is no independent village or workout character.
+export function avatarAtlas() {
+  return atlasPromise ||= Promise.all([loadImage(CHARACTER.body), loadImage(CHARACTER.equipment)]).then(([body, equipment]) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = CHARACTER.frameWidth * POSES.length; canvas.height = CHARACTER.frameHeight * CHARACTER.stages.length;
+    const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
+    CHARACTER.stages.forEach((stage, i) => {
+      ctx.drawImage(body, 0, i * 64);
+      if (stage.equipmentRow !== null) ctx.drawImage(equipment, 0, stage.equipmentRow * 64, canvas.width, 64, 0, i * 64, canvas.width, 64);
+    });
+    return canvas;
+  }).catch(error => { atlasPromise = null; throw error; });
+}
+export const avatarFrame = (pose, stage) => {
+  if (!POSES.includes(pose) || !CHARACTER.stages[stage]) throw new Error('Unknown character frame.');
+  return { x: POSES.indexOf(pose) * 48, y: stage * 64, w: 48, h: 64 };
+};
+export function avatarFingerprint(atlas, stage) {
+  const f = avatarFrame('stand', stage), pixels = atlas.getContext('2d').getImageData(f.x, f.y, f.w, f.h).data;
+  let hash = 2166136261; for (const n of pixels) hash = Math.imul(hash ^ n, 16777619);
+  return (hash >>> 0).toString(16);
+}

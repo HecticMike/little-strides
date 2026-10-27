@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
 import { loadState, saveState, backup } from './storage.mjs';
-import { avatarAtlas, avatarStage, POSES } from './avatar.mjs';
+import { avatarAtlas, avatarStage, avatarFrame, avatarFingerprint, CHARACTER } from './avatar.mjs';
 import { Cues } from './audio.mjs';
 import { ScreenLock } from './wake.mjs';
 import './style.css';
@@ -10,36 +10,52 @@ import './style.css';
 const cues = new Cues(), wake = new ScreenLock();
 const clock = ms => { const seconds = Math.ceil(Math.max(0, ms) / 1000); return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; };
 const time = ms => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+function Icon({ index, className = '' }) {
+  return <span aria-hidden="true" className={'pixel-icon ' + className} style={{ '--icon': index }} />;
+}
 function Avatar({ pose = 'stand', stage = 0 }) {
-  const ref = useRef();
+  const ref = useRef(), [failed, setFailed] = useState(false);
   useEffect(() => {
-    const ctx = ref.current.getContext('2d');
-    ctx.clearRect(0, 0, 32, 40); ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(avatarAtlas(), POSES.indexOf(pose) * 32, stage * 40, 32, 40, 0, 0, 32, 40);
+    let disposed = false;
+    avatarAtlas().then(atlas => {
+      if (disposed) return;
+      const ctx = ref.current.getContext('2d'), frame = avatarFrame(pose, stage);
+      ctx.clearRect(0, 0, 48, 64); ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(atlas, frame.x, frame.y, frame.w, frame.h, 0, 0, 48, 64);
+      ref.current.dataset.avatarFingerprint = avatarFingerprint(atlas, stage);
+      ref.current.dataset.ready = 'true'; setFailed(false);
+    }).catch(() => { if (!disposed) setFailed(true); });
+    return () => { disposed = true; };
   }, [pose, stage]);
-  return <canvas className="avatar" ref={ref} width="32" height="40" role="img" aria-label={`Your character demonstrating ${pose}`} />;
+  return <><canvas className="avatar" ref={ref} width="48" height="64" role="img" data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
 }
 function Village({ completed }) {
-  const ref = useRef();
+  const ref = useRef(), gameRef = useRef();
   const [place, setPlace] = useState('Training green');
+  const stage = avatarStage(completed);
   useEffect(() => {
-    let disposed = false, game;
-    import('./village.mjs').then(({ createVillage }) => {
-      if (!disposed) game = createVillage(ref.current, avatarStage(completed), setPlace);
-    }).catch(() => setPlace('Village could not load. Your workouts are still available.'));
-    return () => { disposed = true; game?.destroy(true); };
-  }, [completed]);
+    let disposed = false;
+    import('./village.mjs').then(async ({ createVillage }) => {
+      if (disposed) return;
+      const game = await createVillage(ref.current, stage, completed, setPlace);
+      if (disposed) game.destroy(true); else gameRef.current = game;
+    }).catch(() => { if (!disposed) setPlace('Village could not load. Your workouts are still available.'); });
+    return () => { disposed = true; gameRef.current?.destroy(true); gameRef.current = null; };
+  }, [completed, stage]);
+  const visit = name => { setPlace(name); gameRef.current?.events.emit('visit', name); };
   return <section className="village-page">
-    <p className="eyebrow">YOUR LITTLE CORNER OF THE WORLD</p><h1>A village that grows<br />one stride at a time.</h1>
-    <div className="village-canvas" ref={ref} role="img" aria-label="Pixel village. Tap the ground to walk, or a building to visit." />
-    <p className="muted">Tap to walk. Tap a building to visit.</p>
-    <div className="places">{['Training green', 'Garden', 'Workshop'].map(p => <button key={p} aria-pressed={place === p} onClick={() => setPlace(p)}>{p}</button>)}</div>
-    <article className="card" aria-live="polite"><h2>{place}</h2><p>{place === 'Garden' ? `${completed} completed sessions have planted ${Math.min(12, completed)} flowers. Small, steady growth.` : place === 'Workshop' ? `Character stage ${avatarStage(completed) + 1} of 3. Your outfit grows every three completed sessions.` : 'Your next adventure starts with a short workout. Visit the Today tab when you are ready.'}</p></article>
+    <p className="eyebrow">THE HEARTHWOOD CHRONICLES</p><h1>Your little<br />corner of the realm.</h1>
+    <div className="village-status"><span><Icon index={5} />{CHARACTER.stages[stage].name}</span><span>{completed} strides</span></div>
+    <div className="village-canvas" ref={ref} role="img" aria-label="Hearthwood pixel village. Tap a path to walk, or a building to visit." />
+    <p className="muted village-hint">Tap a path to explore. Choose a building below.</p>
+    <div className="places">{['Training green', 'Garden', 'Workshop'].map(p => <button key={p} aria-pressed={place === p} onClick={() => visit(p)}>{p}</button>)}</div>
+    <article className="card" aria-live="polite"><h2>{place}</h2><p>{place === 'Garden' ? completed + ' completed sessions have planted ' + Math.min(12, completed) + ' flowers in your garden.' : place === 'Workshop' ? completed ? 'Restored! Your first stride brought warm windows, a new roof and the guild banner to the workshop.' : 'A quiet workshop, waiting for a new chapter. Complete your first stride to restore it.' : 'A sheltered training lodge beside the village green. Your next short adventure starts in Today.'}</p></article>
+    <p className="small muted">Beginner · Adventurer · Veteran. Character rewards are fictional; they do not measure your real body.</p>
   </section>;
 }
 function App() {
   const [data, setData] = useState(null), current = useRef(null);
-  const [tab, setTab] = useState('Today'), [minutes, setMinutes] = useState(7);
+  const [tab, setTab] = useState('Today'), [minutes, setMinutes] = useState(10);
   const [now, setNow] = useState(Date.now()), [error, setError] = useState('');
   const [notice, setNotice] = useState(''), [offline, setOffline] = useState(!navigator.onLine);
   const [cached, setCached] = useState(false), [install, setInstall] = useState(null);
@@ -190,7 +206,7 @@ function App() {
     {s ? <main className="workout">
       <header className="workout-heading"><span className="brand">LITTLE STRIDES</span><span className="pill">{clock(duration(s) - elapsed(s, now))} left</span></header>
       <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'rest' ? 'BREATHE & RESET' : `MOVE ${Math.floor((p?.index || 0) / 2) + 1} OF ${s.minutes}`}</p><h1>{p?.done ? 'All done' : p?.kind === 'rest' ? 'Take a breath' : e?.name}</h1></section>
-      <div className="exercise-art"><span className="sun" /><span className="ground" /><Avatar pose={p?.kind === 'rest' ? 'stand' : e?.pose || 'stand'} stage={stage} /></div>
+      <div className="exercise-art"><Avatar pose={p?.kind === 'rest' ? 'stand' : e?.pose || 'stand'} stage={stage} /><span className="pose-note">Stylised game pose · follow the written cue</span></div>
       <section className="workout-readout" aria-label="Exercise timing"><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : 'REST · 15 SEC'}</span><p>{p?.kind === 'rest' ? 'Relax your shoulders. Get ready for the next move.' : e?.cue}</p></section>
       <div className="workout-footer">
         {s.reason === 'interrupted' && <p className="recovery" role="status">Interrupted session saved. Time away was not counted. Resume when ready.</p>}
@@ -199,20 +215,20 @@ function App() {
         <div className="session-meta"><button className="text-button" onClick={() => action(async () => { if (confirm('End this session and save it as partial?')) { wake.release(); await commit(finish(current.current, false)); } })}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
       </div>
     </main> : <>
-      <header className="app-header"><a className="brand" href="./">LITTLE STRIDES<span className="brand-dot">✦</span></a><span className="pill">{offline ? 'Offline' : cached ? 'Offline ready' : 'Preparing offline'}</span></header>
+      <header className="app-header"><a className="brand" href="./"><Icon index={0} />LITTLE STRIDES</a><span className="pill">{offline ? 'Offline' : cached ? 'Offline ready' : 'Preparing offline'}</span></header>
       <main className="page">
         {notice && <div className="notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={() => setNotice('')}>×</button></div>}
         {tab === 'Today' && <>
-          <p className="eyebrow">A LITTLE MOVEMENT. A LITTLE MAGIC.</p><h1>Make time<br />for <em>yourself.</em></h1><p className="intro">A short workout. A quieter mind.<br />A world that grows with you.</p>
-          <div className="home-scene"><span className="sun" /><span className="scene-label">YOUR NEXT CHAPTER STARTS HERE</span><Avatar stage={stage} /><div className="hill hill-one" /><div className="hill hill-two" /><span className="scene-flower">✿</span></div>
-          <section className="plan"><div className="row between"><h2>Your daily stride</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><p className="muted plan-description">{resting.resting.length ? 'An easy mobility day. Recently used muscle groups are resting.' : 'Gentle full-body moves · 45 seconds on, 15 seconds rest'}</p><button className="primary start" disabled={busy || !!error} onClick={() => action(begin)}>{busy ? 'Preparing…' : `Start ${minutes}-minute session`}<span>↗</span></button><p className="small muted">Move within a comfortable range. Pause whenever you need.</p></section>
-          <div className="progress-strip"><span className="progress-icon">✿</span><div><strong>{count} little strides</strong><p>Your village is growing. So are you.</p></div><span className="stage">{stage + 1}/3</span></div>
+          <p className="eyebrow">THE HEARTHWOOD CHRONICLES</p><h1>A small quest.<br /><em>A stronger story.</em></h1><p className="intro">Take a little time. Return with a little magic.</p>
+          <div className="home-scene"><span className="scene-label">HEARTHWOOD · VILLAGE GREEN</span><Avatar stage={stage} /><span className="hero-stage"><Icon index={5} />{CHARACTER.stages[stage].name}</span></div>
+          <section className="plan"><div className="row between"><h2>Choose your quest</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><p className="muted plan-description">{resting.resting.length ? 'An easy mobility day. Recently used muscle groups are resting.' : 'Gentle full-body moves · 45 seconds on, 15 seconds rest'}</p><button className="primary start" disabled={busy || !!error} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><p className="small muted">Move within a comfortable range. Pause whenever you need.</p></section>
+          <div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{count ? 'Your next chapter is taking root.' : 'First quest reward: restore the workshop.'}</p></div><span className="stage">{stage + 1}/3</span></div>
         </>}
         {tab === 'Village' && <Village completed={count} />}
         {tab === 'Journal' && <><p className="eyebrow">EVERY LITTLE STRIDE COUNTS</p><h1>Your journal</h1><article className="card"><h2>Suggested recovery</h2><p>{resting.resting.length ? 'Your next session uses easy mobility while these groups rest:' : 'Your next session includes a gentle mix of moves.'}</p>{resting.resting.map(g => <p key={g}>{g === 'legs' ? 'Legs' : 'Upper body'} · varied moves return {new Date(resting.until[g]).toLocaleDateString()} at {time(resting.until[g])}</p>)}<p className="small muted">A simple 24-hour variety rule, not a measure of physical readiness.</p></article><h2 className="section-title">Session history</h2>{data.history.length === 0 ? <p className="muted">Your first session will appear here.</p> : <ul className="history">{[...data.history].reverse().map(h => <li key={h.id}><div><strong>{h.minutes}-minute stride</strong><p>{new Date(h.endedAt).toLocaleDateString()} · {Math.floor(h.activeMs / 1000)} seconds moving</p></div><span className="pill">{h.completed ? 'Complete' : 'Partial'}</span></li>)}</ul>}</>}
         {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : 'Keep the app open online until “Offline ready” appears.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen. Android: Chrome menu → Install app / Add to Home screen.</p>}<p className="small muted">Use HTTPS on your phone. Screen lock and sounds depend on device and browser settings.</p></section></>}
       </main>
-      <nav className="bottom-nav" aria-label="Main navigation">{[['Today', '◒'], ['Village', '⌂'], ['Journal', '▤'], ['Settings', '⚙']].map(([name, icon]) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => setTab(name)}><span aria-hidden="true">{icon}</span>{name}</button>)}</nav>
+      <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => setTab(name)}><Icon index={icon} />{name}</button>)}</nav>
     </>}
   </div>;
 }

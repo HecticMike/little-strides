@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 async function open(page) {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/'); await expect(page.getByRole('button', { name: 'Start 7-minute session' })).toBeEnabled();
+  await page.goto('/'); await expect(page.getByRole('button', { name: 'Start 10-minute session' })).toBeEnabled();
+  await page.getByRole('button', { name: '7 MIN', exact: true }).tap();
   return errors;
 }
 async function assertFits(page) {

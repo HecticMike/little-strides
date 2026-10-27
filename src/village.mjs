@@ -1,36 +1,76 @@
 import Phaser from 'phaser';
-import { avatarAtlas } from './avatar.mjs';
-export function createVillage(parent, stage, onVisit) {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  class Village extends Phaser.Scene {
-    create() {
-      const g = this.add.graphics();
-      const rect = (x, y, w, h, color) => { g.fillStyle(color); g.fillRect(x, y, w, h); };
-      rect(0, 0, 320, 280, 0x91b39a);
-      rect(0, 0, 320, 53, 0xd6e6c3);
-      rect(0, 53, 320, 18, 0x719780);
-      rect(140, 80, 38, 200, 0xd9c38f); rect(25, 179, 270, 26, 0xd9c38f);
-      for (let i = 0; i < 40; i++) rect((i * 67 + 13) % 314, 80 + (i * 31) % 196, 3, 4, 0x799e7d);
-      const tree = (x, y) => { rect(x + 9, y + 18, 7, 22, 0x755c46); rect(x, y + 10, 27, 20, 0x426e57); rect(x + 5, y, 18, 24, 0x557f58); rect(x + 8, y + 4, 7, 9, 0x7c9b65); };
-      [12, 50, 263, 294].forEach((x, i) => tree(x, 42 + i % 2 * 12));
-      tree(12, 225); tree(276, 219);
-      rect(43, 95, 64, 66, 0xe8dab0); rect(36, 88, 78, 14, 0x8c604c); rect(44, 78, 62, 12, 0xa87354); rect(52, 68, 46, 12, 0xb48158); rect(66, 126, 18, 35, 0x596a5c); rect(48, 112, 12, 14, 0x86b7b0); rect(89, 112, 12, 14, 0x86b7b0);
-      rect(215, 106, 62, 54, 0xc2b68d); rect(207, 92, 78, 18, 0x5c7772); rect(216, 82, 61, 12, 0x6c8980); rect(235, 134, 16, 26, 0x675b48); rect(255, 118, 13, 12, 0x9dc4ba);
-      rect(49, 223, 65, 35, 0x795e46);
-      for (let i = 0; i < 12; i++) { rect(54 + i % 6 * 10, 225 + Math.floor(i / 6) * 16, 4, 11, 0x6d8b52); if (i < Math.min(12, stage * 3 + 1)) rect(52 + i % 6 * 10, 223 + Math.floor(i / 6) * 16, 8, 5, 0xf0ca6d); }
-      const atlas = this.textures.addCanvas('avatar', avatarAtlas());
-      atlas.add('standing', 0, 0, stage * 40, 32, 40);
-      this.player = this.add.image(160, 210, 'avatar', 'standing').setOrigin(0.5, 1).setScale(1.5);
-      this.input.on('pointerdown', pointer => {
-        const x = Phaser.Math.Clamp(pointer.x, 22, 298), y = Phaser.Math.Clamp(pointer.y, 110, 268);
-        this.tweens.killTweensOf(this.player);
-        this.tweens.add({ targets: this.player, x, y, duration: reduced ? 0 : 300, ease: 'Linear' });
-        if (x < 115 && y < 180) onVisit('Training green');
-        else if (x > 200 && y < 180) onVisit('Workshop');
-        else if (x < 125 && y > 215) onVisit('Garden');
-      });
-      this.add.text(13, 12, 'THE LITTLE VILLAGE', { fontFamily: 'monospace', fontSize: '15px', color: '#294d41' });
+import { avatarAtlas, avatarFrame, avatarFingerprint, CHARACTER, POSES } from './avatar.mjs';
+import { WORLD } from './art-spec.mjs';
+const destinations = { 'Training green': [72, 180], Workshop: [248, 180], Garden: [88, 208] };
+function walkable(x, y) {
+  return x >= 1 && x <= 18 && y >= 3 && y <= 16 && !(y < 10 && (x < 7 || x > 12)) && !(x < 7 && y >= 14) && !(x >= 13 && y === 14);
+}
+export function route(from, to) {
+  const start = from.map(n => Math.floor(n / 16)), end = to.map(n => Math.floor(n / 16));
+  if (!walkable(...end)) return [];
+  const queue = [start], parents = new Map([[start.join(','), null]]);
+  for (let i = 0; i < queue.length; i++) {
+    const p = queue[i];
+    if (p[0] === end[0] && p[1] === end[1]) {
+      const path = []; let cursor = p;
+      while (parents.get(cursor.join(','))) { path.unshift(cursor.map(n => n * 16 + 8)); cursor = parents.get(cursor.join(',')); }
+      return path;
+    }
+    for (const [dx, dy] of [[0,1],[1,0],[0,-1],[-1,0]]) {
+      const next = [p[0] + dx, p[1] + dy], key = next.join(',');
+      if (walkable(...next) && !parents.has(key)) { parents.set(key, p); queue.push(next); }
     }
   }
-  return new Phaser.Game({ type: Phaser.AUTO, parent, width: 320, height: 280, pixelArt: true, roundPixels: true, antialias: false, backgroundColor: '#91b39a', fps: { target: 30, forceSetTimeOut: true }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, scene: Village, audio: { noAudio: true }, banner: false });
+  return [];
+}
+export async function createVillage(parent, stage, completed, onVisit) {
+  const atlas = await avatarAtlas(), reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const restored = completed >= WORLD.workshopUnlock;
+  class Village extends Phaser.Scene {
+    preload() {
+      for (const name of ['village-ground', 'village-foreground']) this.load.image(name, `./art/${name}.png`);
+      this.load.spritesheet('buildings', './art/buildings.png', { frameWidth: 96, frameHeight: 112 });
+      this.load.spritesheet('icons', './art/icons.png', { frameWidth: 16, frameHeight: 16 });
+    }
+    create() {
+      this.add.image(0, 0, 'village-ground').setOrigin(0);
+      this.add.image(14, 44, 'buildings', 0).setOrigin(0).setDepth(148);
+      this.add.image(204, 45, 'buildings', restored ? 2 : 1).setOrigin(0).setDepth(149);
+      this.add.image(0, 0, 'village-foreground').setOrigin(0).setDepth(1000);
+      for (let i = 0; i < Math.min(12, completed); i++) this.add.image(39 + i % 6 * 10, 239 + Math.floor(i / 6) * 12, 'icons', 4).setScale(.5).setDepth(260);
+      const texture = this.textures.addCanvas('hero', atlas);
+      POSES.forEach(pose => { const f = avatarFrame(pose, stage); texture.add(pose, 0, f.x, f.y, f.w, f.h); });
+      this.player = this.add.image(168, 216, 'hero', 'stand').setOrigin(.5, 1).setScale(.75).setDepth(216);
+      this.path = [];
+      const visit = name => { this.path = route([this.player.x, this.player.y], destinations[name]); onVisit(name); };
+      this.game.events.on('visit', visit);
+      this.input.on('pointerdown', p => {
+        if (p.y < 164 && p.y > 55 && p.x < 115) return visit('Training green');
+        if (p.y < 164 && p.y > 55 && p.x > 204) return visit('Workshop');
+        if (p.x < 112 && p.y > 220) return visit('Garden');
+        this.path = route([this.player.x, this.player.y], [p.x, p.y]);
+        if (reduced && this.path.length) { const end = this.path.at(-1); this.player.setPosition(...end).setDepth(end[1]); this.path = []; }
+      });
+      if (!reduced) {
+        for (const [x,y] of [[119,153],[199,153],[93,204]]) {
+          const light = this.add.rectangle(x, y, 2, 2, 0xfff0c2, .6).setDepth(500);
+          this.tweens.add({ targets: light, alpha: .2, y: y - 3, duration: 2400, yoyo: true, repeat: -1 });
+        }
+      }
+      parent.dataset.avatarId = CHARACTER.id;
+      parent.dataset.avatarStage = CHARACTER.stages[stage].id;
+      parent.dataset.avatarFingerprint = avatarFingerprint(atlas, stage);
+      parent.dataset.buildingStage = restored ? 'restored' : 'original';
+      parent.dataset.ready = 'true';
+    }
+    update(_time, delta) {
+      if (!this.player || !this.path.length) { this.player?.setFrame('stand'); return; }
+      const [x,y] = this.path[0], dx = x - this.player.x, dy = y - this.player.y;
+      const distance = Math.hypot(dx, dy), step = Math.min(delta, 50) * .11;
+      if (distance <= step || reduced) { this.player.setPosition(x,y); this.path.shift(); }
+      else { this.player.x += dx / distance * step; this.player.y += dy / distance * step; }
+      this.player.setDepth(Math.round(this.player.y)).setFrame('march');
+    }
+  }
+  return new Phaser.Game({ type: Phaser.AUTO, parent, width: WORLD.width, height: WORLD.height, pixelArt: true, roundPixels: true, antialias: false, backgroundColor: '#344e48', fps: { target: 30, forceSetTimeOut: true }, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, scene: Village, audio: { noAudio: true }, banner: false });
 }

@@ -1,0 +1,10 @@
+# Little Strides development log
+
+## 2026-10-27 — Phase 2: Hearthwood visual and RPG upgrade
+
+- Goal: upgrade the existing mobile app's art and RPG identity without replacing its workout/persistence systems. Repository confirmed as C:/0. Miguel/1. VSCode/little-strides; no Pitch files changed.
+- Completed: original 48x64 wayfarer body and stage equipment, six game poses plus a non-workout lying study, editable Aseprite masters/export metadata, compact textured tile village with depth/walk routing/ambient light, workshop restoration at one completed rewarded session, RPG Today/Workout/icons, 10-minute fresh default and navigation in a reserved row.
+- Files: src/avatar/art-spec/village/main/style, public/art and launch colours, art/source/palette/README, seed/export/capture scripts, package scripts/README/gitignore and focused tests/screenshots. Engine, recovery scheduling, IndexedDB schema/storage, audio/wake logic and service-worker implementation unchanged; no dependency additions.
+- Checks: production build, 11 engine/art tests and all 32 WebKit/Chromium mobile checks pass. Final theme build also passed 10 targeted visual/offline checks. Screenshot review at 375x667 covers Today, Village, paused Workout and restored Workshop; repeated Aseprite PNG exports are byte-identical. All three avatar stages share fingerprints across renderers; all exercise IDs have distinct matching frames. Original functional scenarios now explicitly select their previous 7-minute fixture, with 10-minute default checked separately.
+- Limits: original initial pixel art, not claimed as final professional or clinically reviewed demonstration art. Manual refinement remains for wall-push/squat anatomy and the lying identity study; only static exercise key poses and one small village area are included. Windows WebKit audio and physical-device limits remain as documented in README.
+- Next: manual Aseprite polish and physical iPhone/Android acceptance. Edit canonical masters and run npm run art:export; never maintain separate village/workout character designs.
