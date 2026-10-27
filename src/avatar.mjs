@@ -12,15 +12,15 @@ export function avatarAtlas() {
     canvas.width = CHARACTER.frameWidth * POSES.length; canvas.height = CHARACTER.frameHeight * CHARACTER.stages.length;
     const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
     CHARACTER.stages.forEach((stage, i) => {
-      ctx.drawImage(body, 0, i * 64);
-      if (stage.equipmentRow !== null) ctx.drawImage(equipment, 0, stage.equipmentRow * 64, canvas.width, 64, 0, i * 64, canvas.width, 64);
+      ctx.drawImage(body, 0, i * CHARACTER.frameHeight);
+      if (stage.equipmentRow !== null) ctx.drawImage(equipment, 0, stage.equipmentRow * CHARACTER.frameHeight, canvas.width, CHARACTER.frameHeight, 0, i * CHARACTER.frameHeight, canvas.width, CHARACTER.frameHeight);
     });
     return canvas;
   }).catch(error => { atlasPromise = null; throw error; });
 }
 export const avatarFrame = (pose, stage) => {
   if (!POSES.includes(pose) || !CHARACTER.stages[stage]) throw new Error('Unknown character frame.');
-  return { x: POSES.indexOf(pose) * 48, y: stage * 64, w: 48, h: 64 };
+  return { x: POSES.indexOf(pose) * CHARACTER.frameWidth, y: stage * CHARACTER.frameHeight, w: CHARACTER.frameWidth, h: CHARACTER.frameHeight };
 };
 export function avatarFingerprint(atlas, stage) {
   const f = avatarFrame('stand', stage), pixels = atlas.getContext('2d').getImageData(f.x, f.y, f.w, f.h).data;

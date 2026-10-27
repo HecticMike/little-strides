@@ -1,0 +1,28 @@
+LITTLE STRIDES — EXACT BUILT-IN GENERATION PROMPTS
+
+CHARACTER
+Reference: _uploads/ChatGPT Image Oct 27, 2026, 03_44_00 PM-1.png
+transparent_background: true
+
+Use case: stylized-concept
+Asset type: Little Strides canonical character art-direction candidate; a single isolated full-body character, not a poster, not a sprite sheet.
+Input image 1 is the identity and quality reference. Match the BEGINNER character in the upper-left group: warm light skin, friendly youthful adult face, large readable dark eyes, distinctive tousled chestnut hair swept upward, short-sleeved forest teal shirt with subtle gold edge stitching, brown trousers, brown belt with small square brass buckle, dark sturdy boots. Keep these identity features and appealing proportions (roughly four heads tall), but remove all backpack/cape/scarf/equipment from this beginner. This is the same person who will later acquire those items, not a new design.
+Primary request: produce ONE exceptionally appealing, polished 16-bit-inspired fantasy RPG character in a relaxed neutral standing pose, both boots planted, arms slightly clear of torso, facing front with a slight turn toward viewer right. Clear face, attractive hair clusters and asymmetric silhouette; anatomically coherent hands and knees, simple readable clothing.
+Style/medium: carefully art-directed pixel art with deliberate square pixel clusters, stepped edges, crisp selective deep-green outlines, controlled hue-shifted shadows, warm upper-left lighting and restrained highlights. Match the reference character's richness and charm. Aim for an underlying approximately 96 by 128 pixel full-body design presented as a large clean nearest-neighbour enlargement. Keep a consistent pixel scale; no smooth painting, no photographic texture, no blur, no vector shapes, no oversampled noise or artificial pixel grid.
+Composition: character alone, full body entirely visible, occupies 80 percent of image height, generous transparent margin around hair/hands/boots. Transparent background, no scenic environment, no floor, no cast shadow outside the character.
+Palette: chestnut and copper hair highlights; warm peach skin; deep forest teal shirt; muted earth-brown trousers; charcoal-green boots; restrained warm brass accents. Selective darker outlines, no pure white shine.
+No words, labels, logo, border, props, weapon, exercise instructions, other figures or alternate poses.
+This is an art-direction candidate requiring pixel-grid and animation cleanup, not a claim of a finished game-ready sprite.
+
+VILLAGE
+Reference: _uploads/ChatGPT Image Oct 27, 2026, 03_44_02 PM-2.png
+transparent_background: false
+
+Use case: stylized-concept
+Asset type: Little Strides small village art-direction key visual, not a UI screenshot or finished tilemap.
+Input image 1 is a style/quality reference: reproduce its inviting, richly textured 16-bit-inspired fantasy environment, carefully shaded clustered foliage, warm timber and plaster buildings, stonework, readable ochre paths and restrained gold lantern accents. Create a NEW compact layout limited to the game's existing lodge, workshop and garden. No additional gameplay locations.
+Composition: near-square landscape canvas about 10:9, slightly elevated orthographic RPG view looking north, not diamond isometric. At upper-left a small attractive cream-plaster timber training lodge with terracotta tile roof, readable front door, flower boxes and a short stone entrance. At upper-right a matching craft workshop at its ORIGINAL unrestored stage: weathered blue slate roof with a small missing section exposing rafters, a few boards, stone foundation and workbench. It is neglected but welcoming, not a ruin. Both doors face the camera and open toward the central paths.
+Keep the lower half open and walkable: a broad central sandy courtyard connects both doors and a path exiting at bottom centre. A modest existing fenced garden sits at lower-left. Trees, shrubs, wildflowers and a few stones frame the outside edges; avoid blocking the central walking space. Keep the camera close enough to read roof tiles, woodgrain, individual vegetation clusters and stone steps at phone size. Layered cast shadows, coherent upper-left daylight, subtle warm sunlight through trees.
+Style: exceptionally polished pixel-art RPG environment matching the reference's material richness, appealing composition and colour harmony. Structured sharp pixel clusters with stepped edges, deep green-blue shadows, mossy and lime foliage, cream and ochre highlights, textured roof tiles and timber. No smooth painted gradients, no blur, no realistic photographic texture, no generic flat vector art, no evenly scattered noisy dots. Generous visual hierarchy: detail along edges, calm readable walkable paths.
+No player or NPC, no lettering, no signs with text, no HUD, borders, icons, mountains, distant vistas, extra buildings, extra regions, river, bridge or added gameplay objects. Do not include the character from the reference. No labels.
+This is a single concept reference, not a claim of separated production layers.

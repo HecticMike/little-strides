@@ -1,0 +1,133 @@
+IMPLEMENTATION UPDATE ? 2026-10-27
+User approved this art direction. The character, poses and courtyard are now integrated.
+Current dimensions, masks, export instructions and limitations are in ../README.md.
+The original proposal below is retained as design provenance; building patch sizing
+was adjusted to the approved composition. Generated originals remain non-runtime inputs.
+
+LITTLE STRIDES — REFERENCE-QUALITY ART DIRECTION
+Status: exploratory candidates, not approved or integrated game assets.
+Repository: C:/0. Miguel/1. VSCode/little-strides. No Pitch changes.
+
+ASSESSMENT
+The uploaded references set a substantially higher bar than the current procedural art:
+expressive faces and hair silhouettes; shaded fabric and stone; clustered foliage;
+coherent warm sunlight; foreground/background overlap; generous, readable paths.
+This is an asset-production gap as well as an interface styling gap.
+
+Aseprite can author and refine this art, but is not an automatic art generator.
+Image generation can supply appealing designs and source imagery. It does not reliably
+deliver exact pixel grids, seamless tiles, aligned animation frames, separate layers,
+or medically trustworthy movement illustrations. A flattened generated PNG imported
+into Aseprite is not a layered production master.
+
+DELIVERED CANDIDATES
+beginner-character-v1.png — 1082 x 1454, transparent, single neutral character.
+village-courtyard-v1.png — 1322 x 1190, opaque, compact village composition.
+Both were generated with the built-in image generation tool using the supplied
+references; exact prompts are in generation-prompts.txt. Dimensions are actual output,
+not the requested logical sprite grid. Neither is referenced by the app.
+Character identity, visual richness and village composition are useful initial results.
+Pixel-scale uniformity, animation, separated scenery and collision alignment remain.
+The original references remain the quality benchmark; these candidates do not replace it.
+
+DESIGN TO PRESERVE
+A single welcoming courtyard: lodge upper-left, workshop upper-right, existing garden
+lower-left. Wide central paths connect doors; vegetation frames the edges.
+Workshop restoration is the focal reward: repaired roof, finished timber/windows,
+then the existing banner/planter details. Only ORIGINAL and RESTORED are needed for
+the implemented loop. No new regions, buildings, quests or restoration stages.
+A character must be visible against sandy paths without a large arrow or glow.
+During workouts, reduce scenery contrast so the character silhouette, timer and
+controls remain readable. Render all labels and controls in React, not into images.
+
+CANONICAL CHARACTER CONTRACT
+Use the uploaded character sheet and beginner candidate together as identity references.
+Keep tousled chestnut hair, warm skin, large dark eyes, teal short-sleeved shirt,
+brown trousers, brass square belt buckle and dark boots. About four heads tall;
+upper-left light; readable hands/feet; no weapon or armour.
+Beginner: base outfit. Adventurer: the SAME body/face plus ochre scarf and small pack.
+Veteran: same identity plus forest cloak and restrained brass trim.
+These are fictional outfit/progression rewards, not changes measured from the user.
+Separate base, hair, outfit, equipment and shadow into named Aseprite layers.
+All directions, motion and exercise poses derive from this model; never commission
+an unrelated workout portrait. Cloaks/packs must not hide exercise joint positions.
+
+PRODUCTION SIZES — PROPOSED, NOT YET A RUNTIME MIGRATION
+Use a consistent 2x authoring grid relative to today's assets:
+- Canonical standing/walking frame: 96 x 128 logical pixels, transparent.
+  Feet anchor (48,120). Fixed scale, head size and baseline across every frame.
+- Current canonical pose order: stand, march, squat, push, calf, reach, lying,
+  walk-a, walk-b, idle-blink. Production body strip: 960 x 128.
+  Two matching equipment rows: 960 x 256. Do not generate these as one AI sheet.
+  Withhold unresolved/locked poses; do not fill them with a convincing wrong pose.
+- World: 640 x 576 canvas, 32-pixel tile grid, same proportions as current 320 x 288.
+  Deliver ground and foreground PNGs with identical dimensions and registration.
+- Building frames: 192 x 224. Three current slots: lodge, original workshop,
+  restored workshop. Combined strip 576 x 224. Match workshop footprint, entrance,
+  perspective, lighting and anchor exactly between both states.
+These sizes require a deliberate metadata/renderer update before integration. The
+current 48 x 64 / 16-pixel runtime assets and existing export contract remain intact.
+A generated 1300-pixel painting is NOT a finished 640-pixel tilemap: redraw/snap to
+one grid and review clusters. Mobile detail must survive a 375-pixel-wide viewport.
+Use nearest-neighbour rendering; no smoothing, photographic grain or blurry scaling.
+
+SMALLEST USEFUL ART HANDOFF
+1. One approved neutral Beginner model. Then two walking keys and one blink based
+   on that model, not independently generated people.
+2. One small courtyard: ground/paths; separate lodge and both workshop states;
+   foreground canopy/fences. Reusable grass/path edge tiles, one tree/bush family.
+   No need to produce a huge general-purpose tileset before the courtyard works.
+3. One neutral and one clear key pose for EACH existing opt-in movement:
+   march, calf raise, gentle reach. Match the existing catalogue text exactly.
+   Review silhouette and anatomy before any image can function as a demonstration.
+Squat/wall-push stay locked and provisional. The uploaded glute-bridge and step-touch
+examples are NOT additions to the catalogue. Do not copy their instructions or enable
+new exercises. Artwork does not confer exercise suitability or clinical approval.
+
+COPY-PASTE FOLLOW-UP PROMPTS
+Attach the relevant uploaded reference AND the approved candidate each time.
+Ask for one asset/edit per request, retaining original image files.
+
+A. Stage edit:
+"Use the attached neutral Beginner as the edit target and the supplied character
+sheet only as equipment reference. Keep face, hair, body proportions, skin, pose,
+camera, shirt, trousers, belt and boots unchanged. Add only the Adventurer ochre
+scarf and small brown pack. Full body, isolated transparent background, same scale,
+same baseline, same lighting and pixel treatment. No text or extra figures."
+Repeat separately for Veteran using the same base; request forest cloak and brass
+trim. Inspect identity drift before any atlas assembly.
+
+B. Restored workshop:
+"Use the attached village candidate as the edit target. Change only the upper-right
+workshop: repair the roof with complete blue slates, finish exposed timber, remove
+temporary cloth/ladder, repair windows and add a modest teal banner and flower box.
+Keep the exact building footprint, door location, size, perspective, lighting and
+all other scenery unchanged. No new objects in the walking paths. No text."
+Use this as a restoration reference; extract/rebuild the building in Aseprite rather
+than swapping the entire scene, which could alter collisions or background details.
+
+C. Exercise key:
+"Use the attached approved character as the identity master. Create ONE isolated,
+full-body key pose for [existing exercise ID]. Match this existing movement cue:
+[copy verbatim from src/catalog.mjs]. Keep identity, outfit, stage, proportions and
+light unchanged. Show hands/feet and the relevant joint positions clearly. Transparent
+background; no scenic decor, text, counters, invented movement instructions or
+medical claims. This is a provisional illustration requiring anatomy and exercise
+review, not a validated demonstration."
+Generate march/calf/reach individually. Do not treat a visually attractive result as
+proof that the movement is correct.
+
+ASEPRITE HANDOFF
+Keep experimental files here; existing masters remain in art/source.
+After model approval, recreate clean logical-pixel masters in Aseprite with named
+layers, fixed anchors and the shared palette. Use no antialiasing. Trace/check each
+key at 100% and enlarged nearest-neighbour; hand-clean hands, facial pixels, feet,
+equipment overlap, walking weight transfer and tile seams.
+Do not call art:seed on new masters to generate final artwork. The existing
+npm run art:export preserves manual masters, but its dimensions/metadata must be
+updated deliberately if adopting the proposed 2x contract. Do not overwrite existing
+production sheets with these larger candidates.
+Only integrate after checking the same identity/stage in village/workout, correct
+exercise mapping, building before/after alignment and mobile readability. Then run
+existing unit/build/mobile checks. No runtime change or functional test claim is
+made by this art-direction pass.

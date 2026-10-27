@@ -161,3 +161,26 @@ small, .small { font-size: 11px; }
 }
 .pace-option {display:flex;align-items:center;gap:9px;min-height:44px;font-size:12px;}
 .pace-option input {width:21px;height:21px;accent-color:#e4ad55;}
+/* Approved Hearthwood art: retain the mobile layout, warm the existing RPG chrome. */
+:root { background:#102721; --muted:#c1c5ac; --gold:#edbd66; }
+.app,.in-session { background:#18372f; }
+.app-header,.bottom-nav { background:#102c26; border-color:#a8874e; }
+button { background:#27483e; border-color:#748b69; box-shadow:inset 0 1px #b9c19b22,0 2px #0c211c; }
+.primary { background:#426b4d; border-color:#c6ba77; }
+.plan,.card { background:#203f34; border-color:#9c8958; box-shadow:inset 0 0 0 3px #17372f,0 2px #0b251d; }
+.bottom-nav [aria-current=page] { background:#315442; }
+.home-scene { height:132px; margin-block:10px; border-color:#bda264; box-shadow:inset 0 0 0 2px #203d30; }
+.home-scene::before { content:""; position:absolute; inset:0; box-shadow:inset 0 0 22px #152c3580; }
+.home-scene .avatar { height:128px; width:96px; left:calc(50% - 48px); }
+.scene-label { padding:3px 5px; background:#17372fd9; }
+.hero-stage { border-color:#bda264; background:#17372fe8; }
+.plan { padding:12px; }
+.duration-options { margin-block:10px; }
+.duration-options button { padding:7px; }
+.village-canvas { border-color:#bda264; background:#547741; }
+.village-page .eyebrow { margin-bottom:5px; }
+.village-status { margin-block:9px; }
+.exercise-art { border:2px solid #bda264; background-image:linear-gradient(#f5e6bed9,#e3ca94c9),url('/art/training.png'); background-color:#e7d2a4; box-shadow:inset 0 0 24px #594e2522; }
+.pose-note { font-size:9px; line-height:14px; color:#18372f; text-shadow:none; background:#f6e7c5ed; }
+.workshop-panel { background:#203f34; box-shadow:0 -3px 18px #0c211caa,inset 0 0 0 3px #17372f; }
+@media(max-height:600px) and (orientation:portrait) { .home-scene {height:108px;} .home-scene .avatar {height:104px;width:78px;left:calc(50% - 39px);} }

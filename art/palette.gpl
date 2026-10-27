@@ -1,30 +1,49 @@
 GIMP Palette
-Name: Little Strides · Hearthwood
-Columns: 8
-32 44 55 ink
-41 59 64 deep
-52 78 72 pine
-77 106 72 leaf
-113 130 82 grass
-152 161 106 light
-182 184 121 moss
-211 184 121 sand
-240 212 160 cream
-228 173 85 gold
-189 124 64 amber
-160 91 68 brick
-117 73 81 roof
-164 103 89 roofLight
-106 76 61 wood
-156 117 80 woodLight
-229 175 131 skin
-244 203 160 skinLight
-185 118 94 skinShadow
-86 60 53 hair
-152 98 68 hairLight
-63 114 112 teal
-117 164 154 tealLight
-80 120 138 blue
-134 166 177 blueLight
-155 135 154 lilac
-255 240 194 white
+Name: Hearthwood approved character
+Columns: 7
+#
+ 16  38  41  shade-0
+ 25  51  54  shade-1
+ 37  64  65  shade-2
+ 52  84  84  shade-3
+ 72 105 102  shade-4
+100 136 129  shade-5
+134 166 154  shade-6
+ 28  42  43  shade-7
+ 43  57  57  shade-8
+ 63  75  71  shade-9
+ 85  98  91  shade-10
+120 132 119  shade-11
+ 56  44  35  shade-12
+ 80  53  37  shade-13
+112  71  44  shade-14
+146  94  53  shade-15
+179 122  69  shade-16
+212 151  87  shade-17
+238 185 116  shade-18
+ 69  47  36  shade-19
+ 97  68  49  shade-20
+128  90  59  shade-21
+156 113  75  shade-22
+179 139  94  shade-23
+155  91  64  shade-24
+183 115  79  shade-25
+213 143  97  shade-26
+233 170 120  shade-27
+247 193 140  shade-28
+255 218 168  shade-29
+ 23  59  59  shade-30
+ 36  80  78  shade-31
+ 50 101  95  shade-32
+ 67 121 112  shade-33
+ 87 141 128  shade-34
+117 164 150  shade-35
+120  80  45  shade-36
+173 115  57  shade-37
+214 158  75  shade-38
+237 189 102  shade-39
+255 218 136  shade-40
+246 235 200  shade-41
+ 36  69  57  shade-42
+ 67 103  72  shade-43
+ 48  84  63  shade-44

@@ -8,41 +8,42 @@ export async function createVillage(parent, stage, completed, onInteract, initia
   class Village extends Phaser.Scene {
     preload() {
       for (const name of ['village-ground','village-foreground']) this.load.image(name,`./art/${name}.png`);
-      this.load.spritesheet('buildings','./art/buildings.png',{ frameWidth:96,frameHeight:112 });
+      this.load.spritesheet('buildings','./art/buildings.png',{ frameWidth:WORLD.buildingFrameWidth,frameHeight:WORLD.buildingFrameHeight });
       this.load.spritesheet('icons','./art/icons.png',{ frameWidth:16,frameHeight:16 });
     }
     create() {
-      this.add.image(0,0,'village-ground').setOrigin(0);
-      this.add.image(14,44,'buildings',0).setOrigin(0).setDepth(148);
+      this.add.image(0,0,'village-ground').setOrigin(0).setScale(1/WORLD.textureScale);
+      // The lodge is baked into the painted base; workshop patches share its exact registration.
       this.workshopStage = initialWorkshopStage;
-      this.workshop = this.add.image(204,45,'buildings',initialWorkshopStage ? 2 : 1).setOrigin(0).setDepth(149);
-      this.add.image(0,0,'village-foreground').setOrigin(0).setDepth(1000);
-      for (let i=0;i<Math.min(12,completed);i++) this.add.image(39+i%6*10,239+Math.floor(i/6)*12,'icons',4).setScale(.5).setDepth(260);
+      this.workshop = this.add.image(WORLD.workshopX,WORLD.workshopY,'buildings',initialWorkshopStage ? 2 : 1).setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1);
+      this.add.image(0,0,'village-foreground').setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1000);
+      for (let i=0;i<Math.min(12,completed);i++) this.add.image(43+i%6*8,209+Math.floor(i/6)*8,'icons',4).setScale(.5).setDepth(260);
       const texture = this.textures.addCanvas('hero',atlas);
       POSES.forEach(pose=>{const f=avatarFrame(pose,stage);texture.add(pose,0,f.x,f.y,f.w,f.h);});
-      this.player = this.add.image(168,216,'hero','stand').setOrigin(.5,1).setScale(.75).setDepth(216);
-      this.marker = this.add.image(252,104,'icons',0).setScale(.7).setDepth(510);
+      this.player = this.add.image(168,216,'hero','stand').setOrigin(.5,1).setScale(.375).setDepth(216);
+      this.shadow=this.add.ellipse(168,214,20,5,0x183732,.28).setDepth(215);
+      this.marker = this.add.image(228,104,'icons',0).setScale(.7).setDepth(510);
       this.focus = this.add.graphics().setDepth(505);
       this.path=[];this.pending=null;
       this.game.events.on('visit',name=>this.visit(name));
       this.game.events.on('workshop-stage',value=>this.showWorkshop(value));
       this.game.events.on('dismiss-interaction',()=>{this.pending=null;parent.dataset.interaction='idle';this.focus.clear();});
       this.input.on('pointerdown',p=>{
-        if(p.y<164&&p.y>55&&p.x<115)return this.visit('Training green');
-        if(p.y<164&&p.y>55&&p.x>204)return this.visit('Workshop');
-        if(p.x<112&&p.y>220)return this.visit('Garden');
+        if(p.y<145&&p.y>20&&p.x<135)return this.visit('Training green');
+        if(p.y<152&&p.y>20&&p.x>180)return this.visit('Workshop');
+        if(p.x<145&&p.y>164)return this.visit('Garden');
         if(!walkable(Math.floor(p.x/16),Math.floor(p.y/16))){parent.dataset.moveResult='blocked';return;}
         this.pending=null;this.path=route([this.player.x,this.player.y],[p.x,p.y]);parent.dataset.moveResult='accepted';
         if(reduced&&this.path.length){this.player.setPosition(...this.path.at(-1));this.path=[];}
         this.publish();
       });
       if(!reduced){
-        for(const [x,y] of [[119,153],[199,153],[93,204]]){
+        for(const [x,y] of [[142,95],[212,96],[131,195]]){
           const light=this.add.rectangle(x,y,2,2,0xfff0c2,.6).setDepth(500);
           this.tweens.add({targets:light,alpha:.2,y:y-3,duration:2400,yoyo:true,repeat:-1});
         }
         for(let i=0;i<3;i++){
-          const smoke=this.add.rectangle(80+i*2,59-i*4,3,2,0x9b9f9a,.3).setDepth(151);
+          const smoke=this.add.rectangle(65+i*2,29-i*4,3,2,0x9b9f9a,.3).setDepth(151);
           this.tweens.add({targets:smoke,x:smoke.x+5,y:smoke.y-12,alpha:0,duration:3200,delay:i*900,repeat:-1});
         }
       }
@@ -84,6 +85,7 @@ export async function createVillage(parent, stage, completed, onInteract, initia
     }
     update(time,delta){
       if(!this.player)return;
+      this.shadow.setPosition(this.player.x,this.player.y-1).setDepth(Math.round(this.player.y)-1);
       if(!this.path.length){this.player.setFrame(!reduced&&time%3800>3630?'idle-blink':'stand');this.arrive();this.publish();return;}
       const [x,y]=this.path[0],dx=x-this.player.x,dy=y-this.player.y,distance=Math.hypot(dx,dy),step=Math.min(delta,50)*.11;
       if(distance<=step||reduced){this.player.setPosition(x,y);this.path.shift();}
@@ -93,5 +95,5 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       this.publish();
     }
   }
-  return new Phaser.Game({type:Phaser.AUTO,parent,width:WORLD.width,height:WORLD.height,pixelArt:true,roundPixels:true,antialias:false,backgroundColor:'#344e48',fps:{target:30,forceSetTimeOut:true},scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},scene:Village,audio:{noAudio:true},banner:false});
+  return new Phaser.Game({type:Phaser.CANVAS,parent,width:WORLD.width,height:WORLD.height,pixelArt:true,roundPixels:true,antialias:false,backgroundColor:'#344e48',fps:{target:30,forceSetTimeOut:true},scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},scene:Village,audio:{noAudio:true},banner:false});
 }

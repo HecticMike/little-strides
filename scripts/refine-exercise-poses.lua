@@ -1,5 +1,6 @@
 -- One-time exercise-only key-pose refinement; no standing/walking identity redraw.
 local body=app.open('art/source/hero-body.aseprite')
+if body.width~=480 then body:close();error('Archived 48x64 study: edit the approved 96x128 masters manually; locked poses remain withheld.') end
 local original=body.cels[1].image
 local pc=app.pixelColor
 local ink=pc.rgba(32,44,55,255)

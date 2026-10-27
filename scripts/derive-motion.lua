@@ -1,31 +1,66 @@
--- Derive just two walk keys and one blink from the canonical Aseprite sheets.
--- This is repeatable: the seven existing exercise/study columns are untouched.
-local function expand(file, equipment)
-  local old = app.open(file)
-  local original = old.cels[1].image
-  local output = Image(480, original.height, ColorMode.RGB)
-  for y=0,original.height-1 do for x=0,335 do output:drawPixel(x,y,original:getPixel(x,y)) end end
-  for row=0,(equipment and 1 or 0) do
-    for frame=0,2 do
-      for y=0,63 do for x=0,47 do
-        local sourceX=x
-        local column=(frame<2 and not equipment) and 1 or 0
-        if frame==1 and not equipment and y>=39 then sourceX=47-x end
-        output:drawPixel((7+frame)*48+x,row*64+y,original:getPixel(column*48+sourceX,row*64+y))
-      end end
-      if frame==2 and not equipment then
-        for y=14,16 do for x=22,23 do output:drawPixel(9*48+x,y,app.pixelColor.rgba(229,175,131,255)) end end
-        for y=14,15 do output:drawPixel(9*48+28,y,app.pixelColor.rgba(229,175,131,255)) end
-        for x=22,23 do output:drawPixel(9*48+x,16,app.pixelColor.rgba(32,44,55,255)) end
-        output:drawPixel(9*48+28,16,app.pixelColor.rgba(32,44,55,255))
-      end
+-- Derive two contact keys and a blink without flattening the editable masters.
+-- Existing exercise columns and all artist layers are preserved. Safe to repeat.
+local pc=app.pixelColor
+local W,H=96,128
+local rgba=pc.rgba
+local body=app.open("art/source/hero-body.aseprite")
+local composite=Image(body)
+local eyeBoxes={}
+-- Only cream eye-white clusters inside the face can become closed eyes.
+local seen={}
+for y=20,37 do for x=37,69 do
+ local key=y*W+x
+ local c=composite:getPixel(x,y)
+ if not seen[key] and pc.rgbaR(c)>230 and pc.rgbaG(c)>225 and pc.rgbaB(c)>185 then
+  local q={{x,y}};seen[key]=true;local i=1
+  local box={x,x,y,y}
+  while i<=#q do
+   local p=q[i];i=i+1;box[1]=math.min(box[1],p[1]);box[2]=math.max(box[2],p[1]);box[3]=math.min(box[3],p[2]);box[4]=math.max(box[4],p[2])
+   for _,d in ipairs({{1,0},{-1,0},{0,1},{0,-1}}) do
+    local nx,ny=p[1]+d[1],p[2]+d[2];local k=ny*W+nx
+    if nx>=37 and nx<=69 and ny>=20 and ny<=37 and not seen[k] then
+     local v=composite:getPixel(nx,ny)
+     if pc.rgbaR(v)>230 and pc.rgbaG(v)>225 and pc.rgbaB(v)>185 then seen[k]=true;q[#q+1]={nx,ny} end
     end
+   end
   end
-  old:close()
-  local sprite=Sprite(480,output.height,ColorMode.RGB)
-  sprite.cels[1].image=output
-  sprite:saveAs(file)
-  sprite:close()
+  if #q>=2 then eyeBoxes[#eyeBoxes+1]=box end
+ end
+end end
+local function process(sprite,equipment)
+ for _,layer in ipairs(sprite.layers) do
+  local cel=layer:cel(1)
+  if cel then
+   local original=Image(sprite.width,sprite.height,ColorMode.RGB)
+   original:drawImage(cel.image,cel.position)
+   local result=Image(original)
+   for row=0,(equipment and 1 or 0) do
+    for y=0,H-1 do for x=0,W-1 do
+     local sx=(not equipment and y>=76) and W-1-x or x
+     local c=original:getPixel(7*W+sx,row*H+y)
+     if equipment and y>=76 and layer.name:find("cloak") and pc.rgbaA(composite:getPixel(8*W+x,y))>0 then c=0 end
+     result:drawPixel(8*W+x,row*H+y,c)
+     result:drawPixel(9*W+x,row*H+y,original:getPixel(x,row*H+y))
+    end end
+   end
+   if not equipment then
+    for _,b in ipairs(eyeBoxes) do
+     for y=b[3],b[4]+1 do for x=b[1]-1,b[2]+1 do
+      local c=0
+      if layer.name=="Skin and face" then
+       c=rgba(247,193,140,255)
+       if y==math.floor((b[3]+b[4])/2)+1 then c=rgba(25,51,54,255) end
+      end
+      result:drawPixel(9*W+x,y,c)
+     end end
+    end
+   end
+   cel.image=result;cel.position=Point(0,0)
+  end
+ end
+ sprite:saveAs(sprite.filename)
 end
-expand('art/source/hero-body.aseprite',false)
-expand('art/source/hero-equipment.aseprite',true)
+process(body,false)
+body:close()
+local gear=app.open("art/source/hero-equipment.aseprite");process(gear,true);gear:close()
+print("Layer-preserving walk/blink derived. Eye-white clusters: "..#eyeBoxes)

@@ -1,6 +1,14 @@
-export const destinations = { 'Training green': [72, 184], Workshop: [248, 184], Garden: [88, 216] };
-export function walkable(x, y) {
-  return Number.isInteger(x) && Number.isInteger(y) && x >= 1 && x <= 18 && y >= 3 && y <= 16 && !(y < 10 && (x < 7 || x > 12)) && !(x < 7 && y >= 14) && !(x >= 13 && y === 14);
+export const destinations = { 'Training green': [88, 152], Workshop: [232, 168], Garden: [152, 216] };
+// Conservative feet-space boundaries registered to the approved painted courtyard.
+// Roofs, garden beds, fences and thick edge foliage are not traversable.
+const passages = {
+  3:[9,10],4:[9,10],5:[9,10],6:[9,10],7:[9,10],8:[9,10],
+  9:[4,14],10:[3,14],11:[8,14],12:[9,13],13:[9,13],
+  14:[9,13],15:[9,12],16:[9,11],
+};
+export function walkable(x,y) {
+  const row=passages[y];
+  return Number.isInteger(x)&&Number.isInteger(y)&&!!row&&x>=row[0]&&x<=row[1];
 }
 export function route(from, to) {
   const start = from.map(n => Math.floor(n / 16)), end = to.map(n => Math.floor(n / 16));

@@ -24,14 +24,14 @@ function Avatar({ pose = 'stand', stage = 0 }) {
     avatarAtlas().then(atlas => {
       if (disposed) return;
       const ctx = ref.current.getContext('2d'), frame = avatarFrame(pose, stage);
-      ctx.clearRect(0, 0, 48, 64); ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(atlas, frame.x, frame.y, frame.w, frame.h, 0, 0, 48, 64);
+      ctx.clearRect(0, 0, CHARACTER.frameWidth, CHARACTER.frameHeight); ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(atlas, frame.x, frame.y, frame.w, frame.h, 0, 0, CHARACTER.frameWidth, CHARACTER.frameHeight);
       ref.current.dataset.avatarFingerprint = avatarFingerprint(atlas, stage);
       ref.current.dataset.ready = 'true'; setFailed(false);
     }).catch(() => { if (!disposed) setFailed(true); });
     return () => { disposed = true; };
   }, [pose, stage]);
-  return <><canvas className="avatar" ref={ref} width="48" height="64" role="img" data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
+  return <><canvas className="avatar" ref={ref} width={CHARACTER.frameWidth} height={CHARACTER.frameHeight} role="img" data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
 }
 function Village({ completed, workshop, onRestore, busy }) {
   const ref = useRef(), gameRef = useRef();
@@ -51,7 +51,7 @@ function Village({ completed, workshop, onRestore, busy }) {
   const visit = name => gameRef.current?.events.emit('visit', name);
   const closeWorkshop = () => { gameRef.current?.events.emit('dismiss-interaction'); setInteraction({ place: 'Training green', phase: 'idle' }); };
   return <section className="village-page">
-    <p className="eyebrow">HEARTHWOOD VILLAGE</p><h1>A little work.<br />A lasting home.</h1>
+    <p className="eyebrow">YOUR VILLAGE</p><h1>Hearthwood</h1>
     <div className="village-status"><span><Icon index={5} />{CHARACTER.stages[stage].name}</span><span>{workshop.balance} timber</span></div>
     <div className="village-canvas" ref={ref} role="img" aria-label="Hearthwood pixel village. Tap a clear path to walk; tap a building to approach and interact." />
     <p className="muted village-hint">Tap a path to walk. The gold crest marks the workshop.</p>

@@ -7,3 +7,6 @@ playwright-report/
 *.log
 
 art/seed/
+
+# Local reference uploads; approved art sources are retained in art/direction.
+_uploads/

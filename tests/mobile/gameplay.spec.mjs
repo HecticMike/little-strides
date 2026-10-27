@@ -29,11 +29,11 @@ test('touch movement animates, respects boundaries, and approaches before enabli
   await mapTap(page,312,255);await expect(map).toHaveAttribute('data-move-result','blocked');await expect(map).toHaveAttribute('data-player-y','120');
   await mapTap(page,250,100);await expect(map).toHaveAttribute('data-interaction','approaching');
   await expect(page.getByRole('button',{name:'Restore workshop · 1 timber'})).toBeDisabled();
-  await expect(map).toHaveAttribute('data-interaction','arrived');await expect(map).toHaveAttribute('data-player-x','248');await expect(map).toHaveAttribute('data-player-y','184');
+  await expect(map).toHaveAttribute('data-interaction','arrived');await expect(map).toHaveAttribute('data-player-x','232');await expect(map).toHaveAttribute('data-player-y','168');
   await expect(page.getByRole('button',{name:'Restore workshop · 1 timber'})).toBeEnabled();
   await expect(map).toHaveAttribute('data-avatar-stage','adventurer');
   await page.getByRole('button',{name:'Close workshop'}).tap();
-  await page.getByRole('button',{name:'Garden',exact:true}).tap();await expect(map).toHaveAttribute('data-interaction','arrived');await expect(map).toHaveAttribute('data-player-x','88');
+  await page.getByRole('button',{name:'Garden',exact:true}).tap();await expect(map).toHaveAttribute('data-interaction','arrived');await expect(map).toHaveAttribute('data-player-x','152');
 });
 test('full timed workout earns once, workshop spends it, construction and offline reload persist',async({page,context})=>{
   await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();

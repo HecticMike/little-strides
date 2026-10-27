@@ -1,30 +1,81 @@
-# Hearthwood pixel-art system
+# Hearthwood artwork
 
-The editable masters are in `art/source/`. Runtime PNGs and frame metadata are in `public/art/`. These are original initial game assets, not purchased stock art or emoji.
+The approved direction and generated originals live in `art/direction/`.
+Editable production masters are in `art/source/`; runtime PNGs and metadata are in
+`public/art/`. No image service, external font or CDN is required at runtime.
 
-## Style contract
+## Canonical character
 
-- Warm, muted 16-bit fantasy palette: ink outlines, teal clothing, ochre scarf, auburn hair, cream highlights. `src/art-spec.mjs` is the shared palette/frame/stage contract; `art/palette.gpl` is its Aseprite palette.
-- Character frames: 48 × 64, feet on a common baseline, light from upper left, selective 1px outlines and clustered shading. Keep the same head, face, scarf, tunic, boots and limb lengths across poses. No antialiasing or gradients.
-- Body sheet: ten columns in the order `stand`, `march`, `squat`, `push`, `calf`, `reach`, `lying`, `walk-a`, `walk-b`, `idle-blink`. The lying image is an identity study only; it is deliberately not assigned to a workout.
-- Equipment sheet: same columns, two rows. Adventurer adds the first row; Veteran adds the second. Beginner uses the unmodified base body. The runtime composes all three stages from that same body, preserving identity in React and Phaser. Stages are fictional rewards, not measurements of a person's body.
-- World: 16px tile grid in a 320 × 288 area. Buildings: three 96 × 112 frames (training lodge, original workshop, restored workshop). A rewarded workout earns one timber. Approach the workshop and spend one timber to restore its roof, windows, planter and banner; restoration is saved before the short construction effect. Existing Phase 2 restorations are retained.
-- Icons: six 16px frames (quest, village, journal, settings, flower, stage crest). The font stays system-based and offline; monospace is limited to headings/short labels.
+- One 96 ? 128 base body with separate outfit/boots, skin/face and hair layers.
+  A shared 45-colour palette is in `art/palette.gpl`.
+- Ten stable columns: stand, march, squat, push, calf, reach, lying, walk-a,
+  walk-b, idle-blink. Squat, push and lying are deliberately transparent and
+  marked unavailable in metadata. Locked exercises show the standing character
+  and withheld-demonstration label; no unrelated pose is prescribed.
+- Beginner uses the base. Adventurer adds the shared ochre scarf and leather pack.
+  Veteran adds the forest cloak. These equipment layers were extracted from
+  generated stage references and registered in Aseprite; the face/body is never
+  replaced by an independently generated stage character.
+- React and Phaser compose the exact same atlas and stage equipment. The atlas is
+  960 ? 384, below 1024 pixels on either edge. Equipment is clipped around each
+  pose so hands and joints remain readable.
+- Three movement keys are stylised illustrations, not clinically reviewed
+  demonstrations. Exercise opt-ins, locked candidates and written cues are unchanged.
+  Development stages are fictional rewards, not measurements of a user's body.
 
-## Editing and exporting
+## Village
 
-1. Open the relevant `.aseprite` master in Aseprite. Edit `hero-body.aseprite` for shared appearance; edit `hero-equipment.aseprite` for stage equipment. Do not redraw a separate village/workout avatar.
-2. Load `art/palette.gpl` through Aseprite's palette menu if needed. Retain sheet dimensions, frame order and transparent background. These initial masters are editable flattened sheets, not a fully separated layered production animation rig.
-3. Run `npm run art:export`. This invokes the installed Aseprite batch exporter, refreshes the runtime PNGs and `avatar.json`, and preserves manual master edits. On another machine set `ASEPRITE_PATH` to its executable.
-4. After editing the base standing/marching keys, run `npm run art:motion` to rederive the two walking keys and blink through `scripts/derive-motion.lua`. This preserves the seven existing exercise/study columns and copies stage equipment from the canonical sheet. Then run `npm test`, `npm run build`, then the mobile tests. Build precaches every exported PNG and metadata file; no runtime Aseprite or network service is needed.
+The approved composition supplies a small painted 640 ? 576 courtyard, displayed
+in the existing 320 ? 288 coordinate system. Its underlying scenery includes the
+lodge and vegetation; it is not a newly constructed seamless general-purpose tileset.
+Separate canopy/fence layers provide foreground occlusion. A registered workshop
+patch changes only the building area after the existing restoration purchase.
+All scenery uses one 192-colour palette plus transparency; exported art totals
+under 0.8 MB. Phaser uses its canvas renderer at 30 fps for this small sprite count,
+with nearest-neighbour rendering and retained pixels in mobile screenshots.
 
-`npm run art:seed` regenerates deterministic construction PNGs under ignored `art/seed/` and imports only masters that do not already exist. It never overwrites existing `.aseprite` masters. It is for bootstrapping/restoring missing initial artwork, not the normal editing workflow.
+`buildings.aseprite` has three 280 ? 300 columns: lodge reference, original
+workshop patch, restored patch. Workshop patches share anchor (180,12) in world
+coordinates and are displayed at half source size. The courtyard collision mask
+and approach points match the paths/doors. The lodge column is retained for
+editing/reference; the runtime lodge is baked into the courtyard.
 
-## Complete versus provisional
+## Edit and export
 
-Complete for this implementation: canonical shared rendering, all supported exercise-to-frame mappings, standing design and stage equipment, compact village/environment/UI sheets, reward-driven building change, stable names/metadata, editable sources and reproducible export.
+1. Open the relevant `art/source/*.aseprite` file in Aseprite. The character body
+   has named layers; equipment has separate cloak, pack/straps and scarf layers.
+   The world foreground has canopy and fence masks. The ground is an editable
+   painted layer, not a hand-separated tile/architecture rig.
+2. Keep frame dimensions, pose order, transparency, foot baseline and registration.
+   Load `art/palette.gpl` for character work. World masters retain their shared
+   indexed scenery palette. Edit both workshop columns against the unchanged base.
+3. Run `npm run art:export`. It exports current masters without regenerating them
+   and writes canonical frame availability/dimensions to `avatar.json`.
+4. If deliberately regenerating the derived second walking contact and blink,
+   run `npm run art:motion`, then `npm run art:export`. This preserves artist
+   layers and the movement columns, but replaces manual edits to walk-b/blink.
+5. Run `npm test`, `npm run build`, `npm run preview`, then
+   `npm run test:mobile`. Review Today, Village, all stages, movement keys and
+   workshop before/after on a 375-pixel portrait viewport.
 
-The pixel artwork is an initial original pass, not claimed as professional final art. Exercise images are stylised key poses, not validated demonstrations or motion capture. Existing written exercise instructions are unchanged. Remaining manual artwork: refine limb anatomy/weight distribution in the wall push and shallow squat; polish the non-workout lying study; refine weight transfer and add hand-polished in-between frames beyond the two derived walking keys. There is no new lying exercise, back-facing character, NPC pack or unreviewed movement advice in this phase.
-## Phase 4 exercise refinement
+Aseprite defaults to `C:/Program Files/Aseprite/Aseprite.exe`; set
+`ASEPRITE_PATH` on another machine. `scripts/import-approved-art.lua` records the
+ONE-TIME assembly from generated originals, palette reduction and masks. Re-running
+it overwrites the corresponding masters; it is intentionally absent from normal
+export/build commands. The earlier `art:seed` is a legacy bootstrap, not a way to
+recreate the approved artwork. The old 48 ? 64 refinement script refuses these
+new masters.
 
-The wall-push key now has clearer wall contact, bent-arm silhouette and trunk inclination, with matching stage equipment. The squat key has less splayed knee/boot alignment. scripts/refine-exercise-poses.lua records this one-time edit; ordinary art:export preserves subsequent manual work. Both poses remain provisional and locked out of real sessions. Legacy interrupted plans with provisional art show the standing character and an explicit withheld-demonstration label. Manual anatomy/weight-distribution review is still required; the lying study remains unused. No standing/village/walking redesign was made.
+## Finished integration and remaining artwork
+
+Integrated: approved character identity, shared stage composition, three distinct
+movement keys, two contact keys/blink, rich small courtyard, foreground masks,
+touch boundaries, visible original/restored workshop, mobile presentation and
+offline-export pipeline.
+
+Still provisional: hand-polished walking weight transfer/in-betweens; exact cloth
+fit at every pose; exercise anatomy/illustration review; original hand-separated
+building/terrain tiles. The second walking key derives its lower legs from the
+first, rather than being a fully hand-authored animation. The scenery originates
+from generated painted artwork, not an artist-authored SNES tile pack. Do not
+describe these files as finished professional animation or validated demonstrations.

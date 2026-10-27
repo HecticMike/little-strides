@@ -1,5 +1,24 @@
 # Little Strides development log
 
+## 2026-10-27 ? Approved character and village art integration
+
+- Goal: implement the user-approved character/courtyard direction in Little Strides without RPG expansion or changes to workout/recovery/persistence/PWA systems.
+- Completed: canonical 96x128 body (named outfit, skin/face, hair layers), shared extracted scarf/pack/cloak overlays for all stages and both renderers; three movement keys, two contact keys and blink. Squat/push/lying art deliberately withheld rather than substituted as demonstrations. All opt-ins and exercise eligibility unchanged.
+- Village/UI: approved painted courtyard, foreground canopy/fence masks, registered original/restored workshop patch, matching touch/collision approaches, retained accessible place buttons and existing reward purchase. Canvas rendering fixes black suspended-clock captures. Warmer existing mobile chrome, prominent workout art, default 10 and reserved navigation retained.
+- Assets/workflow: generated originals and exact prompts under art/direction; explicit Aseprite import script, normal non-destructive export and layer-preserving motion. Shared 45-colour character / 192-colour scenery palettes; runtime art under 0.8 MB, largest atlas 960x384. Ground retains baked structures; this is not a new seamless tile pack. Local upload originals excluded from source via .gitignore.
+- Checks: production build and 28 unit/art checks PASS. All 56 existing mobile checks PASS in full regression run (WebKit/Chromium, including full timed reward/restoration, entire 10-minute flow, all four lengths, recovery, interruption, audio, offline and JSON persistence). Two new stage/art/offline checks PASS after correcting their viewport/palette assertions. Final affected artwork/navigation suite 10/10 PASS after cloak refinement; no app logic changed by those test corrections. Repeated layer-preserving motion/PNG/metadata export is byte-identical.
+- Review/screenshots: Today, Village and Workout across all stages plus movement keys in screenshots/art-upgrade; full workout/workshop before/after capture also there. Existing phase4 flow captures refreshed by the regression suite. Relevant app/art README and production-brief status updated; no other repository/log modified.
+- Remaining: two-key walking weight transfer and stage cloth fit require manual Aseprite polish. Exercise illustrations are stylised and unvalidated; locked candidates remain unavailable. Physical iPhone/Android distance readability, installation/safe areas, silent/Bluetooth audio, calls, background recovery and wake-lock acceptance remain.
+- Next: user visual review of the playable village and character; prioritise targeted cloth/walking cleanup over new buildings/features.
+
+## 2026-10-27 — Reference-quality art direction
+
+- Goal: assess all three uploaded visual references and establish a stronger art-production direction in Little Strides only.
+- Completed: built-in image generation produced a transparent Beginner character candidate and compact lodge/workshop/garden composition. Saved originals, exact prompts, follow-up generation instructions, proposed sizing/layer/identity contracts and honest Aseprite handoff under art/direction; linked from art/README.md.
+- Checks: visually inspected references and both outputs; inspected PNG dimensions and transparent character corner. No functional tests run: no app, production asset, dependency or export-source changes.
+- Limits: exploratory concepts, not approved pixel-grid sprites, separated scenery, animations or reviewed exercise demonstrations. Current runtime/export contract is unchanged; proposed 2x authoring requires a later controlled metadata update.
+- Next: select/refine the canonical model and courtyard direction, then build a small layered Aseprite production slice before integrating. No other project/log touched; no publication.
+
 ## 2026-10-27 — Phase 4: workout quality
 
 - Goal: practical recovery-aware short workouts; no RPG expansion or new dependencies.
