@@ -21,8 +21,8 @@ footer p{font-size:12px;line-height:1.55;max-width:630px;margin:0}.samples{displ
 <div class="grid"><div></div>${columns.map(([name,,purpose])=>`<div class="heading">${name}<small>${purpose==='study'?'PROVISIONAL / NEVER SCHEDULED':purpose==='training'?'Light training outfit':'Adventure outfit'}</small></div>`).join('')}
 ${CHARACTER.stages.map((stage,row)=>`<div class="label">${stage.name}<small>Fictional progression<br>Same canonical identity</small></div>${columns.map(([,pose,purpose])=>`<div class="cell ${purpose==='study'?'study':''}"><canvas data-row="${row}" data-pose="${pose}" data-outfit="${purpose}" width="${purpose==='study'?320:192}" height="${purpose==='study'?192:256}"></canvas></div>`).join('')}`).join('')}
 </div><footer><p>Review at 100% for pixel edges. Main sprites are shown at exact 2x scale.<br>
-The core study is artwork only: head/back support, forearm overlap and foot contacts still need manual review. All exercise artwork remains clinically unvalidated; locks and opt-ins are unchanged.<br>
-Walking retains two contact keys; upper-body registration is fixed, but weight transfer and cloth fitting still need an artist's pass.</p>
+The core study is artwork only: support and limb separation improved; neck, hand and contact polish still need manual review. All exercise artwork remains clinically unvalidated; locks and opt-ins are unchanged.<br>
+Walking alternates flat support and toe-off using the original boots. Upper-body registration is fixed; knee/cuff joins still need an artist's pass.</p>
 <div class="samples">${CHARACTER.stages.map((s,row)=>`<div class="sample">${s.name}<canvas class="mini" data-row="${row}" width="48" height="64"></canvas>Village game-space 48x64</div>`).join('')}</div>
 <div class="sample">Core study at mobile 160x96<canvas id="core-mini" width="160" height="96"></canvas>Not a demonstration</div></footer></div>
 <script>

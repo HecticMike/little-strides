@@ -1,8 +1,8 @@
 [
-  {"asset":"hero-body","width":960,"height":128,"mode":"RGBA","layers":["Outfit and boots","Skin and face","Chestnut hair"],"visiblePixels":[14722,6203,2048]},
-  {"asset":"hero-equipment","width":960,"height":256,"mode":"RGBA","layers":["Veteran cloak behind silhouette","Leather pack and straps","Shaded ochre scarf"],"visiblePixels":[4367,1258,4396]},
-  {"asset":"hero-training-outfit","width":960,"height":384,"mode":"RGBA","layers":["Soft trouser cuffs - shared footwear shape","Stage seam and buckle accents"],"visiblePixels":[483,1440]},
-  {"asset":"hero-core-study","width":160,"height":96,"mode":"RGBA","layers":["Head and hair - support needs review","Torso - back contact needs review","Near and far arms - hand overlap needs review","Bent legs and feet - contact needs review","Adventurer trim","Veteran trim"],"visiblePixels":[1082,488,623,1706,49,49]},
+  {"asset":"hero-body","width":960,"height":128,"mode":"RGBA","layers":["Outfit and boots","Skin and face","Chestnut hair"],"visiblePixels":[15185,6292,2048]},
+  {"asset":"hero-equipment","width":960,"height":256,"mode":"RGBA","layers":["Veteran cloak behind silhouette","Leather pack and straps","Shaded ochre scarf"],"visiblePixels":[4395,1258,4396]},
+  {"asset":"hero-training-outfit","width":960,"height":384,"mode":"RGBA","layers":["Soft trouser cuffs - shared footwear shape","Stage seam and buckle accents"],"visiblePixels":[528,1440]},
+  {"asset":"hero-core-study","width":160,"height":96,"mode":"RGBA","layers":["Far forearm - separated","Far bent leg and planted foot","Torso upper-back and pelvis support","Near bent leg and planted foot","Head and neck - lowered rigid key","Near forearm and hand - separated","Adventurer trim","Veteran trim"],"visiblePixels":[438,907,1038,983,981,438,49,49]},
   {"asset":"village-ground","width":640,"height":576,"mode":"indexed","layers":["Painted terrain and lodge - workshop removed"],"visiblePixels":[284640]},
   {"asset":"workshop-context","width":280,"height":300,"mode":"indexed","layers":["Approach terrain and foliage","Workbench tools and barrels","Front fence and stored stone"],"visiblePixels":[33621,4526,12598]},
   {"asset":"buildings","width":840,"height":300,"mode":"indexed","layers":["Lodge reference - not used at runtime","Original - Roof","Original - Walls and doorway","Original - Chimney","Original - Timber and canvas","Restored - Roof","Restored - Walls and doorway","Restored - Chimney","Restored - Window and banner"],"visiblePixels":[84000,8581,10770,3106,10798,18320,7699,3106,4130]},

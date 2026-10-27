@@ -1,5 +1,14 @@
 # Little Strides development log
 
+## 2026-10-27 - Targeted sprite corrections
+
+- Goal: refine only the existing core study and Walk A/B; preserve approved identity, village, pipeline and exercise locks.
+- Core: reused existing pixels/palette; lowered/rotated head, completed upper-back/pelvis support, separated forearms and bent legs/feet. Eight named layers expose near/far limbs, head/neck, torso and existing stage trims. Still provisional, review-only and unmapped; no movement unlocked.
+- Walking: original unmirrored standing boot textures, alternating flat support/toe-off and knee/shin adjustments. Head/torso/hands remain registered; floor y=119 and anchor y=120 retained. Existing two-key playback unchanged. Matching gear/cuff masks updated only in Walk A/B.
+- Files: four character Aseprite masters, three runtime PNGs, review core/comparison PNG/HTML, source inventory, one-time correction script, comparison footer, character audit and documentation-only physique proposal. No app code, village art, dependencies or other project/log edits.
+- Checks: 30 unit/art and all 70 WebKit/Chromium mobile tests PASS (7.8m); build PASS. PNG comparison proves zero non-walk changes in runtime sheets, alternating sole contacts preserved. Export/comparison repeated byte-identically for 16 files. Comparison plus real mobile Village/Workout captures visually reviewed; noisy existing screenshots restored.
+- Remaining: manual core neck connection, shirt support edge, far wrist/near hand and knee/foot perspective polish; walk knee/shin and ankle/cuff joins. Exact files/regions in art/review/character-audit.md. No clinical validation or physical-device acceptance claimed.
+- Next: review the regenerated comparison and manually polish these named Aseprite regions. Subtle fictional stage physique differences are proposed in art/review/physique-proposal.md, not implemented.
 ## 2026-10-27 - Focused character art pass
 
 - Goal: improve canonical character consistency, walking, marching, lying study and training clothing; preserve approved village art and all exercise locks.
