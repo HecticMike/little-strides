@@ -1,25 +1,27 @@
 # Little Strides alpha 0.1 — real-phone testing
 
-Private app: https://little-strides-mobile.ssi-strategy-7759.chatgpt.site/
+App: https://hecticmike.github.io/little-strides/
+
+Source: https://github.com/HecticMike/little-strides (public, as requested).
 
 This alpha installs from the browser as a standalone Home Screen web app. Use the
-same ChatGPT account that owns the private preview. No store publication is needed.
+GitHub Pages address above; no GitHub or ChatGPT sign-in is required. No store publication is needed.
 The exercise candidates, recovery rules and local records are the existing app;
 this release upgrades icons and small interface artwork.
 
 ## Install on iPhone
 
-1. Copy the app URL into Safari and sign in online with your ChatGPT account.
+1. Copy the app URL into Safari while online.
 2. Open Share (inside the page menu on some Safari layouts), then Add to Home Screen.
 3. Leave Open as Web App switched on if it is offered, and tap Add.
-4. Open Little Strides from its new Home Screen icon. Sign in again if asked.
+4. Open Little Strides from its new Home Screen icon.
 5. Keep the app online until the header says Offline ready.
 
 These menu steps follow [Apple's current iPhone guide](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios).
 
 ## Install on Android
 
-1. Copy the app URL into Chrome and sign in online with your ChatGPT account.
+1. Copy the app URL into Chrome while online.
 2. Open the three-dot menu, choose Install and create shortcut → Install.
    Some Chrome versions offer Install app or Add to Home screen instead.
 3. Follow the confirmation, then open Little Strides from the installed icon.
@@ -42,15 +44,29 @@ See [Google Chrome's installation guide](https://support.google.com/chrome/answe
 - Check a short app switch or incoming call: the workout should pause, exclude time
   away and ask you to resume. Confirm the screen stays awake during foreground use.
 
-Physical phone checks remain necessary: real installation/sign-in, device masks and
+Physical phone checks remain necessary: real installation, device masks and
 launch appearance, audio/silent/Bluetooth routes, wake lock, calls and background
 interruptions. Browser emulation does not certify these behaviours on your phone.
 For an issue, note the device, OS/browser version, Alpha 0.1 and the steps that led to it.
 
+## Move from the old preview
+
+1. Open the old preview on the device/browser containing your history:
+   https://little-strides-mobile.ssi-strategy-7759.chatgpt.site/
+2. Settings → Export JSON. Keep the downloaded file before removing anything.
+3. Install/open the GitHub Pages app, then Settings → Import JSON; select that file.
+4. Check your Journal, village restoration and exercise/recovery settings.
+   Import restores the backup; it does not merge two separate histories.
+
+The new domain has separate browser storage. Nothing transfers automatically.
+The old preview is retained for export, but future releases use GitHub Pages.
+Source and built assets are public. Your local exercise records and exported
+backups are not uploaded to the repository by the app.
+
 ## Keep your alpha data
 
-History is local to the device/browser installation; signing in does not synchronise
-it from desktop or another phone. Export JSON in Settings on the old installation,
+History is local to the device/browser installation; it does not synchronise
+from desktop or another phone. Export JSON in Settings on the old installation,
 move the file to the phone, then Import JSON inside the installed app if you want
 that history. Check imported records and recovery restrictions before starting.
 

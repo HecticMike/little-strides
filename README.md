@@ -65,8 +65,33 @@ The completion screen and Journal explain the outcome for each recorded session.
 
 ## Alpha 0.1 on your phone
 
-Use the existing private URL in Safari (iPhone) or Chrome (Android), sign in with
-the same ChatGPT account, and install it to the Home Screen. Open its icon online
+Open https://hecticmike.github.io/little-strides/ in Safari (iPhone) or Chrome
+(Android), and install it to the Home Screen. No sign-in is required. Open its icon online
 until Offline ready appears. See [the real-phone alpha guide](docs/alpha_mobile.md)
 for installation, first checks, offline use, updates and JSON data transfer.
 Icons are now exported from layered Aseprite masters with `npm run art:export`.
+
+## GitHub Pages publishing
+
+The public repository is https://github.com/HecticMike/little-strides. Push to
+`main` to run unit/art checks and deploy only `dist` through GitHub Actions.
+Repository Settings → Pages → Source must be GitHub Actions. The workflow reads
+the Pages base path, so scripts, CSS, icons and offline caching work under
+`/little-strides/`. No hosting credentials or external services are needed.
+
+Local equivalent (PowerShell):
+
+```powershell
+$env:BASE_PATH='/little-strides/'
+npm test
+npm run build
+npm run preview
+# In a second terminal, against the running preview:
+$env:PAGES_TEST_PATH='/little-strides/'
+npx playwright test tests/mobile/pages-hosting.spec.mjs
+```
+
+Move existing data using Settings → Export JSON on the old preview, then Import
+JSON on the new site. Browser storage is separate across domains. See the alpha
+guide above before removing the old installation. Future updates use Pages,
+not the previous private hosting.
