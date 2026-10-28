@@ -7,7 +7,8 @@
 - Files: three character masters/exports, avatar metadata/inventory; guarded calf authoring, comparison/baseline/before-after/full sheet; shared art spec and one caption; relevant art/mobile QA, two new screenshots under screenshots/calf-contact, art notes and this log. No Pitch or other project touched.
 - Local QA artifacts: automatic approval review rejected broad restoration of screenshots because it could discard other uncommitted image work. Existing generated changes under screenshots/character-pass are preserved unstaged and excluded from publication; no destructive cleanup was attempted after rejection.
 - Remaining: stylised/unvalidated ankle/boot perspective and personal support/balance suitability. The picture shows one raised phase, not measured repetitions or professional review. No clinical/progression decision is inferred.
-- Next: publish the verified update, confirm exact live calf rendering/offline recovery, then assess it during a suitable session on the physical iPhone.
+- Deployment: commit 8342b07 published successfully in GitHub Actions run 40785274628; CI unit/art checks and Pages build passed. Live body/training atlases and pose metadata match the tested exports. Isolated emulated iPhone 15 WebKit and Android Chromium profiles verified exact raised-calf canvas pixels, the unvalidated-art caption, offline checkpoint restoration and Resume without page errors. No real user data was accessed.
+- Next: reopen online after closing old app windows and assess heel/forefoot clarity on the physical iPhone. This art slice is complete; personal balance/support suitability and precise ankle perspective remain review matters. Historical QA screenshot changes remain preserved unstaged after the cleanup rejection.
 
 ## 2026-10-28 - Floor-pose support and arm separation
 
