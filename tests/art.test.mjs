@@ -70,3 +70,18 @@ test('four floor illustrations share canonical stages, editable parts and explic
  const meta=JSON.parse(readFileSync('public/art/avatar.json'));assert.equal(meta.coreIllustrations.characterId,CHARACTER.id);assert.deepEqual(meta.coreIllustrations.stages,CHARACTER.stages);
  assert.equal(EXERCISES.find(e=>e.id==='modified-dead-bug').selectable,false);
 });
+
+test('launcher exports match the PWA/iOS contracts and retain editable Aseprite layers',()=>{
+ const manifest=JSON.parse(readFileSync('public/manifest.webmanifest','utf8'));
+ assert.equal(manifest.name,'Little Strides');assert.equal(manifest.display,'standalone');assert.equal(manifest.start_url,'./');assert.equal(manifest.id,'./');
+ for(const icon of manifest.icons){const b=readFileSync('public/'+icon.src);assert.equal(`${b.readUInt32BE(16)}x${b.readUInt32BE(20)}`,icon.sizes);assert.equal(icon.type,'image/png');}
+ assert.ok(manifest.icons.some(i=>i.purpose==='maskable'&&i.sizes==='512x512'));
+ const apple=readFileSync('public/icons/strides-apple-touch.png');assert.equal(apple.readUInt32BE(16),180);assert.equal(apple.readUInt32BE(20),180);
+ const index=readFileSync('index.html','utf8');assert.ok(index.includes('strides-apple-touch.png'));assert.ok(index.includes('strides-favicon-32.png'));
+ const audit=JSON.parse(readFileSync('art/review/interface-audit.json','utf8'));assert.ok(audit.criticalRadius<=audit.safeRadius);assert.equal(audit.safeRadius,64*.4);
+ const source=readFileSync('art/source/app-icon.aseprite');assert.equal(source.readUInt16LE(4),0xa5e0);
+ const record=JSON.parse(readFileSync('art/source-inventory.json','utf8')).find(a=>a.asset==='app-icon');for(const name of ['Forest enamel','Brass frame','Golden trail','Stride - front boot','Stride - rear boot'])assert.ok(record.layers.includes(name));assert.equal(record.visiblePixels[record.layers.indexOf('Forest enamel')],64*64);
+});
+test('UI glyphs use native 24px frames with separate editable icon layers',()=>{
+ assert.deepEqual(dimensions('icons'),[24*8,24]);const record=JSON.parse(readFileSync('art/source-inventory.json','utf8')).find(a=>a.asset==='icons');assert.equal(record.layers.length,8);assert.ok(record.layers.includes('Timber - bound oak logs'));assert.ok(record.visiblePixels.every(n=>n>0));
+});

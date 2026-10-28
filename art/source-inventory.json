@@ -14,5 +14,6 @@
   {"asset":"vista","width":640,"height":288,"mode":"indexed","layers":["Courtyard entrance"],"visiblePixels":[184320]},
   {"asset":"training","width":640,"height":448,"mode":"indexed","layers":["Quiet courtyard crop"],"visiblePixels":[286720]},
   {"asset":"tiles","width":128,"height":16,"mode":"RGBA","layers":["Layer"],"visiblePixels":[2048]},
-  {"asset":"icons","width":96,"height":16,"mode":"RGBA","layers":["Layer"],"visiblePixels":[741]}
+  {"asset":"icons","width":192,"height":24,"mode":"RGBA","layers":["Today - walking boots","Village - hearth cottage","Journal - leather field book","Settings - brass mechanism","Progress - stride medal","Stage - guild shield","Timber - bound oak logs","Garden - golden wildflower"],"visiblePixels":[194,313,348,340,255,322,285,225]},
+  {"asset":"app-icon","width":64,"height":64,"mode":"RGBA","layers":["Forest enamel","Brass frame","Golden trail","Fern details","Stride - rear boot","Stride - front boot","Glints"],"visiblePixels":[4096,1172,299,98,243,387,11]}
 ]

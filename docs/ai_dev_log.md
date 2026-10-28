@@ -1,5 +1,16 @@
 # Little Strides development log
 
+## 2026-10-28 - Aseprite icons and mobile alpha handoff
+
+- Goal: replace weak app icons and refine related small UI artwork, then provide real-phone alpha installation/testing instructions.
+- Completed: Aseprite-native 64px boots/trail launcher master with seven editable layers; general, maskable, Apple-touch and favicon exports. Opaque full-bleed backgrounds, measured central safe area, nearest-neighbour scaling and fresh manifest icon paths; legacy aliases retained. Matching launch presentation and dark-green metadata theme. No image-generation service or new dependency used.
+- UI: eight individually editable 24px glyphs replace the enlarged 16px strip. Updated brand/navigation/progress/stage assets, timber badges and workshop crest. Updated Phaser frame parsing/scales and retained garden-flower semantics/world-space sizes; collision, character, village painting and progression mechanics unchanged.
+- Alpha: Settings identifies Alpha 0.1 and explains install/offline/local-data basics. docs/alpha_mobile.md gives current official iPhone/Android steps, private sign-in, preview/real-session checks, sound/calls/wake-lock/offline acceptance, backup/import and safe update instructions. Source icon edits remain reproducible with art:export; old seed tooling cannot overwrite them.
+- Files: app/UI Aseprite masters, launcher/glyph PNGs, icon generation/export/audit scripts; manifest/index, shared Icon component, narrowly scoped React/CSS/Phaser integration; focused tests, art/app documentation and alpha guide. Workout engine, scheduler, eligibility, data schema, character/exercise artwork and painted village unchanged.
+- Checks: 61 unit/art checks PASS; production build PASS (30 cached files); all 8 targeted WebKit/Chromium checks PASS. Verified icon sizes/opacity/mask previews, native frame rendering, Phaser frame contract, touch tabs, 375x568/667 and 393x727 layouts, offline assets and JSON roundtrip/corruption protection. Tightened one ambiguous backup-test text locator to its exact heading. Screenshots reviewed; git diff --check PASS.
+- Remaining: native Home Screen installation/sign-in, actual OS masking/splash, audio routes, incoming calls, wake lock and storage retention still need physical iPhone/Android acceptance. No claim of completed physical-device testing.
+- Next: install the private alpha on the user's phone, review/enable suitable candidates, try preview first, then a suitable complete session and export a backup. Keep existing exercise-suitability restrictions.
+
 ## 2026-10-28 - Core illustrations and explicit timber requirements
 
 - Goal: fill the available core exercise image gaps and explain the next workshop reward without changing earning or clinical-eligibility rules.

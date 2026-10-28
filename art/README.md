@@ -16,7 +16,9 @@ actual dimensions, layer names and nontransparent pixel counts.
 | `village-ground.aseprite` | Flattened painted terrain/lodge, with the entire workshop patch removed. This is not a seamless terrain tileset. |
 | `village-foreground.aseprite` | Canopy and garden-fence occlusion masks. These are extracted painted pixels, not separately authored trees. |
 | `vista.aseprite`, `training.aseprite` | Flattened crops used as Today/workout backgrounds. |
-| `tiles.aseprite`, `icons.aseprite` | Flattened small legacy strips. |
+| `tiles.aseprite` | Flattened small legacy strip. |
+| `icons.aseprite` | Eight independently editable 24px UI/world glyph layers, drawn natively in Aseprite. |
+| `app-icon.aseprite` | Seven native pixel layers: enamel, frame, path, ferns, both boots and highlights. |
 
 The workshop components are region-separated existing artwork, not reconstructed
 architectural models. Layer separation supports meaningful pixel editing of roofs,
@@ -126,3 +128,26 @@ originals are in `art/direction/core-illustrations/`. Aseprite performs alpha cl
 common-scale sampling and shared-palette conversion. Remaining manual refinement:
 far-arm visibility, exact neck/support contacts, and subtle pelvic movement cues.
 All new artwork stays labelled illustrative in the app.
+
+## Alpha launcher and interface icons
+
+`app-icon.aseprite` is the 64x64 logical master for the boots-and-trail emblem.
+`icons.aseprite` is a 192x24 strip: Today boots, Village cottage, Journal book,
+Settings mechanism, progress medal, stage shield, timber bundle, garden flower.
+The UI uses native 24px frames. Phaser reads the same frame size and retains the
+prior world-space sizes of its workshop marker and garden flowers.
+
+Edit the masters in Aseprite, then run `npm run art:export`. The export creates
+192/512px general launcher icons, a 512px Android maskable variant, a 180px Apple
+touch icon and a 32px favicon under `public/icons/strides-*.png`. Nearest-neighbour
+sampling preserves the pixel edges. The maskable variant omits the decorative
+frame; both boots must remain inside the central radius-25.6px safe circle.
+The background stays fully opaque; system launchers apply their own corner masks.
+The measured audit is saved in `art/review/interface-audit.json`.
+
+`create-interface-art.lua` is the guarded one-time drawing recipe; normal export
+never overwrites the source masters. `refine-launcher-background.lua` records the
+native enamel/frame refinement. `append-garden-icon.lua` records the lossless atlas
+extension. The old asset-seed generator skips install icons once this master exists.
+Legacy icon filenames remain exported as aliases; the current manifest/Apple links
+use fresh filenames so new installations request the updated artwork.

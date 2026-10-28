@@ -33,3 +33,8 @@
 /* Reserve the top corner for the countdown instead of covering bent knees. */
 .workout .exercise-art .core-illustration {box-sizing:border-box;padding-top:88px;padding-bottom:16px;object-position:center bottom;}
 @media(max-height:600px) {.workout .exercise-art .core-illustration {padding-top:72px;padding-bottom:14px;}}
+
+.resource-heading,.workshop-balance {display:flex;align-items:center;gap:8px;}
+.village-status>span {display:inline-flex;align-items:center;gap:6px;}
+
+.hero-stage .pixel-icon {width:24px;height:24px;transform:none;}

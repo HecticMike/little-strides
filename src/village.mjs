@@ -9,7 +9,7 @@ export async function createVillage(parent, stage, completed, onInteract, initia
     preload() {
       for (const name of ['village-ground','village-foreground','workshop-context']) this.load.image(name,`./art/${name}.png`);
       this.load.spritesheet('buildings','./art/buildings.png',{ frameWidth:WORLD.buildingFrameWidth,frameHeight:WORLD.buildingFrameHeight });
-      this.load.spritesheet('icons','./art/icons.png',{ frameWidth:16,frameHeight:16 });
+      this.load.spritesheet('icons','./art/icons.png',{ frameWidth:24,frameHeight:24 });
     }
     create() {
       this.add.image(0,0,'village-ground').setOrigin(0).setScale(1/WORLD.textureScale);
@@ -18,12 +18,13 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       this.workshopStage = initialWorkshopStage;
       this.workshop = this.add.image(WORLD.workshopX,WORLD.workshopY,'buildings',initialWorkshopStage ? 2 : 1).setOrigin(0).setScale(1/WORLD.textureScale).setDepth(2);
       this.add.image(0,0,'village-foreground').setOrigin(0).setScale(1/WORLD.textureScale).setDepth(1000);
-      for (let i=0;i<Math.min(12,completed);i++) this.add.image(43+i%6*8,209+Math.floor(i/6)*8,'icons',4).setScale(.5).setDepth(260);
+      for (let i=0;i<Math.min(12,completed);i++) this.add.image(43+i%6*8,209+Math.floor(i/6)*8,'icons',7).setScale(1/3).setDepth(260);
       const texture = this.textures.addCanvas('hero',atlas);
       POSES.forEach(pose=>{const f=avatarFrame(pose,stage);texture.add(pose,0,f.x,f.y,f.w,f.h);});
       this.player = this.add.image(168,216,'hero','stand').setOrigin(.5,CHARACTER.feetY/CHARACTER.frameHeight).setScale(1/WORLD.textureScale).setDepth(216);
       this.shadow=this.add.ellipse(168,216,22,5,0x183732,.28).setDepth(215);
-      this.marker = this.add.image(228,104,'icons',0).setScale(.7).setDepth(510);
+      this.marker = this.add.image(228,104,'icons',5).setScale(7/15).setDepth(510);
+      parent.dataset.iconFrameSize=String(this.marker.frame.width);
       this.focus = this.add.graphics().setDepth(505);
       this.path=[];this.pending=null;
       this.game.events.on('visit',name=>this.visit(name));

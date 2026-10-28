@@ -1,5 +1,5 @@
 import { deflateSync } from 'node:zlib';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 mkdirSync('public/icons', { recursive: true }); mkdirSync('public/audio', { recursive: true });
 const crc32 = b => {
   let crc = -1;
@@ -11,7 +11,8 @@ function chunk(name, data) {
   length.writeUInt32BE(data.length); crc.writeUInt32BE(crc32(Buffer.concat([n, data])));
   return Buffer.concat([length, n, data, crc]);
 }
-for (const [name, size] of [['icon-192', 192], ['icon-512', 512], ['maskable-512', 512], ['apple-touch-icon', 180]]) {
+// Aseprite masters own production icons; preserve them when regenerating sound seeds.
+if (!existsSync('art/source/app-icon.aseprite')) for (const [name, size] of [['icon-192', 192], ['icon-512', 512], ['maskable-512', 512], ['apple-touch-icon', 180]]) {
   const scan = Buffer.alloc((size * 3 + 1) * size);
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
     const px = Math.floor(x * 32 / size), py = Math.floor(y * 32 / size);
@@ -30,4 +31,4 @@ for (const [name, frequency, seconds] of [['transition', 660, 0.3], ['pace', 440
   for (let i = 0; i < samples; i++) { const t = i / rate, envelope = Math.min(1, t / .008) * Math.max(0, 1 - t / seconds); b.writeInt16LE(Math.round(Math.sin(2 * Math.PI * frequency * t) * envelope * 11000), 44 + i * 2); }
   writeFileSync(`public/audio/${name}.wav`, b);
 }
-console.log('Generated local PNG install icons and gentle WAV cues.');
+console.log('Generated local asset seeds. Use art:export for production icons.');

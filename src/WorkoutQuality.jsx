@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { EXERCISES, JOINTS, recoveryConfig, SESSION_FOCUSES, normaliseFocus, planningMetadata } from './catalog.mjs';
 import {exerciseEligibility,planSession} from './scheduler.mjs';
+import {Icon} from './Icon.jsx';
 import {rewardOutcome,TIMBER_RULE} from './gameplay.mjs';
 import {activityTotals,minutesOf} from './activity.mjs';
 export function ExerciseReview({ settings, history=[], now=Date.now(), onToggle, onFlag, onFocus, onRecovery, onAccept, onCancel, busy, purpose }) {
@@ -51,5 +52,5 @@ const exerciseName=id=>EXERCISES.find(e=>e.id===id)?.name||'Movement';
 
 export function RewardGoal({workshop,onVillage}){
  if(workshop.stage)return null;
- return <aside className="reward-goal" aria-label="Next village reward"><strong>Restore the workshop: 1 timber</strong>{workshop.balance>0?<><p>{workshop.balance} timber ready. Open Village, tap Workshop, then choose Restore workshop.</p><button onClick={onVillage}>Go to Village</button></>:<><p>Finish one whole session to earn 1 timber — completing a single exercise is not enough.</p><details><summary>What counts as a whole session?</summary><p>{TIMBER_RULE}</p><p>Then open Village → Workshop → Restore workshop. Stopping early still saves your exercise history.</p></details></>}</aside>;
+ return <aside className="reward-goal" aria-label="Next village reward"><strong className="resource-heading"><Icon index={6}/>Restore the workshop: 1 timber</strong>{workshop.balance>0?<><p>{workshop.balance} timber ready. Open Village, tap Workshop, then choose Restore workshop.</p><button onClick={onVillage}>Go to Village</button></>:<><p>Finish one whole session to earn 1 timber — completing a single exercise is not enough.</p><details><summary>What counts as a whole session?</summary><p>{TIMBER_RULE}</p><p>Then open Village → Workshop → Restore workshop. Stopping early still saves your exercise history.</p></details></>}</aside>;
 }

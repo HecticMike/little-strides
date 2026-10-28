@@ -27,5 +27,6 @@ writeFileSync('public/art/avatar.json', JSON.stringify({ ...CHARACTER, coreIllus
 mkdirSync('art/review', {recursive:true});
 run(['-b', '--script', 'scripts/export-character-study.lua']);
 run(['-b', '--script', 'scripts/export-core-illustrations.lua']);
+run(['-b', '--script', 'scripts/export-interface-art.lua']);
 run(['-b', '--script', 'scripts/audit-art.lua']);
 console.log('Aseprite masters exported with stable frame metadata.');

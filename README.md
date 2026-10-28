@@ -61,3 +61,12 @@ automatically. Completing one exercise, using preview, skipping movement or endi
 early earns no timber; activity is still saved. Pause/resume and suitable replacements
 are allowed. Then choose Village → Workshop → Restore workshop (1 timber).
 The completion screen and Journal explain the outcome for each recorded session.
+
+
+## Alpha 0.1 on your phone
+
+Use the existing private URL in Safari (iPhone) or Chrome (Android), sign in with
+the same ChatGPT account, and install it to the Home Screen. Open its icon online
+until Offline ready appears. See [the real-phone alpha guide](docs/alpha_mobile.md)
+for installation, first checks, offline use, updates and JSON data transfer.
+Icons are now exported from layered Aseprite masters with `npm run art:export`.

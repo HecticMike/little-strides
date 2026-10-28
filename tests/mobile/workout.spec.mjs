@@ -121,7 +121,7 @@ test('JSON export and import restore history; corrupt input preserves data', asy
   await expect(page.getByText('Backup restored on this device.')).toBeVisible();
   await page.locator('input[type=file]').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"format":"bad"}') });
   await expect(page.getByText(/not a valid Little Strides backup/)).toBeVisible();
-  await expect(page.getByText('Stored on this device')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Stored on this device',exact:true})).toBeVisible();
 });
 test('wake lock refusal retains usable workout and reduced-motion village loads', async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: () => Promise.reject(new Error('not allowed')) } }));

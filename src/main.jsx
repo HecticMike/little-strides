@@ -8,6 +8,7 @@ import { ScreenLock } from './wake.mjs';
 import { workshopState, restoreWorkshop } from './gameplay.mjs';
 import { watchOffline } from './offline.mjs';
 import { ExerciseReview, FocusSelect, PlanPreview, SessionCompletion, RewardGoal } from './WorkoutQuality.jsx';
+import {Icon} from './Icon.jsx';
 import { CoreIllustration } from './CoreIllustration.jsx';
 import { enabledExercise } from './catalog.mjs';
 import {Journal} from './Journal.jsx';
@@ -17,9 +18,6 @@ import './functional.css';
 const cues = new Cues(), wake = new ScreenLock();
 const clock = ms => { const seconds = Math.ceil(Math.max(0, ms) / 1000); return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; };
 const time = ms => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-function Icon({ index, className = '' }) {
-  return <span aria-hidden="true" className={'pixel-icon ' + className} style={{ '--icon': index }} />;
-}
 function Avatar({ pose = 'stand', stage = 0, outfit = 'adventure' }) {
   const ref = useRef(), [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -56,7 +54,7 @@ function Village({ completed, workshop, onRestore, busy }) {
   const closeWorkshop = () => { gameRef.current?.events.emit('dismiss-interaction'); setInteraction({ place: 'Training green', phase: 'idle' }); };
   return <section className="village-page">
     <p className="eyebrow">YOUR VILLAGE</p><h1>Hearthwood</h1>
-    <div className="village-status"><span><Icon index={5} />{CHARACTER.stages[stage].name}</span><span>{workshop.balance} timber</span></div>
+    <div className="village-status"><span><Icon index={5} />{CHARACTER.stages[stage].name}</span><span><Icon index={6}/>{workshop.balance} timber</span></div>
     <div className="village-canvas" ref={ref} role="img" aria-label="Hearthwood pixel village. Tap a clear path to walk; tap a building to approach and interact." />
     <p className="muted village-hint">Tap a path to walk. The gold crest marks the workshop.</p>
     <div className="places">{['Training green', 'Garden', 'Workshop'].map(p => <button key={p} disabled={!ready} aria-pressed={place === p} onClick={() => visit(p)}>{p}</button>)}</div>
@@ -64,7 +62,7 @@ function Village({ completed, workshop, onRestore, busy }) {
       {interaction.phase === 'approaching' && <p>Walking to {place.toLowerCase()}…</p>}
       {place === 'Workshop' ? <>
         <p>{workshop.stage ? 'Workshop restored. A warm roof, lit windows and your guild banner. Saved on this device.' : 'Restore the roof, light the windows and raise your guild banner. Cost: 1 timber. Earn it by completing one whole real session; let its timer finish automatically.'}</p>
-        <p className="workshop-balance">{workshop.balance} timber available</p>
+        <p className="workshop-balance"><Icon index={6}/>{workshop.balance} timber available</p>
         {!workshop.stage && <button className="primary" disabled={busy || interaction.phase !== 'arrived' || workshop.balance < 1} onClick={onRestore}>{workshop.balance ? 'Restore workshop · 1 timber' : 'Need 1 timber'}</button>}
       </> : <p>{place === 'Garden' ? completed + ' rewarded workouts have planted ' + Math.min(12, completed) + ' flowers. Your garden grows while you restore the workshop.' : 'Your next short workout starts in Today. Earn one timber per rewarded workout, then spend it at the workshop.'}</p>}
     </article>
@@ -299,7 +297,7 @@ function App() {
         </>}
         {tab === 'Village' && <Village completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} />}
         {tab === 'Journal' && <Journal history={data.history} settings={data.settings} now={now}/>}
-        {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Exercises and recovery</h2><p>Unreviewed candidates require individual opt-in. Wall-push and squat are locked pending review.</p><button onClick={()=>setPendingReview('settings')}>Review or disable movements</button></section><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><label className="pace-option"><input aria-label="Pacing sound" type="checkbox" checked={!data.settings.paceMuted} onChange={event=>settings({paceMuted:!event.target.checked})}/>Pacing sound (transition cues stay on)</label><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen. Android: Chrome menu → Install app / Add to Home screen.</p>}<p className="small muted">Use HTTPS on your phone. Screen lock and sounds depend on device and browser settings.</p></section></>}
+        {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Exercises and recovery</h2><p>Unreviewed candidates require individual opt-in. Wall-push and squat are locked pending review.</p><button onClick={()=>setPendingReview('settings')}>Review or disable movements</button></section><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><label className="pace-option"><input aria-label="Pacing sound" type="checkbox" checked={!data.settings.paceMuted} onChange={event=>settings({paceMuted:!event.target.checked})}/>Pacing sound (transition cues stay on)</label><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><span className="pill" aria-label="Release stage">Alpha 0.1</span><p>Open this private site on your phone and sign in with the same ChatGPT account. Then add it to your Home Screen and open its icon.</p><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen; leave Open as Web App on if shown. Android: Chrome → menu → Install and create shortcut → Install (or Add to Home screen).</p>}<p className="small muted">Wait for Offline ready before testing without a connection. History is stored on this device; export JSON before removing the app or clearing browser data. Screen lock and sounds still need a real-phone check.</p></section></>}
       </main>
       <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => { setTab(name); if (name === 'Village') setNotice(''); }}><Icon index={icon} />{name}</button>)}</nav>
     </>}
