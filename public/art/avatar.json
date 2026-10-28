@@ -35,6 +35,12 @@
       "equipmentRow": 1
     }
   ],
+  "poseReferenceOffsets": {
+    "calf": {
+      "x": 0,
+      "y": -4
+    }
+  },
   "exercisePoses": {
     "march": "march",
     "squat": "squat",

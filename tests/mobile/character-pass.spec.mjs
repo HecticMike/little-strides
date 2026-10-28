@@ -3,11 +3,12 @@ import {mkdirSync} from 'node:fs';
 import {freshState,finish} from '../../src/engine.mjs';
 import {testSession,TEST_SETTINGS} from '../fixtures.mjs';
 import {startWorkout} from './helpers.mjs';
+import {CHARACTER} from '../../src/art-spec.mjs';
 const base=process.env.PAGES_TEST_PATH||'/';
 
 test('contact keys keep head/torso registered while hands swing; training never changes the face',async({page})=>{
   await page.goto(base);
-  const report=await page.evaluate(async base=>{
+  const report=await page.evaluate(async({base,refs})=>{
     const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
     const [body,training]=await Promise.all([base+'art/hero-body.png',base+'art/hero-training-outfit.png'].map(load));
     const canvas=Object.assign(document.createElement('canvas'),{width:960,height:384}),ctx=canvas.getContext('2d');
@@ -22,14 +23,14 @@ test('contact keys keep head/torso registered while hands swing; training never 
       if(different&&y>=74&&(x<36||x>69))hands++;
     }
     for(const col of [1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++){
-      const a=offset(0,x,y),b=offset(col,x,y);if(data.slice(a,a+4).some((v,j)=>v!==data[b+j]))heads++;
+      const dy=refs[col===4?'calf':'stand']?.y||0;const a=offset(0,x,y),b=offset(col,x,y+dy);if(data.slice(a,a+4).some((v,j)=>v!==data[b+j]))heads++;
     }
     const baselines=[0,7,8].map(col=>{for(let y=127;y>=0;y--)for(let x=0;x<96;x++)if(data[offset(col,x,y)+3])return y;});
     ctx.clearRect(0,0,960,384);ctx.drawImage(training,0,0);
     const gear=ctx.getImageData(0,0,960,384).data;let coveredFace=0;
-    for(let row=0;row<3;row++)for(const col of [0,1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++)if(gear[((row*128+y)*960+col*96+x)*4+3])coveredFace++;
+    for(let row=0;row<3;row++)for(const col of [0,1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++)if(gear[((row*128+y+(col===4?refs.calf.y:0))*960+col*96+x)*4+3])coveredFace++;
     return {upper,hands,heads,baselines,coveredFace,bootChanges};
-  },base);
+  },{base,refs:CHARACTER.poseReferenceOffsets});
   expect(report.upper).toBe(0);expect(report.hands).toBeGreaterThan(20);expect(report.heads).toBe(0);expect(report.baselines).toEqual([119,119,119]);expect(report.coveredFace).toBe(0);expect(report.bootChanges).toBe(0);
 });
 

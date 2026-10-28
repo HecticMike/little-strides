@@ -9,7 +9,7 @@ actual dimensions, layer names and nontransparent pixel counts.
 
 | Master | Actual structure |
 | --- | --- |
-| `hero-body.aseprite` | Outfit/boots, skin/face and hair layers, plus a separate revealed-trouser-edge layer for the walk keys. These are colour/part masks across a pose strip, not a fully separated anatomical animation rig. |
+| `hero-body.aseprite` | Outfit/boots, skin/face and hair layers, plus revealed trouser edges for walking and a separate calf forefoot sole. These are colour/part masks across a pose strip, not a fully separated anatomical animation rig. |
 | `hero-equipment.aseprite` | Separate cloak, leather pack/straps and scarf masks; two stage rows. |
 | `buildings.aseprite` | Original/restored workshop roof, walls/doorway, chimney and state-specific timber/canvas or window/banner layers. Column 0 remains a flattened lodge reference, unused by Phaser. |
 | `workshop-context.aseprite` | Separate approach/foliage, workbench/tools/barrels and foreground fence/stored stone. The structure has a transparent cutout. |
@@ -247,3 +247,30 @@ are art/individual-review tasks, not newly approved movement instructions.
 Bracing and tilt deliberately remain similar static positions; written cues
 remain essential. The old locked core study, walking/body master, physique
 prototype, exercise eligibility and all workout logic were not changed.
+
+## Calf-raise contact refinement
+
+March and reach were inspected and retained. The existing calf column (index 4)
+now shows a raised phase: the unchanged canonical upper body rises four source
+pixels, the visible side heel clears the ground, and both forefeet retain contact
+at source y119. The front-facing boot uses a foreshortening adjustment; the side
+sole rotates about its forefoot. No extra frame or workout animation was added.
+
+Edit `hero-body.aseprite` with its `Calf - forefoot sole` layer, together with
+column 4 in `hero-equipment.aseprite` and `hero-training-outfit.aseprite`.
+`Calf - forefoot contacts` is an independently editable training-only shadow.
+All stage clothing follows the same body movement. `CHARACTER.poseReferenceOffsets`
+records the -4px calf reference offset; the canvas size and foot anchor remain
+unchanged. The face/torso are original standing pixels, not a new physique.
+Normal `npm run art:export` preserves manual edits. The guarded one-time record
+is `scripts/refine-calf-contact.lua`. `npm run art:compare` reproduces the compact
+`calf-contact-before-after.png`, including native 48×64 samples.
+
+Visual movement context was checked against [NHS strength exercises: calf raises](https://www.nhs.uk/live-well/exercise/strength-exercises/).
+The source includes a supported version; the app's generic unsupported drawing
+is not a personal balance/support recommendation, and no source dose is copied.
+Existing support instructions, recovery limits and clinical status are unchanged.
+The drawing remains stylised and unvalidated; precise ankle/boot perspective and
+individual suitability still need review. All standing workout art now carries
+an explicit not-validated caption. Floor poses, walking, scenery, progression and
+the physique prototype were not changed.

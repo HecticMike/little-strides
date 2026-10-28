@@ -7,6 +7,8 @@ export const CHARACTER = {
     { id: 'adventurer', name: 'Adventurer', equipmentRow: 0 },
     { id: 'veteran', name: 'Veteran', equipmentRow: 1 },
   ],
+  // Upper-body reference moves with the raised calf phase; frame/foot anchor stay fixed.
+  poseReferenceOffsets: { calf: { x:0, y:-4 } },
   exercisePoses: { march: 'march', squat: 'squat', push: 'push', calf: 'calf', reach: 'reach' },
 };
 export const WORLD = { width: 320, height: 288, tileSize: 16, textureScale: 2, buildingFrameWidth: 280, buildingFrameHeight: 300, workshopX: 180, workshopY: 12, workshopUnlock: 1 };

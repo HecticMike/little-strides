@@ -1,3 +1,14 @@
+## 2026-10-28 - Standing-pose audit and calf contact refinement
+
+- Goal: continue exercise-art refinement using the approved canonical character. March/reach read clearly and were retained; the calf key needed a clearer raised phase.
+- Completed: calf column 4 reuses the canonical standing upper body four source pixels higher, with a visible side-heel gap and grounded forefeet. Boot perspective/sole and soft training-only contact shadows are separate Aseprite edits. Both equipment/training overlays follow the pose at all stages. All other body columns, walking, floor art, scenery, physique prototype and exercise rules remain unchanged; no new frame or animation system.
+- Contract/UI: poseReferenceOffsets records the calf reference shift; canvas/ground anchor remain fixed. Standing captions explicitly state the illustration is not validated. NHS movement context was consulted without copying a dose, approving suitability or changing support instructions/eligibility.
+- Checks: 81 unit/art checks PASS. Final 12 focused WebKit/Chromium Pages-path checks PASS: exact face/torso registration, other body poses unchanged, heel gap/two forefoot contacts, all-stage active calf rendering/light outfits, visible >=44px controls, no overflow, canonical walking/Today identity, offline readiness and JSON restoration. A phone review found overly heavy contact blocks; the refined sole/soft shadows were reviewed and the focused suite passed again. All 26 generated outputs repeat byte-identically. Pages build PASS, 41 cached files; existing lazy Phaser size warning remains. Full mobile suite not repeated for bounded artwork/metadata/caption changes.
+- Files: three character masters/exports, avatar metadata/inventory; guarded calf authoring, comparison/baseline/before-after/full sheet; shared art spec and one caption; relevant art/mobile QA, two new screenshots under screenshots/calf-contact, art notes and this log. No Pitch or other project touched.
+- Local QA artifacts: automatic approval review rejected broad restoration of screenshots because it could discard other uncommitted image work. Existing generated changes under screenshots/character-pass are preserved unstaged and excluded from publication; no destructive cleanup was attempted after rejection.
+- Remaining: stylised/unvalidated ankle/boot perspective and personal support/balance suitability. The picture shows one raised phase, not measured repetitions or professional review. No clinical/progression decision is inferred.
+- Next: publish the verified update, confirm exact live calf rendering/offline recovery, then assess it during a suitable session on the physical iPhone.
+
 ## 2026-10-28 - Floor-pose support and arm separation
 
 - Goal: improve the existing four floor illustrations after approval, preserving canonical identity and exercise restrictions.

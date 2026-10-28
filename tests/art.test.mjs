@@ -9,7 +9,7 @@ test('exported character sheets fit the canonical frame grid', () => {
   assert.deepEqual(dimensions('hero-equipment'), [CHARACTER.poses.length * CHARACTER.frameWidth,2*CHARACTER.frameHeight]);
   assert.deepEqual(CHARACTER.stages.map(s=>s.name), ['Beginner','Adventurer','Veteran']);
   const metadata = JSON.parse(readFileSync('public/art/avatar.json','utf8'));
-  assert.equal(metadata.id,CHARACTER.id); assert.deepEqual(metadata.stages,CHARACTER.stages);
+  assert.equal(metadata.id,CHARACTER.id); assert.deepEqual(metadata.stages,CHARACTER.stages);assert.deepEqual(metadata.poseReferenceOffsets,CHARACTER.poseReferenceOffsets);
 });
 test('supported exercises map to their own poses and lying remains an art study', () => {
   for (const e of EXERCISES) { if(e.illustration){assert.equal(e.artStatus,'illustrative');assert.equal(CHARACTER.exerciseIllustrations[e.id],e.illustration);assert.ok(CORE_ILLUSTRATIONS.poses.includes(e.illustration));}else if(e.pose===null){assert.equal(e.artStatus,'missing');assert.equal(e.focus,'core');}else{assert.equal(CHARACTER.exercisePoses[e.id],e.pose);assert.ok(CHARACTER.poses.includes(e.pose));} }
