@@ -9,7 +9,7 @@ actual dimensions, layer names and nontransparent pixel counts.
 
 | Master | Actual structure |
 | --- | --- |
-| `hero-body.aseprite` | Three genuine pixel layers: outfit/boots, skin/face, hair. These are colour/part masks across a pose strip, not a fully separated anatomical animation rig. |
+| `hero-body.aseprite` | Outfit/boots, skin/face and hair layers, plus a separate revealed-trouser-edge layer for the walk keys. These are colour/part masks across a pose strip, not a fully separated anatomical animation rig. |
 | `hero-equipment.aseprite` | Separate cloak, leather pack/straps and scarf masks; two stage rows. |
 | `buildings.aseprite` | Original/restored workshop roof, walls/doorway, chimney and state-specific timber/canvas or window/banner layers. Column 0 remains a flattened lodge reference, unused by Phaser. |
 | `workshop-context.aseprite` | Separate approach/foliage, workbench/tools/barrels and foreground fence/stored stone. The structure has a transparent cutout. |
@@ -180,3 +180,36 @@ separation and joint positions still need manual/individual review; the mat does
 not validate anatomy. Run `npm run art:export`, then `npm run art:compare`.
 `scripts/enhance-motion-and-ground.lua` records the one-time transformation;
 normal exports preserve manual edits rather than rerunning this authoring step.
+
+## Walk contact polish and complete pose review
+
+Only `hero-body.aseprite` Walk A/B were edited: resting-arm outlines are removed;
+boots now retain their original pixels and proportions during weight transfer,
+with the near leg drawn over the far leg. The small area of clothing revealed
+by the moved hands has its own editable layer. Head, central torso, palette, every
+other pose, character stages and exercise anatomy are unchanged.
+`scripts/polish-walk-contacts.lua` records this bounded authoring edit. Do not
+rerun it after manual leg edits; normal `npm run art:export` preserves them.
+
+`npm run art:compare` now includes all four floor illustrations at all stages,
+as well as the standing/marching/walking crops and withheld core study. It also
+reproduces `art/review/walk-animation.gif`: a derived six-frame playback of the
+existing gait, with 48×64 village and 96×128 source samples for each stage. It is
+a review export, not an independent master or a new runtime animation system.
+The HTML is self-contained; playback is optional. PNG/HTML/GIF exports are stable.
+
+Minimum remaining manual exercise-art work (all sources are 192×128):
+
+| Aseprite master | Specific attention |
+| --- | --- |
+| `hero-core-abdominal-bracing.aseprite` | Head/neck support silhouette (approximately x8–50, y76–119); separate the far forearm/hand from the near arm. |
+| `hero-core-pelvic-tilt.aseprite` | Same support/forearm review; the intended subtle pelvic change is difficult to distinguish. Determine an appropriate depiction before changing anatomy. |
+| `hero-core-heel-slide.aseprite` | Head/neck support and far forearm; review the extended heel/sole contact and knee silhouette. |
+| `hero-core-glute-bridge.aseprite` | Neck/upper-back contact and the near/far arm separation; review hip-to-knee alignment as one pose. |
+
+Use the existing Skin and face, Chestnut hair, Teal training shirt, Trousers and
+footwear, Pose outline and details layers. Keep head/face/hair registered together; keep cuffs and Shared mat and contact shadow
+separate. Review at the app's actual crop (y56–127) and phone size. These notes
+identify art-review regions, not clinical movement instructions. Illustrations
+remain unvalidated. The locked `hero-core-study.aseprite` and physique prototype
+were not changed. No exercise becomes reviewed or unlocked through an art edit.

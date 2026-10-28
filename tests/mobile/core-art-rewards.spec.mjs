@@ -1,13 +1,14 @@
 import {test,expect} from '@playwright/test';
 import {freshState,createSession,finish,freeze} from '../../src/engine.mjs';
 import {CORE_ILLUSTRATIONS} from '../../src/art-spec.mjs';
+const base=process.env.PAGES_TEST_PATH||'/';
 const coreIds=CORE_ILLUSTRATIONS.poses;
 const coreSettings={enabledExercises:coreIds,sessionFocus:'core',muted:true,volume:.4,exerciseReviewVersion:2};
 const read=page=>page.evaluate(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});const s=await new Promise(resolve=>{const r=db.transaction('state').objectStore('state').get('current');r.onsuccess=()=>resolve(r.result);});db.close();return s;});
 async function put(page,state){await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);await page.reload();}
 function stateAtStage(stage,now){let state=freshState();state.settings=coreSettings;for(let i=0;i<stage*3;i++){const at=now-(12-i)*96*3600000;state.active=createSession(7,state.history,at,{settings:coreSettings});state=finish(state,true,at+420000);}return state;}
 test('all four core illustrations render crisply at every canonical stage and restore offline',async({page,context},info)=>{
- test.setTimeout(120000);await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();const hashes={};
+ test.setTimeout(120000);await page.clock.install();await page.goto(base);await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();const hashes={};
  for(let stage=0;stage<3;stage++){
   const now=Date.now(),state=stateAtStage(stage,now);await put(page,state);const hero=page.locator('.home-scene .avatar[data-ready=true]');await expect(hero).toBeVisible();const identity=await hero.getAttribute('data-avatar-fingerprint');
   for(const id of coreIds){
@@ -23,7 +24,7 @@ test('all four core illustrations render crisply at every canonical stage and re
  await context.setOffline(true);await page.reload();await expect(page.locator('.core-illustration[data-ready=true]')).toHaveAttribute('data-exercise-id','glute-bridge');
 });
 test('one exercise explains zero timber; a full session earns one and the workshop spends it once',async({page,context},info)=>{
- test.setTimeout(120000);await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await expect(page.getByRole('complementary',{name:'Next village reward'})).toContainText('completing a single exercise is not enough');
+ test.setTimeout(120000);await page.clock.install();await page.goto(base);await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await expect(page.getByRole('complementary',{name:'Next village reward'})).toContainText('completing a single exercise is not enough');
  await page.getByRole('button',{name:'Review or disable movements'}).tap();for(const name of ['Easy march','Calf raise','Gentle reach'])await page.getByRole('checkbox',{name:'Enable '+name,exact:true}).check();await page.getByRole('button',{name:'Save choices',exact:true}).tap();await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:'Start 7-minute session'}).tap();
  let state=await read(page),s=state.active;await page.clock.runFor(s.segments[0].durationMs+s.segments[1].durationMs+1000);page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();await expect(page.getByRole('region',{name:'Session completion'})).toContainText('Your village progress is unchanged.');expect(await page.locator('.completion').evaluate(e=>[...e.childNodes].some(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim()==='0'))).toBe(false);state=await read(page);expect(state.history[0].activeMs).toBe(s.segments[1].durationMs);expect(state.history[0].completed).toBe(false);await page.screenshot({path:info.outputPath('single-exercise-no-timber.png')});
  await page.getByRole('button',{name:'Done',exact:true}).tap();await page.getByRole('button',{name:'Start 7-minute session'}).tap();await page.clock.runFor(420500);await expect(page.getByRole('region',{name:'Session completion'})).toContainText('1 timber earned');state=await read(page);expect(state.history.filter(h=>h.completed)).toHaveLength(1);await page.screenshot({path:info.outputPath('full-session-one-timber.png')});

@@ -3,17 +3,19 @@ import {mkdirSync} from 'node:fs';
 import {freshState,finish} from '../../src/engine.mjs';
 import {testSession,TEST_SETTINGS} from '../fixtures.mjs';
 import {startWorkout} from './helpers.mjs';
+const base=process.env.PAGES_TEST_PATH||'/';
 
 test('contact keys keep head/torso registered while hands swing; training never changes the face',async({page})=>{
-  await page.goto('/');
-  const report=await page.evaluate(async()=>{
+  await page.goto(base);
+  const report=await page.evaluate(async base=>{
     const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
-    const [body,training]=await Promise.all(['/art/hero-body.png','/art/hero-training-outfit.png'].map(load));
+    const [body,training]=await Promise.all([base+'art/hero-body.png',base+'art/hero-training-outfit.png'].map(load));
     const canvas=Object.assign(document.createElement('canvas'),{width:960,height:384}),ctx=canvas.getContext('2d');
     ctx.imageSmoothingEnabled=false;ctx.drawImage(body,0,0);
     const data=ctx.getImageData(0,0,960,128).data;
     const offset=(col,x,y)=>(y*960+col*96+x)*4;
-    let upper=0,hands=0,heads=0;
+    let upper=0,hands=0,heads=0,bootChanges=0;
+    for(const [col,start,end,dx,dy]of [[7,0,50,-5,0],[7,51,95,6,-4],[8,0,50,6,-4]])for(let y=103;y<=119;y++)for(let x=start;x<=end;x++){const a=offset(0,x,y),b=offset(col,x+dx,y+dy);if(data[a+3]===255&&data.slice(a,a+4).some((v,i)=>v!==data[b+i]))bootChanges++;}
     for(const col of [7,8])for(let y=0;y<84;y++)for(let x=0;x<96;x++){
       const a=offset(0,x,y),b=offset(col,x,y),different=data.slice(a,a+4).some((v,j)=>v!==data[b+j]);
       if(different&&y>=44&&y<=70&&x>=45&&x<=60&&data[a+3])upper++;
@@ -26,14 +28,14 @@ test('contact keys keep head/torso registered while hands swing; training never 
     ctx.clearRect(0,0,960,384);ctx.drawImage(training,0,0);
     const gear=ctx.getImageData(0,0,960,384).data;let coveredFace=0;
     for(let row=0;row<3;row++)for(const col of [0,1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++)if(gear[((row*128+y)*960+col*96+x)*4+3])coveredFace++;
-    return {upper,hands,heads,baselines,coveredFace};
-  });
-  expect(report.upper).toBe(0);expect(report.hands).toBeGreaterThan(20);expect(report.heads).toBe(0);expect(report.baselines).toEqual([119,119,119]);expect(report.coveredFace).toBe(0);
+    return {upper,hands,heads,baselines,coveredFace,bootChanges};
+  },base);
+  expect(report.upper).toBe(0);expect(report.hands).toBeGreaterThan(20);expect(report.heads).toBe(0);expect(report.baselines).toEqual([119,119,119]);expect(report.coveredFace).toBe(0);expect(report.bootChanges).toBe(0);
 });
 
 test('all stages share the same rendered face with a distinct light workout outfit at phone size',async({page},info)=>{
   test.setTimeout(120000);mkdirSync('screenshots/character-pass',{recursive:true});
-  await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
+  await page.goto(base);await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
   const faces=[],outfits=[];
   for(const [count,stage] of [[0,'beginner'],[3,'adventurer'],[6,'veteran']]){
     let state=freshState();state.settings={...state.settings,...TEST_SETTINGS};const base=Date.now()-10*86400000;
@@ -76,7 +78,7 @@ test('ending during a delayed final save cannot resurrect a session through a la
       });
     }});
   });
-  await page.clock.install();await page.goto('/');await startWorkout(page,10);await page.clock.runFor(3100);
+  await page.clock.install();await page.goto(base);await startWorkout(page,10);await page.clock.runFor(3100);
   await page.evaluate(()=>{window.__delayEnd=true;});
   page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();
   await expect(page.getByText('PAUSED',{exact:true})).toBeVisible();

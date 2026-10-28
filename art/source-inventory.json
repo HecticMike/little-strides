@@ -1,5 +1,5 @@
 [
-  {"asset":"hero-body","width":960,"height":128,"mode":"RGBA","layers":["Outfit and boots","Skin and face","Chestnut hair"],"visiblePixels":[15056,6228,2048]},
+  {"asset":"hero-body","width":960,"height":128,"mode":"RGBA","layers":["Walk - revealed trouser edges","Outfit and boots","Skin and face","Chestnut hair"],"visiblePixels":[492,15003,6222,2048]},
   {"asset":"hero-equipment","width":960,"height":256,"mode":"RGBA","layers":["Veteran cloak behind silhouette","Leather pack and straps","Shaded ochre scarf"],"visiblePixels":[4188,1258,4396]},
   {"asset":"hero-training-outfit","width":960,"height":384,"mode":"RGBA","layers":["Soft trouser cuffs - shared footwear shape","Stage seam and buckle accents"],"visiblePixels":[528,1440]},
   {"asset":"hero-core-study","width":160,"height":96,"mode":"RGBA","layers":["Far forearm - separated","Far bent leg and planted foot","Torso upper-back and pelvis support","Near bent leg and planted foot","Head and neck - lowered rigid key","Near forearm and hand - separated","Adventurer trim","Veteran trim"],"visiblePixels":[438,907,1038,983,981,438,49,49]},
