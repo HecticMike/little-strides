@@ -1,5 +1,5 @@
 import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts, fullEligibleActivity } from './gameplay.mjs';
-import { MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, JOINTS, exercise, enabledExercise, recoveryConfig } from './catalog.mjs';
+import { MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, JOINTS, exercise, enabledExercise, recoveryConfig, planningMetadata } from './catalog.mjs';
 import { recovery, planSession, eligibleExercises, capacityFits } from './scheduler.mjs';
 export { MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, exercise, recovery, planSession, eligibleExercises };
 export const freshState=()=>({schemaVersion:1,deviceId:crypto.randomUUID(),active:null,history:[],world:emptyWorld(),settings:{muted:false,volume:.45,enabledExercises:[]},updatedAt:Date.now(),lastExportAt:null});
@@ -7,7 +7,7 @@ export function createSession(minutes,history=[],now=Date.now(),{mode='workout',
   if(!['workout','preview'].includes(mode))throw new Error('Unknown session mode.');
   const plan=planSession(minutes,history,now,settings);
   if(!plan.segments){const error=new Error(plan.reason);error.availableMinutes=plan.availableMinutes;throw error;}
-  return {id:crypto.randomUUID(),qualityVersion:3,engineVersion:2,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
+  return {id:crypto.randomUUID(),qualityVersion:3,engineVersion:2,compositionVersion:1,focus:plan.focus,focusLabel:plan.label,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
 }
 export function createPreviewSession(minutes=10,now=Date.now()){
   if(!MINUTES.includes(minutes))throw new Error('Choose 7, 10, 15 or 20 minutes.');
@@ -68,7 +68,7 @@ export function replace(s,now=Date.now(),{history=[],settings={}}={}){
   const p=position(s,now);if(p.done||p.kind!=='work')return s;
   if(s.mode==='preview')return {...s,segments:s.segments.map((b,i)=>i===p.index?{...b,previewLabel:b.previewLabel==='Alternative timer card'?'Sample timer card':'Alternative timer card'}:b)};
   const movements=performedMovements(s,now),record={mode:s.mode,endedAt:now,activeMs:0,groups:[],movements};
-  const candidates=eligibleExercises([...history,record],now,settings).filter(e=>e.id!==p.exerciseId&&e.position===exercise(p.exerciseId).position&&e.loadKind!=='strength');
+  const candidates=eligibleExercises([...history,record],now,settings).filter(e=>e.id!==p.exerciseId&&e.position===exercise(p.exerciseId).position&&e.loadKind!=='strength'&&(!s.compositionVersion||s.segments[p.index].durationMs<=planningMetadata(e,settings).maxSeconds*1000));
   const config=recoveryConfig(settings),prior=recovery(history,now,settings);
   const fits=e=>{
     const draft={...s,status:'paused',elapsedMs:duration(s),segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:e.id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:e.id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
@@ -86,7 +86,7 @@ export function finish(state,completed,now=Date.now()){
   if(s.mode==='preview')return {...state,active:null,updatedAt:now};
   const consumed=elapsed(s,now),movements=performedMovements(s,now),activeMs=movements.reduce((n,m)=>n+m.actualMs,0);
   const groups=[...new Set(movements.filter(m=>m.actualMs>0).map(m=>exercise(m.exerciseId).group))];
-  const record={schemaVersion:1,qualityVersion:3,...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s)&&fullEligibleActivity({segments:s.segments,movements}),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movements,movementAccounting:'legacy-estimate'})};
+  const record={schemaVersion:1,qualityVersion:3,...(s.compositionVersion?{compositionVersion:s.compositionVersion,focus:s.focus,focusLabel:s.focusLabel}:{}),...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s)&&fullEligibleActivity({segments:s.segments,movements}),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movements,movementAccounting:'legacy-estimate'})};
   return {...state,active:null,history:[...state.history.filter(h=>h.id!==s.id),record],updatedAt:now};
 }
 export const progress=history=>rewardedWorkouts(history).length;
@@ -111,24 +111,25 @@ export function validateBackup(input) {
   const fail = () => { throw new Error('This is not a valid Little Strides backup. Your current data is unchanged.'); };
   const num = n => Number.isFinite(n) && n >= 0;
   const legacySegmentsOk = (segments, minutes) => Array.isArray(segments) && segments.length === minutes * 2 && segments.every((b, i) => b && exercise(b.exerciseId) && b.kind === (i % 2 ? 'rest' : 'work') && b.durationMs === (i % 2 ? 15_000 : 45_000));
-  const segmentsOk=(segments,minutes,version)=>version!==2?legacySegmentsOk(segments,minutes):Array.isArray(segments)&&segments.length===minutes*2&&segments.reduce((n,b)=>n+b.durationMs,0)===minutes*60_000&&segments.every((b,i)=>b&&((i===0&&b.kind==='prepare'||i===segments.length-1&&b.kind==='cooldown')?b.exerciseId===null&&b.durationMs===30_000:exercise(b.exerciseId)&&b.kind===(i%2?'work':'rest')&&b.durationMs===(i%2?45_000:15_000)));
+  const segmentsOk=(segments,minutes,version,composition)=>composition===1?Array.isArray(segments)&&segments.length>=3&&segments.length<=100&&segments[0]?.kind==='prepare'&&segments.at(-1)?.kind==='cooldown'&&segments.reduce((n,b)=>n+b.durationMs,0)===minutes*60000&&segments.every((b,i)=>b&&num(b.durationMs)&&b.durationMs>=15000&&b.durationMs<=600000&&(['prepare','cooldown','rest'].includes(b.kind)?b.exerciseId===null:b.kind==='work'&&exercise(b.exerciseId))&&(i>0&&i<segments.length-1?['work','rest'].includes(b.kind):true)):version!==2?legacySegmentsOk(segments,minutes):Array.isArray(segments)&&segments.length===minutes*2&&segments.reduce((n,b)=>n+b.durationMs,0)===minutes*60_000&&segments.every((b,i)=>b&&((i===0&&b.kind==='prepare'||i===segments.length-1&&b.kind==='cooldown')?b.exerciseId===null&&b.durationMs===30_000:exercise(b.exerciseId)&&b.kind===(i%2?'work':'rest')&&b.durationMs===(i%2?45_000:15_000)));
   const eventsOk = (events, count) => Array.isArray(events) && events.length <= 20_000 && events.every(e => e && ['replace', 'skip'].includes(e.type) && Number.isInteger(e.index) && e.index >= 0 && e.index < count && num(e.at) && (e.type !== 'replace' || exercise(e.exerciseId)));
   const identity = x => x && typeof x.id === 'string' && x.id.length > 0 && x.id.length <= 100;
   if (!input || input.format !== 'little-strides' || input.schemaVersion !== 1) fail();
   const s = input.data;
   if (!s || s.schemaVersion !== 1 || typeof s.deviceId !== 'string' || s.deviceId.length > 100 || !num(s.updatedAt) || !(s.lastExportAt === null || num(s.lastExportAt)) || !s.settings || typeof s.settings.muted !== 'boolean' || !num(s.settings.volume) || s.settings.volume > 1 || !Array.isArray(s.history) || s.history.length > 100_000) fail();
+  if(s.settings.planning!==undefined&&(!s.settings.planning||Array.isArray(s.settings.planning)||typeof s.settings.planning!=='object'||Object.entries(s.settings.planning).some(([id,v])=>!exercise(id)||!v||Array.isArray(v)||typeof v!=='object'||Object.entries(v).some(([k,n])=>!['maxSeconds','preferredSeconds','restSeconds'].includes(k)||!Number.isFinite(n)||n<15||n>600||n%15))))fail();
   for(const key of ['exerciseHolds','exerciseReassessedAt'])if(s.settings[key]!==undefined&&(!s.settings[key]||Array.isArray(s.settings[key])||typeof s.settings[key]!=='object'||Object.entries(s.settings[key]).some(([id,at])=>!exercise(id)||!num(at))))fail();
   const ids = new Set();
   for (const h of s.history) {
-    if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility','core'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion) || !eventsOk(h.events, h.segments.length)) fail();
+    if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility','core'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion,h.compositionVersion) || !eventsOk(h.events, h.segments.length)) fail();
     ids.add(h.id);
   }
   if (s.active !== null) {
     const a = s.active;
-    if (!(a.mode === undefined || ['workout', 'preview'].includes(a.mode)) || !identity(a) || ids.has(a.id) || !MINUTES.includes(a.minutes) || !num(a.startedAt) || !num(a.checkpointAt) || a.checkpointAt < a.startedAt || !num(a.elapsedMs) || a.elapsedMs > a.minutes * 60_000 || !['running', 'paused'].includes(a.status) || !(a.reason === null || ['paused', 'interrupted'].includes(a.reason)) || (a.status === 'running' ? !num(a.runningSince) || a.runningSince > a.checkpointAt : a.runningSince !== null) || !segmentsOk(a.segments, a.minutes, a.engineVersion) || !eventsOk(a.events, a.segments.length)) fail();
+    if (!(a.mode === undefined || ['workout', 'preview'].includes(a.mode)) || !identity(a) || ids.has(a.id) || !MINUTES.includes(a.minutes) || !num(a.startedAt) || !num(a.checkpointAt) || a.checkpointAt < a.startedAt || !num(a.elapsedMs) || a.elapsedMs > a.minutes * 60_000 || !['running', 'paused'].includes(a.status) || !(a.reason === null || ['paused', 'interrupted'].includes(a.reason)) || (a.status === 'running' ? !num(a.runningSince) || a.runningSince > a.checkpointAt : a.runningSince !== null) || !segmentsOk(a.segments, a.minutes, a.engineVersion,a.compositionVersion) || !eventsOk(a.events, a.segments.length)) fail();
   }
   if (!(s.settings.exerciseReviewVersion === undefined || Number.isInteger(s.settings.exerciseReviewVersion) && s.settings.exerciseReviewVersion >= 1 && s.settings.exerciseReviewVersion <= EXERCISE_REVIEW_VERSION)) fail();
-  if(s.settings.sessionFocus!==undefined&&!['mixed','core'].includes(s.settings.sessionFocus))fail();
+  if(s.settings.sessionFocus!==undefined&&!['mixed','balanced','core','cardio','recovery'].includes(s.settings.sessionFocus))fail();
   if(s.settings.paceMuted!==undefined&&typeof s.settings.paceMuted!=='boolean')fail();
   if(s.settings.enabledExercises!==undefined&&(!Array.isArray(s.settings.enabledExercises)||!s.settings.enabledExercises.every(id=>exercise(id))))fail();
   if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200||!Number.isFinite(c.maxJointSeconds)||c.maxJointSeconds<90||c.maxJointSeconds>2400)fail();}
@@ -136,8 +137,9 @@ export function validateBackup(input) {
     if(h.qualityVersion!==undefined&&h.qualityVersion!==3)fail();
     if(h.qualityVersion===3&&h!==s.active&&(!Array.isArray(h.movements)||(h.completed&&!fullEligibleActivity(h))))fail();
     if(h.discomfort!==undefined&&(!h.discomfort||!num(h.discomfort.at)||!Array.isArray(h.discomfort.joints)||!h.discomfort.joints.every(j=>JOINTS.includes(j))))fail();
+    if(h.compositionVersion!==undefined&&(h.compositionVersion!==1||h.engineVersion!==2||!['balanced','core','cardio','recovery'].includes(h.focus)))fail();
     if(h.engineVersion!==undefined&&h.engineVersion!==2)fail();
-    if(h.engineVersion===2&&(!segmentsOk(h.plan,h.minutes,2)||!Array.isArray(h.timeline)||h.timeline.length>10000||!h.timeline.length||h.timeline.some((a,i)=>!num(a.at)||!num(a.position)||a.position>h.minutes*60_000||(i>0&&(a.at<h.timeline[i-1].at||a.position<h.timeline[i-1].position)))||h.events.some(e=>!num(e.segmentElapsedMs)||e.segmentElapsedMs>h.segments[e.index].durationMs)))fail();
+    if(h.engineVersion===2&&(!segmentsOk(h.plan,h.minutes,2,h.compositionVersion)||!Array.isArray(h.timeline)||h.timeline.length>10000||!h.timeline.length||h.timeline.some((a,i)=>!num(a.at)||!num(a.position)||a.position>h.minutes*60_000||(i>0&&(a.at<h.timeline[i-1].at||a.position<h.timeline[i-1].position)))||h.events.some(e=>!num(e.segmentElapsedMs)||e.segmentElapsedMs>h.segments[e.index].durationMs)))fail();
     if(h.movements!==undefined){
       if(!Array.isArray(h.movements)||h.movements.length>10000||h.movements.some(m=>!m||!Number.isInteger(m.index)||!h.segments[m.index]||h.segments[m.index].kind!=='work'||!exercise(m.exerciseId)||!exercise(m.plannedExerciseId)||!num(m.actualMs)||!num(m.plannedMs)||m.actualMs>m.plannedMs||!num(m.skippedMs)||m.skippedMs>m.plannedMs||m.actualMs+m.skippedMs>m.plannedMs||!num(m.endedAt)||m.endedAt>h.endedAt||m.repetitions!==null||!['completed','partial','skipped','not-started','replaced'].includes(m.status))||h.movements.reduce((n,m)=>n+m.actualMs,0)!==h.activeMs)fail();
       for(let i=0;i<h.segments.length;i++)if(h.movements.filter(m=>m.index===i).reduce((n,m)=>n+m.plannedMs,0)>(h.segments[i]?.durationMs||0))fail();

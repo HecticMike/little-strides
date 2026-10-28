@@ -1,5 +1,16 @@
 # Little Strides development log
 
+## 2026-10-28 - Phase 6 intelligent workout composition
+
+- Goal: improve the audited exercise composition in Little Strides only; preserve eligibility, recovery, data, PWA and frozen artwork/RPG.
+- Completed: deterministic scored bounded search after hard eligibility/cap checks; balanced/core/cardio/recovery preferences and truthful alternatives; exercise-specific configurable planning windows, strength rest and explicit standing/floor setup/transitions. Active preparation/wind-down use eligible existing movements, with passive time excluded from activity. Continuous periods and actual recorded repetitions remain distinguished from pacing.
+- Quality: fresh 10-minute core strengthening remains 90s while marching increases 45s -> 180s; 15/20-minute marching becomes 360s with less activation filler. Same-day and next-day strength recovery remains intact; seven-minute plans are honestly labelled strength-led with brief movement. See docs/phase6_composition.md for all original-scenario sequences, baseline comparisons, rest and explicit assumptions.
+- Persistence/UI: additive composition metadata preserves old fixed-block sessions and history schema. Compact focus/sequence preview, duration-aware rest labels/cues and separate Journal activation/mobility totals. Replacements cannot insert an overlong alternative. Missing/locked demonstrations remain withheld. WebKit native selector contrast fixed from screenshot evidence.
+- Files: catalogue/scheduler/new composition module; engine, activity/Journal, main/review UI and narrowly scoped CSS; existing/focused unit and mobile tests, package test command and phase6 verification document. No dependencies, Aseprite/PNG/avatar/village/gameplay/storage/SW or other-project files changed.
+- Checks: 57 unit/art checks PASS; production build PASS; 56 distinct targeted WebKit/Chromium mobile checks PASS across broad runs and affected reruns. Full real 10-minute flows, four durations, focus alternatives, recovery, pacing/audio/mute, skip/replace, interruptions, offline/JSON, rewards, 375x568/667 layouts and Beginner/workshop integration verified. Existing preview test now skips the exact remaining segment count and waits for enabled controls, avoiding a late tap during final save. Screenshots reviewed; git diff --check PASS.
+- Limits: no clinical approval/dose validation added; joint time remains an unweighted conservative proxy. Search is bounded, not globally optimal. Catalogue still has one selectable core-strength pattern and one aerobic candidate; the 20-minute mix retains substantial mobility. No force/intensity or cardiovascular-effectiveness inference.
+- Next: individually review existing candidates, planning windows/rest/transfer needs and perform physical iPhone/Android audio, calls, wake-lock and installed-offline checks. No new art or RPG expansion.
+
 ## 2026-10-28 - NHS-informed core catalogue
 
 - Goal: enable personally reviewed core-focused routines without changing art, RPG, dependencies or existing records.

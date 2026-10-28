@@ -7,9 +7,11 @@ for (const minutes of MINUTES) {
   test(`${minutes} minutes: exact plan duration and every transition`, () => {
     const s = createSession(minutes, [], start);
     assert.equal(duration(s), minutes * 60_000);
-    for (let i = 0; i < minutes - 1; i++) {
-      assert.equal(position(s, start + 30_000 + i * 60_000).kind, 'work');
-      assert.equal(position(s, start + 30_000 + i * 60_000 + 45_000).kind, 'rest');
+    let offset=0;
+    for(const segment of s.segments){
+      assert.equal(position(s,start+offset).kind,segment.kind);
+      assert.equal(position(s,start+offset+segment.durationMs-1).kind,segment.kind);
+      offset+=segment.durationMs;
     }
     assert.equal(position(s, start + minutes * 60_000).done, true);
   });

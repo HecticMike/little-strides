@@ -23,7 +23,7 @@ for (const minutes of [7, 10, 15, 20]) test(`${minutes}-minute touch workout com
   await expect(page.getByRole('heading', { name: 'Easy march' })).toBeVisible();
   await assertFits(page);
   await page.clock.runFor(3500);
-  await expect(page.getByText('PACE 2 / 15')).toBeVisible();
+  await expect(page.locator('.reps')).toContainText('PACE 2 /');
   await page.getByRole('button', { name: 'Pause', exact: true }).tap();
   // Restore a checkpoint at the final second. Full-duration boundaries are
   // exhaustively checked by engine tests; no wall-clock multi-minute waits.

@@ -1,4 +1,5 @@
-import { EXERCISES, MINUTES, exercise, enabledExercise, recoveryConfig } from './catalog.mjs';
+import { compose } from './composition.mjs';
+import { EXERCISES, MINUTES, exercise, enabledExercise, recoveryConfig, planningMetadata, normaliseFocus, SESSION_FOCUSES } from './catalog.mjs';
 export function recovery(history,now=Date.now(),settings={}) {
   const config=recoveryConfig(settings),until={},used={},strength={},jointsUntil={},flagged={},musclesUntil={},jointUsed={},discomfort={};
   const hold=(id,at,source)=>{if(at<=now&&!(settings.exerciseReassessedAt?.[id]>=at)&&(!discomfort[id]||discomfort[id].at<=at))discomfort[id]={at,source};};
@@ -52,47 +53,34 @@ export function exerciseEligibility(history=[],now=Date.now(),settings={}){
     else if(r.discomfort[e.id]){status='discomfort';reason='Discomfort hold: reassess this movement before enabling it';}
     else if(strengthUntil>now){status='recovering';reason='Strength recovery';availableAt=strengthUntil;}
     else if(jointUntil>now){status='recovering';reason='Minimum hold after reported joint discomfort';availableAt=jointUntil;}
-    else if(!fits(e,45_000,r,c)){status='limit';reason='Not enough rolling movement or joint-exposure allowance for a block';}
+    else if(!fits(e,planningMetadata(e,settings).minSeconds*1000,r,c)){status='limit';reason='Not enough rolling movement or joint-exposure allowance for a block';}
     else if(!enabledExercise(e.id,settings)){status='disabled';reason='Not enabled';}
     return {...e,status,reason,availableAt,hold:r.discomfort[e.id]||null};
   });
 }
 export const eligibleExercises=(history=[],now=Date.now(),settings={})=>exerciseEligibility(history,now,settings).filter(e=>e.status==='eligible');
-function generate(minutes,history,now,settings){
-  const initial=recovery(history,now,settings),c=recoveryConfig(settings),pool=eligibleExercises(history,now,settings).filter(e=>settings.sessionFocus!=='core'||e.focus==='core');
-  const profile=e=>JSON.stringify([e.position,[...e.joints].sort(),e.loadKind==='strength'?'strength:'+e.group:'repeatable']);
-  const profiles=[...new Set(pool.map(profile))].map(key=>pool.filter(e=>profile(e)===key));
-  const joints=[...new Set(pool.flatMap(e=>e.joints))].sort(),failed=new Set(),count=minutes-1;
-  const slots=ms=>Math.max(0,Math.floor(ms/45000));
-  function build(i,load,previousPosition,lastPattern){
-    if(i===count)return [];
-    const caps=profiles.map(es=>es[0].loadKind==='strength'?slots(c.maxStrengthSeconds*1000-(load.strength[es[0].group]||0)):es.reduce((n,e)=>n+slots(c.maxRepeatableSeconds*1000-(load.used[e.id]||0)),0));
-    const jointCaps=joints.map(j=>slots(c.maxJointSeconds*1000-(load.jointUsed[j]||0))),remaining=count-i;
-    const key=[remaining,...caps,...jointCaps].join(',');if(failed.has(key))return null;
-    if(caps.reduce((n,x)=>n+x,0)<remaining)return null;
-    for(let j=0;j<joints.length;j++)if(jointCaps[j]+profiles.reduce((n,es,k)=>n+(es[0].joints.includes(joints[j])?0:caps[k]),0)<remaining)return null;
-    const choices=pool.filter(e=>fits(e,45000,load,c)),strengthSlot=i===1||(settings.sessionFocus==='core'&&i===4);
-    choices.sort((a,b)=>(strengthSlot?(a.loadKind!=='strength')-(b.loadKind!=='strength'):0)||(strengthSlot?Number(!(a.loadKind==='strength'&&a.muscles?.includes('trunk')))-Number(!(b.loadKind==='strength'&&b.muscles?.includes('trunk'))):0)||(a.position!==previousPosition)-(b.position!==previousPosition)||((a.pattern||a.id)===lastPattern)-((b.pattern||b.id)===lastPattern)||((load.used[a.id]||0)-(load.used[b.id]||0)));
-    // Equivalent profiles consume the same constraints. Keep the preferred
-    // concrete movement, but backtrack between profiles before declaring shortage.
-    const tried=new Set();
-    for(const e of choices){
-      const type=profile(e);if(tried.has(type))continue;tried.add(type);
-      const next={used:{...load.used},strength:{...load.strength},jointUsed:{...load.jointUsed}};add(e,45000,next);
-      const tail=build(i+1,next,e.position,e.pattern||e.id);
-      if(tail)return [{kind:'work',exerciseId:e.id,durationMs:45000},{kind:'rest',exerciseId:e.id,durationMs:15000},...tail];
-    }
-    failed.add(key);return null;
-  }
-  const body=build(0,initial,settings.sessionFocus==='core'?'floor':'standing',null);
-  return body?[{kind:'prepare',exerciseId:null,durationMs:30000},...body,{kind:'cooldown',exerciseId:null,durationMs:30000}]:null;
-}
-export function planSession(minutes,history=[],now=Date.now(),settings={}){
+export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(!MINUTES.includes(minutes))throw new Error('Choose 7, 10, 15 or 20 minutes.');
-  const plans=new Map(MINUTES.map(m=>[m,generate(m,history,now,settings)])),segments=plans.get(minutes),availableMinutes=MINUTES.filter(m=>plans.get(m));
-  const enabled=EXERCISES.filter(e=>enabledExercise(e.id,settings)&&(settings.sessionFocus!=='core'||e.focus==='core'));
-  const reason=segments?'':!enabled.length?(settings.sessionFocus==='core'?'No core movements enabled. Review appropriate core candidates individually or choose mixed focus.':'No movements enabled. Review and explicitly enable suitable candidates.'):availableMinutes.length?'Not enough eligible movement time for this length. Choose a shorter available session or rest.':'Enabled movements are recovering, flagged, or at their rolling activity limit. Not enough suitable time remains for seven minutes. Rest or review your choices.';
+  const focus=normaliseFocus(settings.sessionFocus),load=recovery(history,now,settings),config=recoveryConfig(settings);
+  const choices=exerciseEligibility(history,now,settings),eligible=choices.filter(e=>e.status==='eligible');
+  const pool=eligible.filter(e=>focus==='core'?e.focus==='core':focus==='recovery'?['activation','mobility'].includes(e.loadKind):true);
+  const enabled=EXERCISES.filter(e=>enabledExercise(e.id,settings)&&(focus!=='core'||e.focus==='core'));
+  const build=m=>focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?null:compose(m,pool,load,config,settings,focus,{fits,add});
+  const selected=build(minutes),plans=new Map([[minutes,selected]]);
+  for(const m of MINUTES)if(m!==minutes)plans.set(m,build(m));
+  const availableMinutes=MINUTES.filter(m=>plans.get(m));
+  const reason=selected?'':focus==='recovery'&&!pool.length?'No eligible activation or mobility movements remain for recovery focus. Choose another focus or rest.':!enabled.length?(focus==='core'?'No core movements enabled. Review appropriate core candidates individually or choose balanced focus.':'No movements enabled. Review and explicitly enable suitable candidates.'):focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?'No eligible aerobic movement remains for cardio focus. Choose another focus or rest.':availableMinutes.length?'Not enough eligible movement time for this length. Choose a shorter available session or rest.':pool.length?'Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest.':'Enabled movements are recovering, flagged, or at their rolling activity limit. Not enough suitable time remains for seven minutes. Rest or review your choices.';
   const summary={strength:0,activation:0,mobility:0,aerobic:0};
-  for(const b of segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
-  return {segments,availableMinutes,reason,summary};
+  for(const b of selected?.segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
+  const notes=[];
+  if(choices.some(e=>e.focus==='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Core strengthening is recovering from your previous session.');
+  if(choices.some(e=>e.focus!=='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Other strengthening is recovering from your previous session.');
+  if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='limit'))notes.push('Rolling movement or joint-exposure allowances limit the available options.');
+  if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='discomfort'))notes.push('Movements associated with discomfort are excluded until reassessed.');
+  let label=SESSION_FOCUSES[focus];
+  if(selected&&focus==='balanced'&&(!summary.strength||!summary.aerobic)){label=summary.strength?'Strength & mobility':summary.aerobic?'Movement & mobility':'Activation & mobility';notes.push('A balanced strength/aerobic mix is unavailable; this is an alternative composition.');}
+  if(selected&&focus==='balanced'&&summary.strength&&summary.aerobic>0&&summary.aerobic<120000){label='Strength with brief movement';notes.push('Only brief marching fits. This is primarily a strength/activation session, not sustained aerobic work.');}
+  if(selected&&focus==='core'&&!summary.strength){label='Core activation & mobility';notes.push('No core strengthening is included. Gentle activation is not a strength-equivalent substitute.');}
+  if(selected&&!selected.segments.some(b=>b.phase==='warmup'))notes.push('No suitable active preparation is available; setup is a passive countdown, not a warm-up.');
+  return {segments:selected?.segments||null,availableMinutes,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',{fits,add})?'balanced':null};
 }

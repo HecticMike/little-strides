@@ -7,7 +7,7 @@
                     "dev":  "vite --host 127.0.0.1",
                     "build":  "vite build \u0026\u0026 node scripts/cache-manifest.mjs",
                     "preview":  "vite preview --host 127.0.0.1 --port 4197 --strictPort",
-                    "test":  "node --test tests/engine.test.mjs tests/art.test.mjs tests/gameplay.test.mjs tests/workout-quality.test.mjs",
+                    "test":  "node --test tests/engine.test.mjs tests/art.test.mjs tests/gameplay.test.mjs tests/workout-quality.test.mjs tests/composition.test.mjs",
                     "test:mobile":  "playwright test",
                     "art:seed":  "node scripts/seed-art.mjs \u0026\u0026 node scripts/export-art.mjs --seed",
                     "art:export":  "node scripts/export-art.mjs",

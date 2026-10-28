@@ -16,3 +16,18 @@ export const enabledExercise = (id,settings={}) => !!exercise(id)?.selectable &&
 export function recoveryConfig(settings={}) {
   return {...RECOVERY_DEFAULTS,...settings.recovery};
 }
+// Planning defaults are software heuristics for individual review, not validated doses.
+export const SESSION_FOCUSES = {balanced:'Balanced',core:'Core-focused',cardio:'Cardio-focused',recovery:'Recovery'};
+export const normaliseFocus = value => value === 'mixed' || !SESSION_FOCUSES[value] ? 'balanced' : value;
+export function planningMetadata(e, settings={}) {
+  const base = e.loadKind==='aerobic'
+    ? {minSeconds:30,preferredSeconds:120,maxSeconds:180,restSeconds:15,continuous:true,maxBlocks:5}
+    : e.loadKind==='strength'
+    ? {minSeconds:30,preferredSeconds:45,maxSeconds:45,restSeconds:30,continuous:false,maxBlocks:2}
+    : {minSeconds:30,preferredSeconds:e.loadKind==='activation'?45:60,maxSeconds:e.loadKind==='activation'?60:120,restSeconds:15,continuous:e.loadKind==='mobility',maxBlocks:e.loadKind==='activation'?2:4};
+  // Overrides may shorten blocks or add rest; they cannot expand these unreviewed defaults.
+  const custom=settings.planning?.[e.id]||{};
+  const seconds=(value,fallback)=>Number.isFinite(value)&&value%15===0?value:fallback;
+  return {...base,minSeconds:base.minSeconds,maxSeconds:Math.max(base.minSeconds,Math.min(base.maxSeconds,seconds(custom.maxSeconds,base.maxSeconds))),preferredSeconds:Math.max(base.minSeconds,Math.min(base.maxSeconds,seconds(custom.preferredSeconds,base.preferredSeconds))),restSeconds:Math.max(base.restSeconds,Math.min(60,seconds(custom.restSeconds,base.restSeconds))),transitionSeconds:45,reviewStatus:'unreviewed',repeatedBlocks:e.loadKind==='strength'?'separated sets within existing strength cap':'variety only; not strength progression'};
+}
+export const LOADING_MODEL = Object.freeze({version:1,purposes:['strength','activation','mobility','aerobic'],jointExposureBasis:'unweighted tagged duration; conservative scheduling proxy only',biomechanicalLoad:null,reviewStatus:'unreviewed'});

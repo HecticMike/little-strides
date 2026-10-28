@@ -13,13 +13,13 @@ test('no automatic enable, blanket legacy acknowledgement ignored, provisional c
   const s=createSession(10,[],at,{settings});assert.ok(s.segments.filter(b=>b.kind==='work').every(b=>!['push','squat'].includes(b.exerciseId)));
 });
 test('all exact lengths include preparation, rest/transitions and wind-down; current catalogue stays standing',()=>{
-  for(const minutes of [7,10,15,20]){const s=createSession(minutes,[],at,{settings});assert.equal(s.segments.reduce((n,b)=>n+b.durationMs,0),minutes*60_000);assert.equal(s.segments[0].kind,'prepare');assert.equal(s.segments.at(-1).kind,'cooldown');assert.equal(s.segments.filter(b=>b.kind==='rest').length,minutes-1);}
+  for(const minutes of [7,10,15,20]){const s=createSession(minutes,[],at,{settings});assert.equal(s.segments.reduce((n,b)=>n+b.durationMs,0),minutes*60_000);assert.equal(s.segments[0].kind,'prepare');assert.equal(s.segments.at(-1).kind,'cooldown');assert.ok(s.segments.some(b=>b.kind==='rest'));assert.ok(s.segments.filter(b=>b.kind==='work').every(b=>EXERCISES.find(e=>e.id===b.exerciseId).position==='standing'));}
 });
 test('multiple same-day sessions retain repeatable movement and do not repeat recovering strengthening',()=>{
   const first=completed(),now=at+500_000;
   const second=createSession(10,first.history,now,{settings});
   assert.ok(second.segments.filter(b=>b.kind==='work').every(b=>['march','reach'].includes(b.exerciseId)));
-  assert.ok(second.segments.some(b=>b.exerciseId==='reach'));
+  assert.ok(second.segments.some(b=>b.exerciseId==='reach'));assert.ok(planSession(10,first.history,now,settings).notes.some(note=>/strengthening is recovering/.test(note)));
 });
 test('next-day rolling restriction releases only after the configured recovery window',()=>{
   const first=completed();assert.ok(recovery(first.history,at+25*3600_000,settings).resting.includes('legs'));
@@ -35,19 +35,19 @@ test('cumulative repeatable limits offer shorter supported durations or rest wit
   const capped={...settings,recovery:{maxRepeatableSeconds:90}};assert.equal(planSession(20,[],at,capped).segments,null);
 });
 test('partial time before skip is preserved, rest contributes no work, and real reps remain unknown',()=>{
-  let s=createSession(7,[],at,{settings});s=skip(s,at+40_000);
-  const state=freshState();state.active=freeze(s,at+40_000);const h=finish(state,false,at+40_000).history[0];
-  assert.equal(h.activeMs,10_000);const m=h.movements[0];assert.equal(m.status,'partial');assert.equal(m.actualMs,10_000);assert.equal(m.skippedMs,35_000);assert.equal(m.repetitions,null);assert.equal(h.completed,false);
+  let s=createSession(7,[],at,{settings});s=skip(s,at+s.segments[0].durationMs+10_000);
+  const state=freshState();state.active=freeze(s,at+s.segments[0].durationMs+10_000);const h=finish(state,false,at+s.segments[0].durationMs+10_000).history[0];
+  assert.equal(h.activeMs,10_000);const m=h.movements[0];assert.equal(m.status,'partial');assert.equal(m.actualMs,10_000);assert.equal(m.skippedMs,s.segments[1].durationMs-10_000);assert.equal(m.repetitions,null);assert.equal(h.completed,false);
 });
 test('replacement retains both original and performed movements and eligibility is enforced',()=>{
-  let s=createSession(7,[],at,{settings});s=replace(s,at+40_000,{settings});
+  let s=createSession(7,[],at,{settings});s=replace(s,at+s.segments[0].durationMs+10_000,{settings});
   assert.equal(s.plan[1].exerciseId,'march');assert.equal(s.segments[1].exerciseId,'reach');
-  const actual=performedMovements(s,at+55_000);assert.equal(actual[0].exerciseId,'march');assert.equal(actual[0].actualMs,10_000);assert.equal(actual[1].exerciseId,'reach');assert.equal(actual[1].actualMs,15_000);
+  const actual=performedMovements(s,at+s.segments[0].durationMs+25_000);assert.equal(actual[0].exerciseId,'march');assert.equal(actual[0].actualMs,10_000);assert.equal(actual[1].exerciseId,'reach');assert.equal(actual[1].actualMs,15_000);
   const unavailable=replace(s,at+55_000,{settings:{enabledExercises:[]}});assert.match(unavailable.replacementMessage,/No suitable/);
 });
 test('pauses/interruption do not inflate actual activity or movement end timestamps',()=>{
-  let s=createSession(7,[],at,{settings});s=freeze(s,at+35_000);s=resume(s,at+95_000);
-  const actual=performedMovements(s,at+100_000).filter(m=>m.actualMs>0);assert.equal(actual[0].actualMs,10_000);assert.equal(actual[0].endedAt,at+100_000);
+  let s=createSession(7,[],at,{settings});s=freeze(s,at+s.segments[0].durationMs+5_000);s=resume(s,at+s.segments[0].durationMs+65_000);
+  const actual=performedMovements(s,at+s.segments[0].durationMs+70_000).filter(m=>m.actualMs>0);assert.equal(actual[0].actualMs,10_000);assert.equal(actual[0].endedAt,at+s.segments[0].durationMs+70_000);
 });
 test('feedback and joint flags persist and temporarily exclude affected candidates',()=>{
   const state=completed();const result=setFeedback(state,state.history[0].id,'discomfort',['knees'],at+500_000);
@@ -121,7 +121,7 @@ test('a mostly skipped resolved timeline earns no reward, preserving legacy earn
   let state=freshState();state.settings=settings;let s=createSession(10,[],at,{settings});s=skip(s,at+75_000);
   while(!position(s,at+75_000).done)s=skip(s,at+75_000);
   state.active=s;state=finish(state,true,at+75_000);
-  assert.equal(state.history[0].activeMs,45_000);assert.equal(state.history[0].completed,false);assert.equal(progress(state.history),0);
+  assert.equal(state.history[0].activeMs,s.segments[1].durationMs);assert.equal(state.history[0].completed,false);assert.equal(progress(state.history),0);
   const tampered=structuredClone(state);tampered.history[0].completed=true;assert.equal(progress(tampered.history),0);assert.throws(()=>validateBackup({format:'little-strides',schemaVersion:1,data:tampered}));
   const legacy=structuredClone(state);delete legacy.history[0].qualityVersion;legacy.history[0].completed=true;
   assert.equal(progress(legacy.history),1);assert.doesNotThrow(()=>validateBackup({format:'little-strides',schemaVersion:1,data:legacy}));
@@ -138,8 +138,8 @@ test('today/week statistics count actual purpose separately, omit previews and d
   assert.ok(second.history[1].movements.every(m=>m.exerciseId!=='calf'));
   const preview={...second.history[1],id:'preview-stat',mode:'preview'};
   const summary=activitySummary([...second.history,second.history[0],preview],morning+7*3600_000);
-  assert.equal(summary.today.sessions,2);assert.equal(summary.week.sessions,2);assert.equal(summary.today.activeMs,810_000);assert.equal(summary.today.strengthMs,90_000);
-  assert.equal(summary.today.aerobicMs+summary.today.strengthMs+summary.today.mobilityMs,810_000);
+  assert.equal(summary.today.sessions,2);assert.equal(summary.week.sessions,2);assert.equal(summary.today.activeMs,second.history.reduce((n,h)=>n+h.activeMs,0));assert.equal(summary.today.strengthMs,90_000);
+  assert.equal(summary.today.aerobicMs+summary.today.strengthMs+summary.today.mobilityMs+summary.today.activationMs,summary.today.activeMs);
   assert.ok(!eligibleExercises(second.history,morning+25*3600_000,settings).some(e=>e.id==='calf'));
 });
 test('invalid new hold, exposure and discomfort fields cannot replace a valid backup',()=>{
@@ -165,7 +165,8 @@ test('core plans use only opted-in core movements, distinguish activation and fi
   for(const m of [7,10]){const plan=planSession(m,[],at,coreSettings);assert.ok(plan.segments);assert.equal(plan.segments.reduce((n,b)=>n+b.durationMs,0),m*60000);assert.ok(plan.segments.filter(b=>b.kind==='work').every(b=>EXERCISES.find(e=>e.id===b.exerciseId).focus==='core'));assert.equal(plan.summary.aerobic,0);assert.equal(plan.summary.strength,90000);}
   for(const m of [15,20])assert.equal(planSession(m,[],at,coreSettings).segments,null,'do not bypass combined joint limits');
   const reviewedLimits={...coreSettings,recovery:{maxJointSeconds:1200}};
-  for(const m of [7,10,15,20])assert.ok(planSession(m,[],at,reviewedLimits).segments);
+  for(const m of [7,10])assert.ok(planSession(m,[],at,reviewedLimits).segments);
+  assert.equal(planSession(20,[],at,reviewedLimits).segments,null,'a higher fictional cap does not justify padding beyond meaningful block limits');
 });
 test('same-day and next-day core strength recovers while gentle activation stays distinct',()=>{
   const config={...coreSettings,recovery:{maxJointSeconds:1200}};const first=completed(10,[],at,config);
@@ -182,7 +183,7 @@ test('incomplete, held and recovering core pools offer honest alternatives witho
   const first=completed(10,[],at,coreSettings);assert.equal(planSession(7,first.history,at+700000,coreSettings).segments,null);
 });
 test('self-paced core blocks do not invent a repetition target or use unrelated artwork',()=>{
-  const s=createSession(7,[],at,{settings:coreSettings});const p=position(s,at+31000);assert.equal(p.paceTotal,0);assert.equal(p.rep,0);assert.equal(EXERCISES.find(e=>e.id===p.exerciseId).pose,null);
+  const s=createSession(7,[],at,{settings:coreSettings});const p=position(s,at+s.segments[0].durationMs+1000);assert.equal(p.paceTotal,0);assert.equal(p.rep,0);assert.equal(EXERCISES.find(e=>e.id===p.exerciseId).pose,null);
 });
 test('workflow preview is inert and cannot create history, recovery, records or rewards',async()=>{
   const {createPreviewSession,persistableState}=await import('../src/engine.mjs');const {backup}=await import('../src/storage.mjs');

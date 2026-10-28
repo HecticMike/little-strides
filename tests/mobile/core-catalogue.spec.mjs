@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {createPreviewSession} from '../../src/engine.mjs';
 const ids=['abdominal-bracing','pelvic-tilt','heel-slide','glute-bridge'];
 const names=['Supine abdominal bracing','Supine pelvic tilts','Supine heel slides','Glute bridge'];
 const read=page=>page.evaluate(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});const value=await new Promise(resolve=>{const r=db.transaction('state').objectStore('state').get('current');r.onsuccess=()=>resolve(r.result);});db.close();return value;});
@@ -10,18 +11,18 @@ test('individually opted-in core session has truthful text-only art, self pacing
   await expect(page.getByRole('checkbox',{name:'Enable Modified dead bug',exact:true})).toBeDisabled();
   const article=page.getByRole('checkbox',{name:'Enable Supine heel slides',exact:true}).locator('xpath=ancestor::article');await article.getByText('Purpose, loading and artwork',{exact:true}).tap();await expect(article.getByRole('link')).toHaveAttribute('href',/nhs/);
   await page.getByRole('button',{name:'Save choices',exact:true}).tap();await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:'Start 7-minute session',exact:true}).tap();
-  await page.clock.runFor(30100);await expect(page.getByRole('heading',{name:'Supine abdominal bracing',exact:true})).toBeVisible();await expect(page.locator('.exercise-art .avatar')).toHaveCount(0);await expect(page.getByText('SELF-PACED · NO REP TARGET',{exact:true})).toBeVisible();await expect(page.locator('.text-only-art')).toContainText('No reliable demonstration');
+  const original=(await read(page)).active,setup=original.segments[0].durationMs,activity=original.segments.filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0);await page.clock.runFor(setup+100);await expect(page.getByRole('heading',{name:'Supine abdominal bracing',exact:true})).toBeVisible();await expect(page.locator('.exercise-art .avatar')).toHaveCount(0);await expect(page.getByText('SELF-PACED · NO REP TARGET',{exact:true})).toBeVisible();await expect(page.locator('.text-only-art')).toContainText('No reliable demonstration');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);const active=(await read(page)).active;expect(active.segments.filter(b=>b.kind==='work').every(b=>ids.includes(b.exerciseId))).toBe(true);
-  await page.clock.runFor(390500);await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();let state=await read(page);expect(state.history[0].completed).toBe(true);expect(state.history[0].groups).toEqual(['core']);expect(state.history[0].activeMs).toBe(270000);expect(state.history[0].movements.every(m=>m.repetitions===null)).toBe(true);
+  await page.clock.runFor(420000-setup+500);await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();let state=await read(page);expect(state.history[0].completed).toBe(true);expect(state.history[0].groups).toEqual(['core']);expect(state.history[0].activeMs).toBe(activity);expect(state.history[0].movements.every(m=>m.repetitions===null)).toBe(true);
   await page.getByRole('button',{name:'Done',exact:true}).tap();await context.setOffline(true);await page.reload();state=await read(page);expect(state.history).toHaveLength(1);expect(state.settings.sessionFocus).toBe('core');
 });
 
 test('workflow preview needs no opt-ins and never persists exercise, recovery or rewards',async({page})=>{
-  await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:/^Preview workflow/}).tap();await expect(page.getByText('PREVIEW · NO REWARDS',{exact:true})).toBeVisible();
+  await page.clock.install();await page.goto('/');await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now()+1000)));await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:/^Preview workflow/}).tap();await expect(page.getByText('PREVIEW · NO REWARDS',{exact:true})).toBeVisible();
   expect((await read(page)).active).toBe(null);expect((await read(page)).settings.enabledExercises).toEqual([]);await page.clock.runFor(30100);
   await expect(page.getByRole('heading',{name:'Sample timer card',exact:true})).toBeVisible();await page.getByRole('button',{name:'Replace',exact:true}).tap();await expect(page.getByRole('heading',{name:'Alternative timer card',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Pause',exact:true}).tap();await page.getByRole('button',{name:'Resume',exact:true}).tap();
-  for(let i=0;i<16&&await page.getByRole('button',{name:'Skip',exact:true}).isVisible();i++){await page.getByRole('button',{name:'Skip',exact:true}).tap();await page.clock.runFor(300);}
+  for(let i=0;i<createPreviewSession(7).segments.length-1;i++){const skip=page.getByRole('button',{name:'Skip',exact:true});await expect(skip).toBeEnabled();await skip.tap();await page.clock.runFor(300);}
   await expect(page.getByText('Workflow preview finished. No exercise recorded or rewards granted.',{exact:false})).toBeVisible();let state=await read(page);expect(state.active).toBe(null);expect(state.history).toEqual([]);expect(state.world.workshop.spentRewardIds).toEqual([]);
   await page.getByRole('button',{name:/^Preview workflow/}).tap();await page.reload();await expect(page.getByRole('button',{name:'Start 7-minute session'})).toHaveCount(0);await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeVisible();state=await read(page);expect(state.active).toBe(null);expect(state.history).toEqual([]);
 });

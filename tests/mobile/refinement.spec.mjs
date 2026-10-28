@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {readFileSync,mkdirSync} from 'node:fs';
 import {startWorkout} from './helpers.mjs';
 const directory='screenshots/refinement';
-const shot=(page,info,name)=>{mkdirSync(directory,{recursive:true});return page.screenshot({path:`${directory}/${info.project.name}-${name}.png`});};
+const shot=(page,info,name)=>{mkdirSync(directory,{recursive:true});return page.screenshot({path:info.outputPath(`${name}.png`)});};
 
 test('Today fits short portrait viewports and navigation resets the previous scroll position',async({page},info)=>{
   await page.goto('/');
@@ -73,9 +73,10 @@ test('mobile workout composition and real workshop restoration retain the Beginn
   const illustration=await avatar.boundingBox(),countdown=await timer.boundingBox();
   expect(illustration.height).toBeGreaterThan(240);expect(illustration.x+illustration.width).toBeLessThanOrEqual(countdown.x+1);
   await shot(page,info,'workout-march');
-  await page.clock.runFor(120000);await expect(avatar).toHaveAttribute('data-pose','reach');
+  const timing=await page.evaluate(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});const state=await new Promise(resolve=>{const r=db.transaction('state').objectStore('state').get('current');r.onsuccess=()=>resolve(r.result);});db.close();const a=state.active,index=a.segments.findIndex(b=>b.kind==='work'&&b.exerciseId==='reach');return {untilReach:a.segments.slice(0,index).reduce((n,b)=>n+b.durationMs,0)-a.elapsedMs-(a.status==='running'?Date.now()-a.runningSince:0)};});
+  await page.clock.runFor(timing.untilReach+100);await expect(avatar).toHaveAttribute('data-pose','reach');
   await shot(page,info,'workout-reach');
-  await page.getByRole('button',{name:'Mute sound'}).tap();await page.clock.runFor(270000);
+  await page.getByRole('button',{name:'Mute sound'}).tap();await page.clock.runFor(420000);
   await expect(page.getByText('Session complete. 1 timber earned. Visit the workshop when ready.')).toBeVisible();
   await page.getByRole('button',{name:'Village',exact:true}).tap();
   const map=page.locator('.village-canvas[data-ready=true]');await expect(map).toHaveAttribute('data-avatar-fingerprint',identity);

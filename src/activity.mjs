@@ -1,12 +1,12 @@
 import {exercise} from './catalog.mjs';
 export function activityTotals(records){
-  const total={sessions:0,activeMs:0,aerobicMs:0,strengthMs:0,mobilityMs:0,unclassifiedMs:0};
+  const total={sessions:0,activeMs:0,aerobicMs:0,strengthMs:0,mobilityMs:0,activationMs:0,unclassifiedMs:0};
   for(const h of records){
     if(h.mode==='preview')continue;
     if(h.completed&&h.activeMs>0)total.sessions++;
     total.activeMs+=h.activeMs;
     if(!h.movements){total.unclassifiedMs+=h.activeMs;continue;}
-    for(const m of h.movements){const kind=exercise(m.exerciseId)?.loadKind;const key=kind==='aerobic'?'aerobicMs':kind==='strength'?'strengthMs':['mobility','activation'].includes(kind)?'mobilityMs':'unclassifiedMs';total[key]+=m.actualMs;}
+    for(const m of h.movements){const kind=exercise(m.exerciseId)?.loadKind;const key=kind==='aerobic'?'aerobicMs':kind==='strength'?'strengthMs':kind==='activation'?'activationMs':kind==='mobility'?'mobilityMs':'unclassifiedMs';total[key]+=m.actualMs;}
   }return total;
 }
 export function activitySummary(history,now=Date.now()){
