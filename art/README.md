@@ -151,3 +151,10 @@ native enamel/frame refinement. `append-garden-icon.lua` records the lossless at
 extension. The old asset-seed generator skips install icons once this master exists.
 Legacy icon filenames remain exported as aliases; the current manifest/Apple links
 use fresh filenames so new installations request the updated artwork.
+
+## Chapter I assets
+
+See [chapter production and manual-edit notes](../docs/chapter_one.md#artwork-editing)
+for registered material masks, the actual-workshop crest patch, native nine-slice
+masters, honestly flattened discovery landscapes and reproducible exports.
+The canonical character and physique prototype were not regenerated.

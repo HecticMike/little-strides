@@ -10,7 +10,7 @@ if (process.argv.includes('--progression-prototype')) {
 const executable = process.env.ASEPRITE_PATH || 'C:/Program Files/Aseprite/Aseprite.exe';
 if (!existsSync(executable)) throw new Error('Set ASEPRITE_PATH to the local Aseprite executable.');
 const characterPalette = readFileSync('art/palette.gpl','utf8').split(/\r?\n/).filter(l=>/^\s*\d+\s+\d+\s+\d+/.test(l)).map(l=>'#'+l.trim().split(/\s+/).slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join(''));
-const assets = ['hero-body', 'hero-equipment', 'hero-training-outfit', 'tiles', 'village-ground', 'village-foreground', 'workshop-context', 'buildings', 'vista', 'training', 'icons'];
+const assets = ['hero-body', 'hero-equipment', 'hero-training-outfit', 'tiles', 'village-ground', 'village-foreground', 'workshop-context', 'buildings', 'vista', 'training', 'icons', 'chapter-props', 'chapter-banner', 'ui-enamel', 'ui-paper', 'discovery-pond', 'discovery-watchtower'];
 const run = args => { const p = spawnSync(executable, args, { stdio: 'inherit', windowsHide: true }); if (p.status !== 0) throw new Error('Aseprite export failed.'); };
 mkdirSync('art/source', { recursive: true }); mkdirSync('public/art', { recursive: true });
 for (const name of assets) {

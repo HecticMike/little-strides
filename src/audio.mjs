@@ -24,18 +24,26 @@ export class Cues {
           this.buffers[name] = await this.context.decodeAudioData(await r.arrayBuffer());
         }
       }));
+      if(!this.extraLoading&&typeof this.context.decodeAudioData==='function')this.extraLoading=Promise.all(['selection','preparation','completion','restoration','ambience'].map(async name=>{const r=await fetch('./audio/'+name+'.wav');if(r.ok)this.buffers[name]=await this.context.decodeAudioData(await r.arrayBuffer());})).catch(()=>{});
       this.status = this.context.state === 'running' ? 'Sound ready' : 'Tap Test sound to retry';
     } catch { this.status = 'Sound unavailable; visual cues stay on'; }
   }
   play(name) {
-    if (this.settings.muted || this.settings.volume <= 0 || (name === 'pace' && this.settings.paceMuted) || !this.context || this.context.state !== 'running' || !this.buffers[name]) return false;
+    const buffer=this.buffers[name]||(['selection','preparation','completion','restoration'].includes(name)?this.buffers.transition:null);
+    if (this.settings.muted || this.settings.volume <= 0 || (name === 'pace' && this.settings.paceMuted) || !this.context || this.context.state !== 'running' || !buffer) return false;
     try {
       const node = this.context.createBufferSource(), gain = this.context.createGain();
-      node.buffer = this.buffers[name]; gain.gain.value = this.settings.volume;
+      node.buffer = buffer; gain.gain.value = this.settings.volume;
       node.connect(gain); gain.connect(this.context.destination); node.start();
       this.lastPlayed = name;
       return true;
     } catch { this.status = 'Sound unavailable; visual cues stay on'; return false; }
+  }
+  stopAmbience(){if(this.ambientSource){try{this.ambientSource.stop();}catch{}this.ambientSource.disconnect();this.ambientGain.disconnect();this.ambientSource=null;}}
+  startAmbience(){
+    this.stopAmbience();
+    if(!this.context||this.context.state!=='running'||this.settings.muted||this.settings.volume<=0||!this.settings.ambience||!this.buffers.ambience)return;
+    const source=this.context.createBufferSource(),gain=this.context.createGain();source.buffer=this.buffers.ambience;source.loop=true;gain.gain.value=this.settings.volume*.35;source.connect(gain);gain.connect(this.context.destination);source.start();this.ambientSource=source;this.ambientGain=gain;
   }
   async test() {
     if (this.settings.muted) return 'Sound is off. Turn Sound on before testing.';

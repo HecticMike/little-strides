@@ -1,5 +1,6 @@
 import {CORE_CANDIDATES} from './core-candidates.mjs';
 export const MINUTES = [7,10,15,20];
+export const SESSION_MINUTES = [3,...MINUTES];
 export const EXERCISE_REVIEW_VERSION = 2;
 export const JOINTS = ['ankles','knees','hips','back','shoulders','elbows','wrists'];
 export const RECOVERY_DEFAULTS = { strengthHours:48, discomfortHours:48, windowHours:24, maxStrengthSeconds:90, maxRepeatableSeconds:600, maxJointSeconds:600 };

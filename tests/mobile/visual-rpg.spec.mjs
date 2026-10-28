@@ -66,7 +66,11 @@ test('enabled exercise IDs render distinct matching poses', async ({ page }) => 
     // Wait for the actual rendered crop, rather than only the React attribute.
     await expect.poll(() => avatar.evaluate(c => c.toDataURL())).not.toBe(frames.at(-1) || '');
     frames.push(await avatar.evaluate(c => c.toDataURL()));
-    if (index < 2) { await page.getByRole('button', { name: 'Skip', exact: true }).tap(); await page.getByRole('button', { name: 'Skip', exact: true }).tap(); }
+    if(index===0){await page.getByRole('button',{name:'Skip',exact:true}).tap();await page.getByRole('button',{name:'Skip',exact:true}).tap();}
+    if(index===1){
+      page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();await page.getByRole('button',{name:'Done',exact:true}).tap();
+      await page.getByRole('combobox',{name:'Session focus',exact:true}).selectOption('recovery');await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await startWorkout(page,7);await page.getByRole('button',{name:'Pause',exact:true}).tap();
+    }
   }
   expect(new Set(frames).size).toBe(3);
 });
@@ -86,7 +90,7 @@ test('first real workout reward visibly restores the workshop', async ({ page })
     const scale = canvas.width / 320;
     roofs.push(await page.screenshot({ clip: { x: canvas.x + 205 * scale, y: canvas.y + 60 * scale, width: 94 * scale, height: 90 * scale } }));
     if (!count) await page.getByRole('button', { name: 'Workshop', exact: true }).tap();
-    await expect(page.getByText(count ? /Workshop restored. A warm roof/ : /Cost: 1 timber earned/)).toBeVisible();
+    await expect(page.getByText(count ? /Workshop restored. A warm roof/ : /Cost: 1 timber/)).toBeVisible();
   }
   expect(roofs[0].equals(roofs[1])).toBe(false);
 });

@@ -46,7 +46,7 @@ test('insufficient eligible time offers shorter supported sessions or rest, neve
   await expect(page.getByRole('button',{name:'Use 10 minutes'})).toBeVisible();
   const settings={muted:true,volume:.2,enabledExercises:['march']},at=Date.now()-700_000;
   let state=freshState();state.settings=settings;state.active=createSession(10,[],at,{settings});state=finish(state,true,at+600_000);await putState(page,state);
-  await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();await expect(page.getByText(/Enabled movements are recovering, flagged, or at their rolling activity limit/)).toBeVisible();
+  await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();await expect(page.getByText(/Enabled movements are recovering, flagged, or at their rolling activity limit|Not enough suitable movement time remains for seven minutes/)).toBeVisible();
 });
 test('partial skipped and replaced work is recorded honestly; pacing sound preference survives reload',async({page})=>{
   await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Settings',exact:true}).tap();

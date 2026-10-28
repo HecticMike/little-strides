@@ -5,7 +5,7 @@ import { loadState, saveState, backup } from './storage.mjs';
 import { avatarAtlas, avatarStage, avatarFrame, avatarFingerprint, CHARACTER } from './avatar.mjs';
 import { Cues } from './audio.mjs';
 import { ScreenLock } from './wake.mjs';
-import { workshopState, restoreWorkshop } from './gameplay.mjs';
+import { workshopState, chapterState, purchaseProject, readDiscovery, chooseDiscovery } from './gameplay.mjs';
 import { watchOffline } from './offline.mjs';
 import { ExerciseReview, FocusSelect, PlanPreview, SessionCompletion, RewardGoal } from './WorkoutQuality.jsx';
 import {Icon} from './Icon.jsx';
@@ -14,6 +14,8 @@ import { enabledExercise } from './catalog.mjs';
 import {Journal} from './Journal.jsx';
 import './style.css';
 import './functional.css';
+import './chapter.css';
+import {WorldView,ProjectCard,Discoveries} from './Chapter.jsx';
 
 const cues = new Cues(), wake = new ScreenLock();
 const clock = ms => { const seconds = Math.ceil(Math.max(0, ms) / 1000); return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; };
@@ -35,7 +37,7 @@ function Avatar({ pose = 'stand', stage = 0, outfit = 'adventure' }) {
   }, [pose, stage, outfit]);
   return <><canvas className="avatar" ref={ref} width={CHARACTER.frameWidth} height={CHARACTER.frameHeight} role="img" data-outfit={outfit} data-avatar-id={CHARACTER.id} data-avatar-stage={CHARACTER.stages[stage].id} data-pose={pose} aria-label={CHARACTER.stages[stage].name + ' wayfarer: stylised ' + pose + ' pose'} />{failed && <span className="art-fallback">Artwork unavailable. Follow the written cue.</span>}</>;
 }
-function Village({ completed, workshop, onRestore, busy }) {
+function Village({ completed, workshop, onRestore, busy, chapter, onBuy, onRead, onChoose }) {
   const ref = useRef(), gameRef = useRef();
   const [interaction, setInteraction] = useState({ place: 'Training green', phase: 'idle' });
   const [ready, setReady] = useState(false);
@@ -44,12 +46,12 @@ function Village({ completed, workshop, onRestore, busy }) {
     let disposed = false;
     import('./village.mjs').then(async ({ createVillage }) => {
       if (disposed) return;
-      const game = await createVillage(ref.current, stage, completed, info => { if (!disposed) { setInteraction(info); setReady(true); } }, workshop.stage);
+      const game = await createVillage(ref.current, stage, completed, info => { if (!disposed) { setInteraction(info); setReady(true); } }, workshop.stage, chapter.world);
       if (disposed) game.destroy(true); else gameRef.current = game;
     }).catch(() => { if (!disposed) setInteraction({ place: 'Village could not load. Your workouts are still available.', phase: 'error' }); });
     return () => { disposed = true; gameRef.current?.destroy(true); gameRef.current = null; };
   }, [completed, stage]);
-  useEffect(() => { gameRef.current?.events.emit('workshop-stage', workshop.stage); }, [workshop.stage]);
+  useEffect(() => { gameRef.current?.events.emit('workshop-stage', workshop.stage); gameRef.current?.events.emit('chapter-world',chapter.world); }, [workshop.stage,chapter.world]);
   const visit = name => gameRef.current?.events.emit('visit', name);
   const closeWorkshop = () => { gameRef.current?.events.emit('dismiss-interaction'); setInteraction({ place: 'Training green', phase: 'idle' }); };
   return <section className="village-page">
@@ -66,6 +68,7 @@ function Village({ completed, workshop, onRestore, busy }) {
         {!workshop.stage && <button className="primary" disabled={busy || interaction.phase !== 'arrived' || workshop.balance < 1} onClick={onRestore}>{workshop.balance ? 'Restore workshop · 1 timber' : 'Need 1 timber'}</button>}
       </> : <p>{place === 'Garden' ? completed + ' rewarded workouts have planted ' + Math.min(12, completed) + ' flowers. Your garden grows while you restore the workshop.' : 'Your next short workout starts in Today. Earn one timber per rewarded workout, then spend it at the workshop.'}</p>}
     </article>
+    <ProjectCard chapter={chapter} busy={busy} onBuy={onBuy}/><Discoveries chapter={chapter} onRead={onRead} onChoose={onChoose} busy={busy}/>
     <p className="small muted">Beginner · Adventurer · Veteran. Character rewards are fictional; they do not measure your real body.</p>
   </section>;
 }
@@ -77,12 +80,14 @@ function App() {
   const [offlineSetup, setOfflineSetup] = useState({ status: 'checking', message: '' }), [offlineAttempt, setOfflineAttempt] = useState(0), [install, setInstall] = useState(null);
   const cached = offlineSetup.status === 'ready';
   const [pendingReview, setPendingReview] = useState(null);
+  const [pendingLength,setPendingLength]=useState(null),[smallMessage,setSmallMessage]=useState('');
   const [completionId,setCompletionId] = useState(null), [sessionWarning,setSessionWarning] = useState('');
-  const finishing = useRef(false);
+  const finishing = useRef(false),tabRef=useRef(tab);tabRef.current=tab;
   const [busy, setBusy] = useState(false), busyRef = useRef(false), [otherTab, setOtherTab] = useState(false);
   const [saving, setSaving] = useState(false), writes = useRef(0);
   const lastTick = useRef(Date.now()), lastSave = useRef(0), lastCue = useRef(''), importRef = useRef();
   const proposal=useMemo(()=>data&&!data.active?planSession(minutes,data.history,now,data.settings):null,[minutes,data?.history,data?.settings,!!data?.active,Math.floor(now/60000)]);
+  const smallProposal=useMemo(()=>data&&!data.active?planSession(3,data.history,now,data.settings):null,[data?.history,data?.settings,!!data?.active,Math.floor(now/60000)]);
   const set = value => { current.current = value; setData(value); };
   async function commit(value, optimistic = true) {
     if (optimistic) set(value);
@@ -106,7 +111,16 @@ function App() {
       wake.release();
     }
   }
-  cues.onInterruption = () => interrupt();
+  cues.onInterruption = () => {cues.stopAmbience();interrupt();};
+  useEffect(()=>{
+    const refresh=()=>{cues.stopAmbience();if(tab==='Village'&&!data?.active&&!document.hidden&&data?.settings.ambience&&!data?.settings.muted)cues.startAmbience();};
+    refresh();document.addEventListener('visibilitychange',refresh);return()=>{document.removeEventListener('visibilitychange',refresh);cues.stopAmbience();};
+  },[tab,!!data?.active,data?.settings.ambience,data?.settings.muted,data?.settings.volume]);
+  async function navigate(name){
+    cues.play('selection');setTab(name);if(name==='Village'){setNotice('');if(current.current.settings.ambience&&!current.current.settings.muted){await cues.enable();await cues.extraLoading;if(tabRef.current==='Village'&&!current.current.active&&!document.hidden)cues.startAmbience();}}
+  }
+  async function toggleAmbience(){await cues.enable();await cues.extraLoading;settings({ambience:!current.current.settings.ambience});}
+
   useEffect(() => {
     let releaseLock;
     const boot = async () => {
@@ -157,14 +171,14 @@ function App() {
         const stopped={...s,active:freeze(s.active,t)};set(stopped);
         const next = finish(stopped, true, t);
         void commit(next, false).then(saved => {
-          if (saved) {cues.play('transition');setCompletionId(s.active.mode==='preview'?null:s.active.id);setNotice(s.active.mode==='preview'?'Workflow preview finished. No exercise recorded or rewards granted.':progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
+          if (saved) {cues.play('completion');setCompletionId(s.active.mode==='preview'?null:s.active.id);setNotice(s.active.mode==='preview'?'Workflow preview finished. No exercise recorded or rewards granted.':progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
           finishing.current = false;
         });
         return;
       }
       const cueKey = `${p.index}:${p.kind === 'work' ? p.rep : 0}`;
       if (cueKey !== lastCue.current) {
-        if (lastCue.current) cues.play(cueKey.split(':')[0] !== lastCue.current.split(':')[0] ? 'transition' : 'pace');
+        if (lastCue.current) cues.play(cueKey.split(':')[0] !== lastCue.current.split(':')[0] ? p.kind==='prepare'?'preparation':'transition' : 'pace');
         lastCue.current = cueKey;
       }
       if (t - lastSave.current >= 1000) {
@@ -177,18 +191,18 @@ function App() {
   async function action(fn) {
     if (busyRef.current) return;
     busyRef.current = true; setBusy(true);
-    try { await fn(); } finally { busyRef.current = false; setBusy(false); }
+    try { return await fn(); } finally { busyRef.current = false; setBusy(false); }
   }
-  async function begin() {
-    if (!(current.current.settings.enabledExercises||[]).length) { setPendingReview('start'); return; }
-    const proposal=planSession(minutes,current.current.history,Date.now(),current.current.settings);
-    if (!proposal.segments) {setNotice(proposal.reason);return;}
+  async function begin(requested=minutes) {
+    if (!(current.current.settings.enabledExercises||[]).length) { setPendingLength(requested); setPendingReview(requested===3?'small-start':'start'); return; }
+    const proposal=planSession(requested,current.current.history,Date.now(),current.current.settings);
+    if (!proposal.segments) {if(requested===3)setSmallMessage(proposal.reason);else setNotice(proposal.reason);return;}
     setCompletionId(null);setSessionWarning('');
     await cues.enable();
     cues.settings = current.current.settings;
     const t = Date.now(); lastTick.current = t; lastCue.current = '';
-    const saved = await commit({ ...current.current, active: createSession(minutes, current.current.history, t, {settings:current.current.settings}), updatedAt: t });
-    if (saved) { cues.play('transition'); void wake.acquire(); }
+    const saved = await commit({ ...current.current, active: createSession(requested, current.current.history, t, {settings:current.current.settings}), updatedAt: t });
+    if (saved) { cues.play('preparation'); void wake.acquire(); }
   }
   async function beginPreview(){
     if(current.current.active)return;
@@ -214,7 +228,7 @@ function App() {
     await cues.enable();
     const purpose = pendingReview;
     const next = { ...current.current, settings: { ...current.current.settings, exerciseReviewVersion: EXERCISE_REVIEW_VERSION }, updatedAt: Date.now() };
-    if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') {const remaining=next.active.segments.slice(position(next.active).index).filter(b=>b.kind==='work');if(remaining.every(b=>enabledExercise(b.exerciseId,next.settings)))await toggle();} else if(purpose!=='settings') await begin(); }
+    if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') {const remaining=next.active.segments.slice(position(next.active).index).filter(b=>b.kind==='work');if(remaining.every(b=>enabledExercise(b.exerciseId,next.settings)))await toggle();} else if(purpose!=='settings') {await begin(pendingLength??minutes);setPendingLength(null);} }
   }
   async function endWorkout() {
     if (!confirm(current.current.active.mode==='preview'?'End this workflow preview? Nothing will be recorded.':'End this session early? Your activity will be saved, but no timber is earned. A full session must finish automatically.')) return;
@@ -230,12 +244,17 @@ function App() {
     setSessionWarning(next.replacementMessage||'');await commit({...current.current,active:next});
   }
   async function feedback(id,comfort,joints) {await commit(setFeedback(current.current,id,comfort,joints),false);}
-  async function restoreBuilding() {
+  async function buyProject(id,choice) {
+    const sound=cues.settings.muted?null:cues.enable();
     try {
-      const next = restoreWorkshop(current.current);
-      if (await commit(next, false)) setNotice('');
-    } catch (e) { setNotice(e.message); }
+      const next=purchaseProject(current.current,id,choice);
+      if(await commit(next,false)){setNotice('');if(sound)void sound.then(()=>{if(!current.current.active)cues.play('restoration');});return true;}
+    } catch(e){setNotice(e.message);}return false;
   }
+  async function restoreBuilding(){return buyProject('workshop',null);}
+  const onBuy=(id,choice)=>action(()=>buyProject(id,choice));
+  const onRead=id=>action(()=>commit(readDiscovery(current.current,id),false));
+  const onChoose=id=>action(()=>commit(chooseDiscovery(current.current,id),false));
   function settings(change) {
     const next = { ...current.current, settings: { ...current.current.settings, ...change }, updatedAt: Date.now() };
     cues.settings = next.settings; void commit(next);
@@ -261,7 +280,7 @@ function App() {
   if (otherTab) return <main className="loading"><h1>Already open</h1><p>Close the other Little Strides tab, then reload here to keep your progress safe.</p><button onClick={() => location.reload()}>Reload</button></main>;
   if (!data) return <main className="loading"><h1>Little Strides</h1><p>{error || 'Opening your village…'}</p>{error && <button onClick={() => location.reload()}>Retry loading</button>}</main>;
   cues.settings = data.settings;
-  const count = progress(data.history), stage = avatarStage(count), s = data.active, workshop = workshopState(data);
+  const count = progress(data.history), stage = avatarStage(count), s = data.active, workshop = workshopState(data), chapter=chapterState(data);
   const p = s ? position(s, now) : null, e = p && !p.done ? exercise(p.exerciseId) : null;
 
   const completedRecord=data.history.find(h=>h.id===completionId);
@@ -289,17 +308,17 @@ function App() {
         {offlineSetup.message && <div className="offline-warning" role="status">{offlineSetup.message}{offlineSetup.status === 'error' && <button onClick={() => setOfflineAttempt(n => n + 1)}>Retry offline setup</button>}</div>}
         {notice && !(tab==='Today'&&completedRecord) && <div className="notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={() => setNotice('')}>×</button></div>}
         {tab === 'Today' && <>
-          {completedRecord&&<SessionCompletion record={completedRecord} onVillage={!workshop.stage?()=>{setCompletionId(null);setNotice('');setTab('Village');}:undefined} busy={busy||saving} onFeedback={(comfort,joints)=>action(()=>feedback(completedRecord.id,comfort,joints))} onDone={()=>{setCompletionId(null);setNotice('');}}/>}
-          <h1>Your next stride</h1><p className="intro milestone">{workshop.stage ? stage === 2 ? 'Workshop restored · Veteran outfit unlocked.' : 'Workshop restored · Next outfit in ' + ((stage + 1) * 3 - count) + ' complete sessions.' : workshop.balance ? workshop.balance + ' timber ready → Village → Workshop → Restore.' : 'Next: finish one whole session → earn 1 timber.'}</p>
-          <div className="home-scene"><span className="scene-label">HEARTHWOOD · VILLAGE GREEN</span><Avatar stage={stage} /><span className="hero-stage"><Icon index={5} />{CHARACTER.stages[stage].name}</span></div>
-          <section className="plan"><div className="row between"><h2>Choose your quest</h2><FocusSelect value={data.settings.sessionFocus} onChange={value=>settings({sessionFocus:value})} disabled={busy||saving}/></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><button className="primary start" disabled={busy || !!error || ((data.settings.enabledExercises||[]).length>0&&!proposal.segments)} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><p className="reward-promise">Finish this whole {minutes}-minute session to earn 1 timber.</p><p className="muted plan-description">{proposal.reason||proposal.label}</p>{proposal.notes.map(note=><p key={note} className="small muted">{note}</p>)}{proposal.alternativeFocus&&<button onClick={()=>settings({sessionFocus:proposal.alternativeFocus})}>Consider balanced focus</button>}<PlanPreview plan={proposal} minutes={minutes}/><button className="text-button review-link" onClick={()=>setPendingReview('settings')}>Review or disable movements</button>{!proposal.segments&&proposal.availableMinutes.filter(m=>m<minutes).length>0&&<div className="shorter-options">{proposal.availableMinutes.filter(m=>m<minutes).map(m=><button key={m} onClick={()=>setMinutes(m)}>Use {m} minutes</button>)}<p className="small muted">Or rest; no recovering movement is repeated to fill time.</p></div>}<button className="text-button review-link" disabled={busy||!!error} onClick={()=>action(beginPreview)}>Preview workflow — no exercise recorded</button><p className="small muted">{data.settings.sessionFocus==='core'?'Core focus: floor movements, mat optional.':'Review floor and standing movements individually.'}</p></section>
-          <RewardGoal workshop={workshop} onVillage={()=>setTab('Village')}/><div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{workshop.balance + ' timber available · ' + CHARACTER.stages[stage].name}</p></div><span className="stage">{stage + 1}/3</span></div>
+          {completedRecord&&<SessionCompletion record={completedRecord} onVillage={!workshop.stage?()=>{setCompletionId(null);setNotice('');setTab('Village');}:undefined} project={<ProjectCard chapter={chapter} busy={busy||saving} onBuy={onBuy}/>}  busy={busy||saving} onFeedback={(comfort,joints)=>action(()=>feedback(completedRecord.id,comfort,joints))} onDone={()=>{setCompletionId(null);setNotice('');}}/>}
+          <p className="eyebrow">CHAPTER I · HOME</p><h1>Your next stride</h1>{data.history.length>0&&data.history.reduce((last,h)=>Math.max(last,h.endedAt),0)<now-72*3600000&&<p className="welcome-back">Welcome back. Hearthwood is just as you left it.</p>}<p className="intro milestone">{chapter.next?chapter.balance>=chapter.next.cost?'Your next village project is ready when you are.':`${chapter.next.cost-chapter.balance} more timber → ${chapter.next.name.toLowerCase()}.`:'A welcoming home, built one small step at a time.'}</p>
+          <div className="home-scene"><WorldView world={chapter.world} count={count} project={chapter.next} hero/><span className="scene-label">HEARTHWOOD · {chapter.world.projects.find(p=>p.id==='banner')?.choice==='star'?'STAR CREST':chapter.world.projects.some(p=>p.id==='banner')?'FERN CREST':'VILLAGE GREEN'}</span><Avatar stage={stage} /><span className="hero-stage"><Icon index={5} />{CHARACTER.stages[stage].name}</span></div>
+          <section className="plan"><div className="row between"><h2>Choose your quest</h2><FocusSelect value={data.settings.sessionFocus} onChange={value=>settings({sessionFocus:value})} disabled={busy||saving}/></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><button className="primary start" disabled={busy || !!error || ((data.settings.enabledExercises||[]).length>0&&!proposal.segments)} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><button className="small-step" disabled={busy||saving||!!error} onClick={()=>action(()=>begin(3))}><span>A smaller step · 3 minutes</span><small>{smallProposal?.segments?'Activation & mobility':'Review or rest'}</small></button>{smallMessage&&<p className="small-step-info" role="status">{smallMessage} <button className="text-button" onClick={()=>setPendingReview('settings')}>Review movements</button></p>}<p className="reward-promise">Finish this whole {minutes}-minute session to earn 1 timber.</p><p className="muted plan-description">{proposal.reason||proposal.label}</p>{proposal.notes.map(note=><p key={note} className="small muted">{note}</p>)}{proposal.alternativeFocus&&<button onClick={()=>settings({sessionFocus:proposal.alternativeFocus})}>Consider balanced focus</button>}<PlanPreview plan={proposal} minutes={minutes}/><button className="text-button review-link" onClick={()=>setPendingReview('settings')}>Review or disable movements</button>{!proposal.segments&&proposal.availableMinutes.filter(m=>m<minutes).length>0&&<div className="shorter-options">{proposal.availableMinutes.filter(m=>m<minutes).map(m=><button key={m} onClick={()=>setMinutes(m)}>Use {m} minutes</button>)}<p className="small muted">Or rest; no recovering movement is repeated to fill time.</p></div>}<button className="text-button review-link" disabled={busy||!!error} onClick={()=>action(beginPreview)}>Preview workflow — no exercise recorded</button><p className="small muted">{data.settings.sessionFocus==='core'?'Core focus: floor movements, mat optional.':'Review floor and standing movements individually.'}</p></section>
+          <ProjectCard chapter={chapter} busy={busy||saving} onBuy={onBuy}/><RewardGoal workshop={workshop} onVillage={()=>setTab('Village')}/><div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{workshop.balance + ' timber available · ' + CHARACTER.stages[stage].name}</p></div><span className="stage">{stage + 1}/3</span></div>
         </>}
-        {tab === 'Village' && <Village completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} />}
-        {tab === 'Journal' && <Journal history={data.history} settings={data.settings} now={now}/>}
+        {tab === 'Village' && <><button className="text-button ambience-toggle" aria-pressed={!!data.settings.ambience} onClick={()=>action(toggleAmbience)}>Village ambience: {data.settings.ambience?'on':'off'}</button><Village chapter={chapter} onBuy={onBuy} onRead={onRead} onChoose={onChoose} completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} /></>}
+        {tab === 'Journal' && <><Journal history={data.history} settings={data.settings} now={now}/><Discoveries chapter={chapter} onRead={onRead} onChoose={onChoose} busy={busy||saving} journal/></>}
         {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Exercises and recovery</h2><p>Unreviewed candidates require individual opt-in. Wall-push and squat are locked pending review.</p><button onClick={()=>setPendingReview('settings')}>Review or disable movements</button></section><section className="card sound-settings" aria-label="Workout sound settings"><h2>Workout sound</h2>{audioControls}<button className="test-sound" disabled={busy||saving} onClick={() => action(async () => { setNotice(await cues.test()); })}>Test sound</button><label className="pace-option"><input aria-label="Pacing sound" type="checkbox" checked={!data.settings.paceMuted} onChange={event=>settings({paceMuted:!event.target.checked})}/>Pacing sound (transition cues stay on)</label><p className="small muted">{cues.status}. Test sound plays a sample at your saved volume. Workout cues play during active sessions.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><span className="pill" aria-label="Release stage">Alpha 0.1</span><p>Open the Little Strides GitHub Pages address in Safari or Chrome on your phone. No sign-in is required. Add it to your Home Screen and open its icon.</p><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen; leave Open as Web App on if shown. Android: Chrome → menu → Install and create shortcut → Install (or Add to Home screen).</p>}<p className="small muted">Wait for Offline ready before testing without a connection. History is stored on this device; export JSON before removing the app or clearing browser data. Screen lock and sounds still need a real-phone check.</p></section></>}
       </main>
-      <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => { setTab(name); if (name === 'Village') setNotice(''); }}><Icon index={icon} />{name}</button>)}</nav>
+      <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => {void navigate(name);}}><Icon index={icon} />{name}</button>)}</nav>
     </>}
   </div>;
 }

@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
 import { avatarAtlas, avatarFrame, avatarFingerprint, CHARACTER, POSES } from './avatar.mjs';
 import { WORLD } from './art-spec.mjs';
+import {worldProps,sceneryTime} from './world-art.mjs';
 import { destinations, route, walkable } from './village-path.mjs';
 export { route } from './village-path.mjs';
-export async function createVillage(parent, stage, completed, onInteract, initialWorkshopStage = 0) {
+export async function createVillage(parent, stage, completed, onInteract, initialWorkshopStage = 0, initialWorld = {workshop:{stage:initialWorkshopStage},projects:[]}) {
   const atlas = await avatarAtlas(), reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   class Village extends Phaser.Scene {
     preload() {
       for (const name of ['village-ground','village-foreground','workshop-context']) this.load.image(name,`./art/${name}.png`);
       this.load.spritesheet('buildings','./art/buildings.png',{ frameWidth:WORLD.buildingFrameWidth,frameHeight:WORLD.buildingFrameHeight });
+      this.load.spritesheet('chapter-banner','./art/chapter-banner.png',{frameWidth:60,frameHeight:64});
+      this.load.spritesheet('chapter-props','./art/chapter-props.png',{frameWidth:96,frameHeight:96});
       this.load.spritesheet('icons','./art/icons.png',{ frameWidth:24,frameHeight:24 });
     }
     create() {
@@ -28,7 +31,9 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       this.focus = this.add.graphics().setDepth(505);
       this.path=[];this.pending=null;
       this.game.events.on('visit',name=>this.visit(name));
+      this.chapterObjects=[];this.world=initialWorld;this.showWorld(initialWorld);
       this.game.events.on('workshop-stage',value=>this.showWorkshop(value));
+      this.game.events.on('chapter-world',value=>this.showWorld(value));
       this.game.events.on('dismiss-interaction',()=>{this.pending=null;parent.dataset.interaction='idle';this.focus.clear();});
       this.input.on('pointerdown',p=>{
         if(p.y<145&&p.y>20&&p.x<135)return this.visit('Training green');
@@ -46,9 +51,24 @@ export async function createVillage(parent, stage, completed, onInteract, initia
           this.tweens.add({targets:glow,alpha:.23,duration:1900,yoyo:true,repeat:-1});
         }
       }
+      this.foliage=this.add.image(32,244,'chapter-props',9).setOrigin(0).setScale(.5).setDepth(1001);
       parent.dataset.avatarId=CHARACTER.id;parent.dataset.avatarStage=CHARACTER.stages[stage].id;
       parent.dataset.avatarFingerprint=avatarFingerprint(atlas,stage);parent.dataset.buildingStage=this.workshopStage?'restored':'original';
       parent.dataset.ready='true';this.publish();onInteract({place:'Training green',phase:'idle'});
+    }
+    showWorld(world){
+      this.world=world;
+      for(const obj of this.chapterObjects||[]){this.tweens.killTweensOf(obj);obj.destroy();}this.chapterObjects=[];
+      for(const prop of worldProps(world)){
+        this.chapterObjects.push(this.add.image(prop.x,prop.y,prop.texture||'chapter-props',prop.frame).setOrigin(0).setScale((prop.size||48)/96).setDepth(prop.y+(prop.size||48)*.9));
+        if(prop.id.startsWith('lantern')&&sceneryTime()==='evening'){
+          const glow=this.add.ellipse(prop.x+23,prop.y+18,20,16,0xffd172,.18).setDepth(prop.y+44);this.chapterObjects.push(glow);
+          if(!reduced)this.tweens.add({targets:glow,alpha:.08,duration:2100,yoyo:true,repeat:-1});
+        }
+      }
+      parent.dataset.chapterProjects=String(world.projects.length);parent.dataset.worldTime=sceneryTime();
+      parent.dataset.banner=world.projects.find(p=>p.id==='banner')?.choice||'none';
+      parent.dataset.gardenStyle=world.projects.find(p=>p.id==='garden')?.choice||'none';
     }
     publish(){
       this.shadow?.setPosition(this.player.x,this.player.y).setDepth(Math.round(this.player.y)-1);
@@ -85,12 +105,13 @@ export async function createVillage(parent, stage, completed, onInteract, initia
     }
     update(time,delta){
       if(!this.player)return;
-      if(!this.path.length){this.player.setFrame(!reduced&&time%3800>3630?'idle-blink':'stand');this.arrive();this.publish();return;}
+      if(!reduced)this.foliage?.setFrame(Math.floor(time/1400)%2?10:9);
+      if(!this.path.length){this.player.setDepth(Math.round(this.player.y)).setFrame(!reduced&&time%3800>3630?'idle-blink':'stand');this.arrive();this.publish();return;}
       const [x,y]=this.path[0],dx=x-this.player.x,dy=y-this.player.y,distance=Math.hypot(dx,dy),step=Math.min(delta,50)*.11;
       if(distance<=step||reduced){this.player.setPosition(x,y);this.path.shift();}
       else{this.player.x+=dx/distance*step;this.player.y+=dy/distance*step;}
       if(Math.abs(dx)>1)this.player.setFlipX(dx<0);
-      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':['walk-a','stand','walk-b','stand'][Math.floor(time/135)%4]);
+      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':['walk-a','stand','walk-b','stand'][Math.floor(time/170)%4]);
       this.publish();
     }
   }

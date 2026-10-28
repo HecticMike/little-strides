@@ -36,7 +36,7 @@ See [Google Chrome's installation guide](https://support.google.com/chrome/answe
   Preview records no exercise and earns no timber.
 - Review or disable movements: individually enable only candidates you have
   reviewed as suitable. User opt-in and the illustrations are not clinical approval.
-- When appropriate, run an available full 7- or 10-minute session. Keep it in the
+- When appropriate, run an available full 3-minute small step or a 7- or 10-minute session. Keep it in the
   foreground; let the final countdown finish automatically. One complete session
   earns 1 timber. Village → Workshop → Restore spends it once.
 - Confirm the Journal record, close/reopen the app and check it is still present.
@@ -75,3 +75,15 @@ browser data. Do not clear storage to fix an icon. Phone launchers can retain an
 icon; keep the installed app or re-add it only after making a backup. If the app
 reports Update ready, finish/pause your workout, close all its windows and reopen.
 No app data or eligibility is reset by this source update.
+
+## Chapter I on your phone
+
+Today now offers a separate three-minute activation/mobility step; enable only
+individually suitable movements first. If it cannot fit your recovery limits,
+rest or review the choices. A full small step earns the same one timber as a
+longer session. Partial activity is saved without taking village progress away.
+
+Use the current project card on Today or in Village. Preview the actual change,
+choose your banner/planting style when offered, and spend existing earned timber.
+Letters wait in Village/Journal, and the noticeboard opens a pond/watchtower
+discovery. Nothing expires. See chapter_one.md for content and remaining checks.

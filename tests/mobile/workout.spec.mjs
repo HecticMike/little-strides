@@ -90,7 +90,7 @@ test('offline first reload restores active session, village and sound assets', a
   page.on('dialog', dialog => dialog.accept());
   await page.getByRole('button', { name: 'End session', exact: true }).tap();
   await page.getByRole('button', { name: 'Village', exact: true }).tap();
-  await expect(page.locator('.village-canvas canvas')).toBeVisible();
+  await expect(page.locator('.village-canvas[data-ready=true]')).toBeVisible();
   const canvas = page.locator('.village-canvas canvas'), box = await canvas.boundingBox();
   await page.touchscreen.tap(box.x + box.width * .77, box.y + box.height * .48);
   await expect(page.getByRole('heading', { name: 'Workshop', exact: true })).toBeVisible();

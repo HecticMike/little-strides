@@ -46,7 +46,17 @@ test('approved artwork remains painted, touch accessible and consistent across a
     if(count===0){
       for(const id of ['calf','reach']){
         const before=await avatar.evaluate(c=>c.toDataURL());
-        await page.getByRole('button',{name:'Skip',exact:true}).tap();await page.getByRole('button',{name:'Skip',exact:true}).tap();
+        if(id==='reach'){
+          // Balanced composition need not include every movement. Exercise the
+          // retained reach illustration through an actual recovery-focused plan.
+          page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();
+          await page.getByRole('button',{name:'Done',exact:true}).tap();
+          await page.getByRole('combobox',{name:'Session focus',exact:true}).selectOption('recovery');
+          await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await startWorkout(page,7);
+          await page.getByRole('button',{name:'Pause',exact:true}).tap();
+        }else{
+          await page.getByRole('button',{name:'Skip',exact:true}).tap();await page.getByRole('button',{name:'Skip',exact:true}).tap();
+        }
         await expect(avatar).toHaveAttribute('data-pose',id);
         await expect.poll(()=>avatar.evaluate(c=>c.toDataURL())).not.toBe(before);
         await capture(id+'-'+stage);

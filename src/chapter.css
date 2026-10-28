@@ -1,0 +1,80 @@
+/* Shared Aseprite nine-slice materials. Art is sparse; hierarchy stays readable. */
+:root {--paper-ink:#293b32;--paper-muted:#52604c;}
+.card,.plan,.project-card {border:6px solid transparent;border-image:url('/art/ui-enamel.png') 8 fill / 6px / 0 stretch;border-radius:0;box-shadow:0 3px #102c25;}
+.paper {border:6px solid transparent;border-image:url('/art/ui-paper.png') 8 fill / 6px / 0 stretch;background:#f1dfb2;color:var(--paper-ink);}
+.paper h2,.paper h3,.paper strong {color:#243d32;text-shadow:none;}
+.paper .eyebrow,.paper .small,.paper .muted {color:#4b5a43;}
+.paper button {background:#214a3a;color:#fff0c2;border-color:#58785a;}
+.paper button[aria-pressed=true] {background:#e3b45d;color:#203d32;outline:2px solid #75572c;outline-offset:1px;}
+.notice {position:fixed;z-index:30;top:calc(env(safe-area-inset-top) + 65px);left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:464px;max-height:30dvh;overflow:auto;box-shadow:0 4px 12px #0b211a66;}
+.page[data-tab=Today]>h1 {font-size:25px;letter-spacing:-.8px;}
+.page[data-tab=Today]>.eyebrow {margin-bottom:5px;}
+.home-scene {height:104px;background:#254d3d;isolation:isolate;margin-block:10px;}
+.world-window {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;}
+.home-scene .avatar {filter:drop-shadow(1px 2px 0 #172d2355);}
+.home-scene .scene-label {font-size:8px;max-width:67%;background:#173d32db;padding:5px;line-height:1.4;}
+.home-scene .hero-stage {font-size:10px;padding:4px 5px;}
+.plan {padding:10px 12px;}
+.plan .duration-options {margin:9px 0 7px;}
+.plan .duration-options button {padding:7px;}
+.plan .start {margin:7px 0;}
+.small-step {display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:7px 0 8px;background:#ead9aa;color:#253e31;border:1px solid #b89b5c;text-align:left;gap:8px;}
+.small-step small {font-size:11px;font-weight:500;}
+.small-step:disabled {opacity:.72;}
+.small-step-info {font-size:12px;line-height:1.5;margin:4px 0 10px;}
+.project-card {margin:15px 0;padding:12px;}
+.project-heading {display:flex;align-items:center;gap:10px;}
+.prop-art {width:64px;height:64px;flex:none;image-rendering:pixelated;object-fit:contain;}
+.project-heading>div {min-width:0;}
+.project-heading h2 {font-size:18px;line-height:1.15;}
+.project-heading p:not(.eyebrow) {font-size:12px;line-height:1.45;margin-top:5px;}
+.project-heading .eyebrow {font-size:8px;margin:0 0 5px;}
+.project-cost {display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;margin-top:10px;}
+.project-cost>span:first-child {display:flex;align-items:center;gap:5px;font-weight:750;}
+.project-purchase {width:100%;margin-top:10px;min-height:48px;}
+.project-footnote {font-size:11px;line-height:1.5;margin-top:8px;}
+.project-choices,.destination-choices {display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0;}
+.project-choices button {display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:12px;min-width:0;padding:5px;}
+.project-choices .prop-art {width:60px;height:60px;}
+.world-review {width:100%;height:auto;image-rendering:pixelated;border:2px solid #9f9766;}
+.memory-list {display:grid;gap:8px;margin-top:12px;}
+.memory-list button {display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;text-align:left;}
+.memory-list button span {font-size:10px;color:#dfcda6;flex:none;}
+.story-card {padding:12px;margin-top:14px;}
+.story-card p {font-size:13px;line-height:1.6;}
+.story-speaker {display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.story-speaker h3 {margin:0;font-size:19px;}
+.story-speaker .prop-art {width:70px;height:70px;}
+.discovery-landscape {display:block;width:100%;height:auto;image-rendering:pixelated;margin-bottom:12px;border:1px solid #998459;}
+.destination-choices button {padding:6px;font-size:12px;}
+.destination-choices img {width:100%;image-rendering:pixelated;display:block;margin-bottom:7px;}
+.story-card .keepsake {font-weight:700;}
+.chapter-roadmap {font-size:11px;line-height:1.6;}
+.workout .exercise-art {border:6px solid transparent;border-image:url('/art/ui-paper.png') 8 fill / 6px / 0 stretch;background:#eddfb6;}
+.workout .pose-note {background:#f3e4bf;color:#263e31;text-shadow:none;line-height:1.5;font-size:9px;}
+.workout .workout-readout p {font-size:16px;}
+.workout .countdown {box-shadow:0 0 0 2px #173c31,inset 0 0 0 2px #6b8058;}
+.workout .reps {font-size:19px;letter-spacing:.7px;}
+.workout-actions button {border:5px solid transparent;border-image:url('/art/ui-enamel.png') 8 fill / 5px / 0 stretch;}
+.project-reveal {animation:chapter-reveal 1000ms ease-out;}
+@keyframes chapter-reveal {from {box-shadow:0 0 0 3px #e3b058;}to {box-shadow:0 0 0 0 transparent;}}
+@media(prefers-reduced-motion:reduce){.project-reveal{animation:none;}}
+@media(max-height:700px){.home-scene{height:86px}.page[data-tab=Today]>.intro{font-size:12px;margin-top:5px}.plan .reward-promise{font-size:11px}.small-step{margin-top:6px;}}
+@media(max-width:350px){.home-scene{height:76px}.plan .row.between{gap:4px}.plan .row.between h2{font-size:15px}.plan .row.between .focus-picker select{max-width:120px}.project-cost{font-size:10px}.memory-list button{font-size:11px}.memory-list button span{font-size:9px}.small-step{font-size:12px;}.small-step small{font-size:10px;}}
+
+.project-scene {position:relative;height:112px;margin:11px 0;border:2px solid #9e8859;overflow:hidden;background:#344e48;}
+.project-scene>span {position:absolute;bottom:4px;left:4px;font:8px ui-monospace,monospace;padding:3px 5px;background:#15392ce6;color:#fff0c2;}
+.saved-reveal {padding:8px;background:#e8cf94;margin-bottom:12px;border:1px solid #9c8251;font-size:13px;}
+.saved-reveal>.text-button {float:right;color:#263e31;background:transparent;}
+.workout .exercise-art {border-image:url('/art/ui-paper.png') 8 / 6px / 0 stretch;background-image:linear-gradient(#f2dfb580,#f0ddb7b8),url('/art/training.png');background-size:cover;background-position:center;}
+.workout .exercise-art .avatar {filter:drop-shadow(1px 2px 0 #3e443344);}
+
+.story-speaker .prop-art {border:2px solid #9e895b;background:#dfc591;}
+
+.completion-done{display:block;width:100%;margin:12px 0;min-height:48px;}
+.completion summary{min-height:44px;padding:10px 0;font-size:12px;cursor:pointer;}
+.completion>.eyebrow{font-size:8px;}
+
+.welcome-back{font-size:12px;line-height:1.4;margin-top:5px;color:#d7d3ac;}
+
+.story-card{scroll-margin-top:12px;}

@@ -6,7 +6,7 @@ import {rewardOutcome,TIMBER_RULE} from './gameplay.mjs';
 import {activityTotals,minutesOf} from './activity.mjs';
 export function ExerciseReview({ settings, history=[], now=Date.now(), onToggle, onFlag, onFocus, onRecovery, onAccept, onCancel, busy, purpose }) {
   const ref=useRef();useEffect(()=>{ref.current.showModal();},[]);
-  const config=recoveryConfig(settings),choices=exerciseEligibility(history,now,settings),plan=useMemo(()=>planSession(10,history,now,settings),[history,settings,Math.floor(now/60000)]);
+  const config=recoveryConfig(settings),choices=exerciseEligibility(history,now,settings),plan=useMemo(()=>planSession(purpose==='small-start'?3:10,history,now,settings),[history,settings,purpose,Math.floor(now/60000)]);
   return <dialog ref={ref} className="exercise-review" aria-labelledby="review-title" onCancel={e=>{e.preventDefault();onCancel();}}>
     <h2 id="review-title">Review this unreviewed routine</h2><p>Nothing is enabled automatically. User opt-in is not clinical approval. No candidate here has professional approval recorded. Wall-push, squat and the modified dead bug remain locked.</p><FocusSelect value={settings.sessionFocus} onChange={onFocus} disabled={busy} label="Routine focus"/>
     <div className="exercise-options">{['Core & Strength','Cardio & Movement','Mobility & Recovery'].map(category=><section key={category} aria-label={category}><h3>{category}</h3>{category==='Core & Strength'&&<p className="small muted">Core candidates require individual review and opt-in. Their illustrations are stylised and unvalidated; follow the written instructions. Artwork does not approve suitability. Gentle activation is not counted as strengthening or cardio.</p>}{choices.filter(e=>e.category===category).sort((a,b)=>Number(b.selectable)-Number(a.selectable)).map(e=><article key={e.id}>
@@ -22,20 +22,28 @@ export function ExerciseReview({ settings, history=[], now=Date.now(), onToggle,
       <label>Rolling joint-exposure limit<select aria-label="Joint exposure limit minutes" disabled={busy} value={config.maxJointSeconds/60} onChange={e=>onRecovery({...config,maxJointSeconds:Number(e.target.value)*60})}>{[5,10,15,20].map(n=><option key={n} value={n}>{n} min timed exposure per joint / 24h</option>)}</select></label>
       <p className="small muted">Strength: up to {config.maxStrengthSeconds} seconds per group / 24h. Reported joint discomfort has a minimum {config.discomfortHours}-hour hold and stays excluded until reassessed. Core candidates are floor-based; other movements are standing. No equipment required; mat optional.</p>
     </details>
-    {!plan.segments&&<p className="small" role="status">10-minute session: {plan.reason}{plan.availableMinutes.length?' Available: '+plan.availableMinutes.join(', ')+' minutes.':''}</p>}
-    <div className="review-actions"><button disabled={busy||(purpose!=='settings'&&!choices.some(e=>e.status==='eligible'&&(settings.sessionFocus!=='core'||e.focus==='core')))} className="primary" onClick={onAccept}>{purpose==='settings'?'Save choices':'Use enabled movements'}</button><button disabled={busy} onClick={onCancel}>Go back</button></div>
+    {!plan.segments&&<p className="small" role="status">{purpose==='small-start'?'3':'10'}-minute session: {plan.reason}{plan.availableMinutes.length?' Available: '+plan.availableMinutes.join(', ')+' minutes.':''}</p>}
+    <div className="review-actions"><button disabled={busy||(purpose!=='settings'&&!choices.some(e=>e.status==='eligible'&&(purpose==='small-start'?['activation','mobility'].includes(e.loadKind):settings.sessionFocus!=='core'||e.focus==='core')))} className="primary" onClick={onAccept}>{purpose==='settings'?'Save choices':'Use enabled movements'}</button><button disabled={busy} onClick={onCancel}>Go back</button></div>
   </dialog>;
 }
 export function MovementRecord({record}) {
   if(!record.movements)return <p className="small muted">Legacy record: exact movement outcomes were not recorded.</p>;
   return <details className="movement-record"><summary>Completed and skipped movements</summary>{record.movementAccounting==='legacy-estimate'&&<p className="small muted">Legacy session: movement times are conservative estimates.</p>}<ul>{record.movements.map((m,i)=><li key={i}><strong>{EXERCISES.find(e=>e.id===m.exerciseId)?.name}</strong><span>{m.exerciseId!==m.plannedExerciseId?'Replaces planned '+EXERCISES.find(e=>e.id===m.plannedExerciseId)?.name+' · ':''}{m.status} · {Math.round(m.actualMs/1000)} / {Math.round(m.plannedMs/1000)} s timed{m.skippedMs?' · '+Math.round(m.skippedMs/1000)+' s skipped':''}</span></li>)}</ul><p className="small muted">Repetition pacing is a cue. Actual repetitions were not measured or recorded.</p></details>;
 }
-export function SessionCompletion({record,onFeedback,onDone,onVillage,busy}) {
+export function SessionCompletion({record,onFeedback,onDone,onVillage,busy,project}) {
   const f=record.feedback,total=activityTotals([record]),outcome=rewardOutcome(record);
-  return <section className="card completion" aria-label="Session completion"><h2>{record.completed?'Session complete':'Session saved'}</h2><p>{outcome.reason}</p><p>{Math.round(record.activeMs/1000)} seconds of timed movement.</p><p className="small">Aerobic movement: {minutesOf(total.aerobicMs)} min · Strengthening: {minutesOf(total.strengthMs)} min · Activation: {minutesOf(total.activationMs)} min · Mobility: {minutesOf(total.mobilityMs)} min</p>
-    {!outcome.earned&&<details><summary>How to earn 1 timber</summary><p>{TIMBER_RULE}</p></details>}{outcome.earned>0&&onVillage&&<button className="primary" disabled={busy} onClick={onVillage}>Use timber at the workshop</button>}<p className="small">How did that feel? Optional, one tap.</p><div className="comfort-options">{[['comfortable','Comfortable'],['difficult','Too hard'],['discomfort','Discomfort']].map(([id,name])=><button key={id} disabled={busy} aria-pressed={f?.comfort===id} onClick={()=>onFeedback(id,id===f?.comfort?f.joints:[])}>{name}</button>)}</div>
+  return <section className="card completion" aria-label="Session completion">
+    <p className="eyebrow">{outcome.earned?'A LITTLE MORE LIGHT FOR HEARTHWOOD':'YOUR VILLAGE PROGRESS IS KEPT'}</p>
+    <h2>{record.completed?'Session complete':'Session saved'}</h2><p>{outcome.reason}</p>
+    <p>{Math.round(record.activeMs/1000)} seconds of timed movement.</p>
+    <p className="small">How did that feel? Optional, one tap.</p><div className="comfort-options">{[['comfortable','Comfortable'],['difficult','Too hard'],['discomfort','Discomfort']].map(([id,name])=><button key={id} disabled={busy} aria-pressed={f?.comfort===id} onClick={()=>onFeedback(id,id===f?.comfort?f.joints:[])}>{name}</button>)}</div>
     {f?.comfort==='discomfort'&&<details open><summary>Affected joints (optional)</summary><div className="joint-options">{JOINTS.map(j=><button key={j} disabled={busy} aria-pressed={f.joints.includes(j)} onClick={()=>onFeedback(f.comfort,f.joints.includes(j)?f.joints.filter(x=>x!==j):[...f.joints,j])}>{j}</button>)}</div></details>}
-    {f&&<p className="small muted" role="status">Feedback saved on this device.</p>}{record.discomfort&&<p className="small muted">Discomfort holds stay in place until reassessed in exercise choices.</p>}<MovementRecord record={record}/><button className="primary" disabled={busy} onClick={onDone}>Done</button>
+    {f&&<p className="small muted" role="status">Feedback saved on this device.</p>}{record.discomfort&&<p className="small muted">Discomfort holds stay in place until reassessed in exercise choices.</p>}
+    <button className="primary completion-done" disabled={busy} onClick={onDone}>Done</button>
+    {outcome.earned>0&&onVillage&&<button disabled={busy} onClick={onVillage}>Use timber at the workshop</button>}
+    {project&&<details className="completion-project"><summary>Use timber or preview your next project</summary>{project}</details>}
+    <details><summary>Activity details</summary><p className="small">Aerobic movement: {minutesOf(total.aerobicMs)} min · Strengthening: {minutesOf(total.strengthMs)} min · Activation: {minutesOf(total.activationMs)} min · Mobility: {minutesOf(total.mobilityMs)} min</p><MovementRecord record={record}/></details>
+    {!outcome.earned&&<details><summary>How to earn 1 timber</summary><p>{TIMBER_RULE}</p></details>}
   </section>;
 }
 export function FocusSelect({value,onChange,disabled,label='Session focus'}) {

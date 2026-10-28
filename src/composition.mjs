@@ -5,10 +5,11 @@ export const COMPOSITION_WEIGHTS = Object.freeze({duplicate:-150,positionChange:
 const BEAM=4;
 export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
   if(!pool.length)return null;
+  const small=minutes===3, setup=small?30:15, finish=small?30:15;
   const target=minutes*60,meta=new Map(pool.map(e=>[e.id,planningMetadata(e,settings)]));
-  const buckets=Array.from({length:target/15+1},()=>[]),minimumActive=target*.60;
-  const start={time:15,score:0,blocks:[],load:{used:{...initial.used},strength:{...initial.strength},jointUsed:{...initial.jointUsed}},counts:{},totals:{strength:0,activation:0,mobility:0,aerobic:0},active:0};
-  buckets[1].push(start);let best=null;
+  const buckets=Array.from({length:target/15+1},()=>[]),minimumActive=target*(small?.5:.60);
+  const start={time:setup,score:0,blocks:[],load:{used:{...initial.used},strength:{...initial.strength},jointUsed:{...initial.jointUsed}},counts:{},totals:{strength:0,activation:0,mobility:0,aerobic:0},active:0};
+  buckets[setup/15].push(start);let best=null;
   function contribution(e,before,seconds){
     const kind=e.loadKind,first=Math.min(seconds,Math.max(0,(kind==='aerobic'?Math.min(focus==='cardio'?600:360,target*(focus==='cardio'?.7:.4)):90)-before));
     const weights=focus==='cardio'?{strength:4,activation:1,mobility:2,aerobic:12}:focus==='core'?{strength:16,activation:5,mobility:3,aerobic:0}:focus==='recovery'?{strength:0,activation:5,mobility:5,aerobic:0}:{strength:e.muscles?.includes('trunk')?30:13,activation:3,mobility:3,aerobic:10};
@@ -27,7 +28,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
     buckets[slot]=[];
     for(const node of nodes){
       const last=node.blocks.at(-1);
-      if(node.time+15===target&&node.active>=minimumActive&&last?.e.loadKind!=='strength'){
+      if(node.time+finish===target&&node.active>=minimumActive&&last?.e.loadKind!=='strength'){
         const cardioShare=node.totals.aerobic/node.active;
         if(focus==='cardio'&&(node.totals.aerobic<120||cardioShare<.4))continue;
         const arranged=arrange(node.blocks),duplicates=blocks=>blocks.filter((b,i)=>i&&b.e.id===blocks[i-1].e.id).length;
@@ -39,17 +40,18 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
         if(!last&&e.loadKind==='strength')continue;
         if(count>=m.maxBlocks)continue;
         const change=last&&last.e.position!==e.position;
-        const gap=last?Math.max(meta.get(last.e.id).restSeconds,change?m.transitionSeconds:0):(e.position==='floor'?30:0);
+        if(small&&change)continue;
+        const gap=last?Math.max(meta.get(last.e.id).restSeconds,change?m.transitionSeconds:0):(!small&&e.position==='floor'?30:0);
         const maximum=node.blocks.length?m.maxSeconds:Math.min(60,m.maxSeconds);
         const options=[...new Set([m.minSeconds,m.preferredSeconds,maximum,45,60,90,120,180])].filter(s=>s>=m.minSeconds&&s<=maximum&&s%15===0);
         // Exact final blocks may be shorter than the preferred continuous period.
-        const exact=target-15-node.time-gap;if(exact>=m.minSeconds&&exact<=maximum&&exact%15===0&&!options.includes(exact))options.push(exact);
+        const exact=target-finish-node.time-gap;if(exact>=m.minSeconds&&exact<=maximum&&exact%15===0&&!options.includes(exact))options.push(exact);
         for(const seconds of options){
-          const time=node.time+gap+seconds;if(time===target-15&&e.loadKind==='strength')continue;
-          if(time>target-15||!fits(e,seconds*1000,node.load,config))continue;
+          const time=node.time+gap+seconds;if(time===target-finish&&e.loadKind==='strength')continue;
+          if(time>target-finish||!fits(e,seconds*1000,node.load,config))continue;
           const load={used:{...node.load.used},strength:{...node.load.strength},jointUsed:{...node.load.jointUsed}};add(e,seconds*1000,load);
           const totals={...node.totals,[e.loadKind]:node.totals[e.loadKind]+seconds};
-          if(time===target-15&&(node.active+seconds<minimumActive||focus==='cardio'&&(totals.aerobic<120||totals.aerobic/(node.active+seconds)<.4)))continue;
+          if(time===target-finish&&(node.active+seconds<minimumActive||focus==='cardio'&&(totals.aerobic<120||totals.aerobic/(node.active+seconds)<.4)))continue;
           let score=node.score+contribution(e,node.totals[e.loadKind],seconds)+COMPOSITION_WEIGHTS.blockCost+gap/15*COMPOSITION_WEIGHTS.restPer15;
           if(!count)score+=COMPOSITION_WEIGHTS.newMovement;
           if(!last&&e.loadKind==='aerobic')score+=10;
@@ -64,8 +66,8 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
     }
   }
   if(!best)return null;
-  best.blocks=best.blocks.map((b,i,blocks)=>{const prior=blocks[i-1],change=prior&&prior.e.position!==b.e.position;return {...b,change,gap:prior?Math.max(meta.get(prior.e.id).restSeconds,change?meta.get(b.e.id).transitionSeconds:0):(b.e.position==='floor'?30:0),interval:prior?.e.id===b.e.id};});
-  const segments=[{kind:'prepare',exerciseId:null,durationMs:(15+best.blocks[0].gap)*1000,label:'Check your space and get ready'}];
+  best.blocks=best.blocks.map((b,i,blocks)=>{const prior=blocks[i-1],change=prior&&prior.e.position!==b.e.position;return {...b,change,gap:prior?Math.max(meta.get(prior.e.id).restSeconds,change?meta.get(b.e.id).transitionSeconds:0):(!small&&b.e.position==='floor'?30:0),interval:prior?.e.id===b.e.id};});
+  const segments=[{kind:'prepare',exerciseId:null,durationMs:(setup+best.blocks[0].gap)*1000,label:'Check your space and get ready'}];
   best.blocks.forEach((b,i)=>{
     if(i&&b.gap)segments.push({kind:'rest',exerciseId:null,durationMs:b.gap*1000,label:b.change?'Change position comfortably':'Rest before the next movement',transition:!!b.change,nextExerciseId:b.e.id});
     const first=i===0,last=i===best.blocks.length-1;
@@ -75,7 +77,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
       segments.push({kind:'work',exerciseId:b.e.id,durationMs:30000,phase:'winddown',intentionalContinuation:true});
     }else segments.push({kind:'work',exerciseId:b.e.id,durationMs:b.seconds*1000,phase:first?'warmup':last?'winddown':'activity',...(b.interval?{intentionalInterval:true}:{})});
   });
-  segments.push({kind:'cooldown',exerciseId:null,durationMs:15000,label:'Movement finished; settle comfortably'});
+  segments.push({kind:'cooldown',exerciseId:null,durationMs:finish*1000,label:'Movement finished; settle comfortably'});
   return {segments,score:Math.round(best.score*100)/100};
 }
 

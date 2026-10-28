@@ -13,7 +13,7 @@ Open `http://127.0.0.1:4197` locally. Use HTTPS hosting on a phone; localhost on
 
 - React owns the workout, countdown, audio controls, journal and backup UI. Portrait baseline is 375 × 667; safe-area padding and a separate landscape workout layout keep controls visible. Today defaults to 10 minutes; navigation has its own reserved row below the scrollable page. Touch targets are at least 44 pixels.
 - All candidates remain clinically unreviewed. Every real movement requires individual persisted opt-in; the old blanket acknowledgement enables nothing. Wall-push and squat stay locked pending exercise/art review. The phone review groups Core & Strength, Cardio & Movement, and Mobility & Recovery, with instructions, joint considerations, individual disable/flag controls and explicit reassessment. Four core candidates with stylised, clinically unvalidated illustrations are individually selectable but disabled by default; modified dead bug remains locked pending physiotherapist-guided variation review. Choose Core-focused on Today or in the exercise-review dialog. See [the NHS research and assessment notes](docs/core_catalogue_review.md).
-- Plans last exactly 7/10/15/20 minutes (fresh default 10): 30 seconds of preparation, minutes-minus-one blocks of 45 seconds movement / 15 seconds rest, and 30 seconds wind-down. Existing standing movements use a three-second pace; core candidates are self-paced with no repetition target. Neither counts actual body movements. Pause, skip and replacement are available in place.
+- Standard plans last exactly 7/10/15/20 minutes (fresh default 10), using the existing variable-block composition with necessary preparation/rest/transitions and a finish. A separate three-minute activation/mobility profile includes 30 seconds preparation and 30 seconds finish. Existing standing movements use a three-second pace; core candidates are self-paced with no repetition target. Neither counts actual body movements. Pause, skip and replacement are available in place.
 - Timers derive from timestamps, never decrement counters. Visibility loss, audio interruption and a timer gap over 2.5 seconds pause the session. Reload always restores a paused checkpoint. Background time earns no activity or rewards. A forced kill can lose approximately the last second since the durable checkpoint.
 - IndexedDB atomically stores a versioned local state containing immutable session records with IDs, device origin, performed groups, plan and events. History is independent of any future sync transport. A Web Lock prevents two supported tabs from writing concurrently. Browser implementations without Web Locks should use one tab.
 - Rolling scheduling uses actual performed movement, including partial work before skipping/replacement. Default strength recovery is 48 hours from actual loading; repeatable gentle aerobic/mobility work has a 600-second per-exercise rolling 24-hour cap, strengthening a 90-second per-group cap, and combined timed joint exposure a configurable 600-second rolling cap per joint. Shared muscle recovery also applies across movement patterns. These are conservative configurable software heuristics, not validated safety limits or a readiness assessment. Multiple daily sessions are allowed while eligible time remains; otherwise the app offers a supported shorter length or rest, with no recovering-strength filler. Skipped work gives no growth; new rewards require unique completed workout IDs with all scheduled movement time accounted for using selectable movements. Resolving the timeline by skipping work does not count as completion. Existing historical rewards/restorations are preserved. Preview/partial/early-ended sessions grant no timber; preview history also leaves recovery unchanged. These timers do not verify actual body movements.
@@ -56,7 +56,7 @@ Next: perform the physical-device checklist before claiming mobile release readi
 - General context: [Mayo Clinic strength-training overview](https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/strength-training/art-20046670) discusses recovery between muscle-group sessions; [CDC activity overview](https://www.cdc.gov/physical-activity-basics/guidelines/adults.html) distinguishes aerobic and strengthening work. Neither validates this catalogue, artwork or these numeric app limits.
 - Phase 4 screenshots: screenshots/phase4, captured through an entire 10-minute WebKit/Chromium flow; repeat with the workout-quality Playwright spec.
 
-Timber: finish one whole real 7/10/15/20-minute session and let the timer finish
+Timber: finish one whole real 3-minute small step or 7/10/15/20-minute session and let the timer finish
 automatically. Completing one exercise, using preview, skipping movement or ending
 early earns no timber; activity is still saved. Pause/resume and suitable replacements
 are allowed. Then choose Village → Workshop → Restore workshop (1 timber).
@@ -95,3 +95,12 @@ Move existing data using Settings → Export JSON on the old preview, then Impor
 JSON on the new site. Browser storage is separate across domains. See the alpha
 guide above before removing the old installation. Future updates use Pages,
 not the previous private hosting.
+
+## Chapter I: Home
+
+A separate three-minute activation/mobility step now uses the same eligibility and
+rolling recovery checks. A complete eligible small step earns the same 1 timber
+as a longer session. The four standard duration buttons and ten-minute default
+remain. Six ordered projects spend twelve timber, with persistent banner/garden
+choices, two residents and optional illustrated discoveries. Existing progress
+migrates intact. See [chapter details and art editing](docs/chapter_one.md).
