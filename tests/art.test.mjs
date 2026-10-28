@@ -65,7 +65,7 @@ test('four floor illustrations share canonical stages, editable parts and explic
  for(const id of CORE_ILLUSTRATIONS.poses){
   const e=EXERCISES.find(e=>e.id===id);assert.equal(e.reviewStatus,'unreviewed');assert.equal(e.artStatus,'illustrative');assert.notEqual(e.illustration,'lying');
   const source=readFileSync(`art/source/hero-core-${id}.aseprite`);assert.equal(source.readUInt16LE(4),0xa5e0);
-  const record=inventory.find(x=>x.asset===`hero-core-${id}`);for(const layer of ['Skin and face','Chestnut hair','Teal training shirt','Adventurer cuffs','Veteran cuffs']){const i=record.layers.indexOf(layer);assert.ok(i>=0);assert.ok(record.visiblePixels[i]>0);}
+  const record=inventory.find(x=>x.asset===`hero-core-${id}`);for(const layer of ['Skin and face','Chestnut hair','Teal training shirt','Adventurer cuffs','Veteran cuffs','Supine head - face and neck','Supine head - collar and contour','Near forearm - separated','Far forearm - shaded depth','Upper-back support - shirt underside','Support contact shadows']){const i=record.layers.indexOf(layer);assert.ok(i>=0);assert.ok(record.visiblePixels[i]>0);}
  }
  const meta=JSON.parse(readFileSync('public/art/avatar.json'));assert.equal(meta.coreIllustrations.characterId,CHARACTER.id);assert.deepEqual(meta.coreIllustrations.stages,CHARACTER.stages);
  assert.equal(EXERCISES.find(e=>e.id==='modified-dead-bug').selectable,false);

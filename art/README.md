@@ -213,3 +213,37 @@ separate. Review at the app's actual crop (y56–127) and phone size. These note
 identify art-review regions, not clinical movement instructions. Illustrations
 remain unvalidated. The locked `hero-core-study.aseprite` and physique prototype
 were not changed. No exercise becomes reviewed or unlocked through an art edit.
+
+## Floor support and arm-separation pass
+
+The four `hero-core-{abdominal-bracing,pelvic-tilt,heel-slide,glute-bridge}.aseprite`
+masters now retain their original face/hair pixels through a registered 15-degree
+rotation about the neck. The support-line silhouette is trimmed where needed;
+facial features were not redrawn. The existing near arm is separated and rotated
+8 degrees at the shoulder; a shaded, receding copy supplies the far arm. A shallow
+cloth plane and contact shadows make their different resting depths readable.
+Pelvis, knee and heel positions remain unchanged. Artwork is still unvalidated.
+
+Meaningful new editable layers in each master:
+
+- `Supine head - face and neck`, `Supine head - collar and contour`, together with
+  `Chestnut hair`. Keep these registered when editing the head; body/neck pixels
+  also remain in the original `Skin and face` layer.
+- `Near forearm - separated`, `Far forearm - shaded depth`.
+- `Upper-back support - shirt underside`, `Support contact shadows` and the
+  separate `Shared mat and contact shadow` cloth plane.
+
+Normal `npm run art:export` preserves all these layers. The one-time authoring
+record is `scripts/refine-floor-support.lua`; it refuses refined masters. Do not
+rerun old import/authoring scripts over manual edits. `npm run art:compare` now
+reproduces `floor-support-before-after.png` and embeds optional before/after
+viewing in the self-contained comparison HTML. The fixed before atlas is the
+preceding approved export, not another production character.
+
+Remaining manual review: exact neck/shoulder contact, far-arm perspective and hand
+contours in all four named masters; subtle pelvic movement depiction in the tilt;
+hip-to-knee alignment in the bridge; extended-heel contact in the slide. These
+are art/individual-review tasks, not newly approved movement instructions.
+Bracing and tilt deliberately remain similar static positions; written cues
+remain essential. The old locked core study, walking/body master, physique
+prototype, exercise eligibility and all workout logic were not changed.
