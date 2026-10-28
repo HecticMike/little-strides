@@ -156,7 +156,7 @@ test('offline worker leaves private authentication to the network and falls back
 // Core candidates are unreviewed app entries; fictional opt-ins are not clinical approval.
 test('NHS core candidates start disabled, have no fabricated poses and retain clinical locks',()=>{
   const state=freshState(),core=EXERCISES.filter(e=>e.focus==='core');assert.equal(core.length,5);
-  for(const e of core){assert.ok(!state.settings.enabledExercises.includes(e.id));assert.equal(e.pose,null);assert.equal(e.artStatus,'missing');assert.ok(e.sourceUrl.includes('.nhs.'));assert.ok(e.instructions.length>=2);assert.notEqual(e.reviewStatus,'reviewed');}
+  for(const e of core){assert.ok(!state.settings.enabledExercises.includes(e.id));assert.equal(e.pose,null);assert.equal(e.artStatus,e.selectable?'illustrative':'missing');assert.ok(e.sourceUrl.includes('.nhs.'));assert.ok(e.instructions.length>=2);assert.notEqual(e.reviewStatus,'reviewed');}
   assert.ok(!eligibleExercises([],at,{enabledExercises:core.map(e=>e.id)}).some(e=>e.id==='modified-dead-bug'));
   assert.ok(!eligibleExercises([],at,{enabledExercises:['squat','push']}).length);
 });

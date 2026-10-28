@@ -42,6 +42,52 @@
     "calf": "calf",
     "reach": "reach"
   },
+  "exerciseIllustrations": {
+    "abdominal-bracing": "abdominal-bracing",
+    "pelvic-tilt": "pelvic-tilt",
+    "heel-slide": "heel-slide",
+    "glute-bridge": "glute-bridge"
+  },
+  "coreIllustrations": {
+    "body": "./art/hero-core-poses.png",
+    "frameWidth": 192,
+    "frameHeight": 128,
+    "viewport": {
+      "top": 56,
+      "height": 72,
+      "widths": {
+        "abdominal-bracing": 158,
+        "pelvic-tilt": 158,
+        "heel-slide": 184,
+        "glute-bridge": 158
+      }
+    },
+    "poses": [
+      "abdominal-bracing",
+      "pelvic-tilt",
+      "heel-slide",
+      "glute-bridge"
+    ],
+    "review": "Stylised illustrations, not clinically validated demonstrations.",
+    "characterId": "hearthwood-wayfarer",
+    "stages": [
+      {
+        "id": "beginner",
+        "name": "Beginner",
+        "equipmentRow": null
+      },
+      {
+        "id": "adventurer",
+        "name": "Adventurer",
+        "equipmentRow": 0
+      },
+      {
+        "id": "veteran",
+        "name": "Veteran",
+        "equipmentRow": 1
+      }
+    ]
+  },
   "palette": [
     "#102629",
     "#193336",

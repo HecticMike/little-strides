@@ -11,7 +11,7 @@ test('balanced preview and real ten-minute variable flow persist exact activity,
   let stored=await read(page),plan=stored.active.segments;expect(stored.active.compositionVersion).toBe(1);expect(plan.reduce((n,b)=>n+b.durationMs,0)).toBe(600000);
   const expectedActivity=plan.filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0);let elapsed=0,shot=false;
   for(const b of plan){
-    if(b.kind==='work'){if(b.exerciseId==='march'){await expect(page.locator('.exercise-art .avatar')).toHaveCount(1);}else if(['abdominal-bracing','heel-slide','glute-bridge'].includes(b.exerciseId)){await expect(page.locator('.text-only-art')).toBeVisible();}}
+    if(b.kind==='work'){if(b.exerciseId==='march'){await expect(page.locator('.exercise-art .avatar')).toHaveCount(1);}else if(['abdominal-bracing','heel-slide','glute-bridge'].includes(b.exerciseId)){await expect(page.locator('.core-illustration[data-ready=true]')).toHaveAttribute('data-exercise-id',b.exerciseId);}}
     if(b.kind==='rest')await expect(page.locator('.reps')).toContainText(String(b.durationMs/1000));
     if(!shot&&b.kind==='work'){
       await page.getByRole('button',{name:'Mute sound',exact:true}).tap();await page.getByRole('button',{name:'Pause',exact:true}).tap();const before=(await read(page)).active.elapsedMs;

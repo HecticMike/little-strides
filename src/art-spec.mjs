@@ -11,3 +11,6 @@ export const CHARACTER = {
 };
 export const WORLD = { width: 320, height: 288, tileSize: 16, textureScale: 2, buildingFrameWidth: 280, buildingFrameHeight: 300, workshopX: 180, workshopY: 12, workshopUnlock: 1 };
 export const PALETTE = { ink:'#202c37', deep:'#293b40', pine:'#344e48', leaf:'#4d6a48', grass:'#718252', light:'#98a16a', moss:'#b6b879', sand:'#d3b879', cream:'#f0d4a0', gold:'#e4ad55', amber:'#bd7c40', brick:'#a05b44', roof:'#754951', roofLight:'#a46759', wood:'#6a4c3d', woodLight:'#9c7550', skin:'#e5af83', skinLight:'#f4cba0', skinShadow:'#b9765e', hair:'#563c35', hairLight:'#986244', teal:'#3f7270', tealLight:'#75a49a', blue:'#50788a', blueLight:'#86a6b1', lilac:'#9b879a', white:'#fff0c2' };
+// Exercise art shares the canonical identity/stage model, in a wider floor-pose frame.
+export const CORE_ILLUSTRATIONS={body:'./art/hero-core-poses.png',frameWidth:192,frameHeight:128,viewport:{top:56,height:72,widths:{'abdominal-bracing':158,'pelvic-tilt':158,'heel-slide':184,'glute-bridge':158}},poses:['abdominal-bracing','pelvic-tilt','heel-slide','glute-bridge'],review:'Stylised illustrations, not clinically validated demonstrations.'};
+CHARACTER.exerciseIllustrations=Object.fromEntries(CORE_ILLUSTRATIONS.poses.map(id=>[id,id]));

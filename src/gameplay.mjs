@@ -32,3 +32,13 @@ export function validWorld(world, history) {
   const w = world.workshop, ids = new Set(rewardedWorkouts(history).map(h => h.id));
   return [0,1].includes(w.stage) && Array.isArray(w.spentRewardIds) && w.spentRewardIds.length === w.stage && w.spentRewardIds.every(id => typeof id === 'string' && ids.has(id)) && (w.stage === 0 ? w.restoredAt === null : Number.isFinite(w.restoredAt) && w.restoredAt >= 0);
 }
+// One source of truth for the earning rule and its human-readable outcome.
+export const TIMBER_RULE='Complete one entire 7, 10, 15 or 20-minute real session to earn 1 timber. Let the timer finish automatically; all scheduled movement must be completed. Previews, skipped activity and early-ended sessions earn no timber. Pausing and suitable replacements are allowed.';
+export function rewardOutcome(record){
+ if(record.mode==='preview')return {earned:0,reason:'Preview only: no exercise or timber is recorded.'};
+ if(rewardedWorkouts([record]).length)return {earned:1,reason:'Session complete. 1 timber earned. Visit the workshop when ready.'};
+ const planned=(record.segments||[]).filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0),actual=(record.movements||[]).reduce((n,m)=>n+m.actualMs,0);
+ if(!record.activeMs)return {earned:0,reason:'No timber: no movement time was recorded. Start a real session from Today.'};
+ if(actual<planned)return {earned:0,reason:`No timber: ${Math.round(actual/1000)} of ${Math.round(planned/1000)} seconds of scheduled movement were completed. Some movement was skipped or unfinished. Your activity is still saved.`};
+ return {earned:0,reason:'No timber: the session ended before automatic completion. Let the final countdown finish next time; your activity is still saved.'};
+}

@@ -44,10 +44,11 @@ strength-equivalent substitutions or automatically suitable for shoulder pain.
 - Four lower-level entries are selectable for individual opt-in, **unreviewed and
   disabled by default**. Modified dead bug remains pending-review/locked. Existing
   wall push/squat locks remain. NHS publication is not app or personal approval.
-- Every new demonstration is missing: text only, no unrelated avatar pose, and
-  no reuse of the anatomically provisional core study. No artwork changed.
+- Update 2026-10-28: four selectable candidates now have their own canonical-character
+  illustrations. These are explicitly unvalidated artwork, not clinical demonstrations.
+  The original provisional core study remains unchanged and unused; dead bug stays locked.
 - Self-paced breathing/movement; no imposed hold count, repetition target or
-  pacing beep. The 45-second app window is not an NHS treatment dose. Stop or
+  pacing beep. The configurable app planning window is not an NHS treatment dose. Stop or
   pause as needed; individual dose/range decisions remain outside the app.
 - Bracing/heel slides are conservatively logged as activation, tilts as mobility,
   and bridge/dead bug as strengthening. Activation can still be demanding for an
@@ -76,7 +77,7 @@ It requires no opt-ins, adds no history/recovery/reward and does not persist an
 active session or export one. Leaving/reloading ends it. Existing historical
 preview records are preserved and remain excluded from activity/rewards.
 
-Tests cover opt-ins/locks, source and missing-art metadata, exact durations,
+Tests cover opt-ins/locks, source and illustrative/missing-art metadata, exact durations,
 core/mixed coverage, rolling same-day/next-day recovery, incomplete pools,
 self-paced blocks, preview records/backups/rewards and phone UI flows. See the
 handoff log for final counts. Physical floor transfers, written-cue clarity,

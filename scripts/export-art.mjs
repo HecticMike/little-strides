@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { CHARACTER, WORLD, PALETTE } from '../src/art-spec.mjs';
+import { CHARACTER, WORLD, PALETTE, CORE_ILLUSTRATIONS } from '../src/art-spec.mjs';
 import {EXERCISES} from '../src/catalog.mjs';
 // Review-only branch: never writes public art or live/core masters.
 if (process.argv.includes('--progression-prototype')) {
@@ -23,8 +23,9 @@ if (process.argv.includes('--motion') || readFileSync('public/art/hero-body.png'
   run(['-b', '--script', 'scripts/derive-motion.lua']);
   for (const name of ['hero-body', 'hero-equipment']) run(['-b', 'art/source/' + name + '.aseprite', '--save-as', 'public/art/' + name + '.png']);
 }
-writeFileSync('public/art/avatar.json', JSON.stringify({ ...CHARACTER, palette: characterPalette, worldPalette: PALETTE, world: WORLD, frames: CHARACTER.poses.map((pose, i) => ({ id: pose, artStatus: EXERCISES.find(e=>e.pose===pose)?.artStatus || (pose==='lying'?'provisional':'stylised'), available: !['squat','push','lying'].includes(pose), x: i * CHARACTER.frameWidth, y: 0, w: CHARACTER.frameWidth, h: CHARACTER.frameHeight, usage: pose === 'lying' ? 'identity-study-only' : pose.startsWith('walk-') || pose === 'idle-blink' ? 'village-animation' : 'stylised-game-pose' })), review: 'Approved generated character identity, quantised and layered in Aseprite. Stylised keys are not clinically validated demonstrations; squat, push and lying artwork is withheld.' }, null, 2) + '\n');
+writeFileSync('public/art/avatar.json', JSON.stringify({ ...CHARACTER, coreIllustrations:{...CORE_ILLUSTRATIONS,characterId:CHARACTER.id,stages:CHARACTER.stages}, palette: characterPalette, worldPalette: PALETTE, world: WORLD, frames: CHARACTER.poses.map((pose, i) => ({ id: pose, artStatus: EXERCISES.find(e=>e.pose===pose)?.artStatus || (pose==='lying'?'provisional':'stylised'), available: !['squat','push','lying'].includes(pose), x: i * CHARACTER.frameWidth, y: 0, w: CHARACTER.frameWidth, h: CHARACTER.frameHeight, usage: pose === 'lying' ? 'identity-study-only' : pose.startsWith('walk-') || pose === 'idle-blink' ? 'village-animation' : 'stylised-game-pose' })), review: 'Approved generated character identity, quantised and layered in Aseprite. Stylised keys are not clinically validated demonstrations; squat, push and lying artwork is withheld.' }, null, 2) + '\n');
 mkdirSync('art/review', {recursive:true});
 run(['-b', '--script', 'scripts/export-character-study.lua']);
+run(['-b', '--script', 'scripts/export-core-illustrations.lua']);
 run(['-b', '--script', 'scripts/audit-art.lua']);
 console.log('Aseprite masters exported with stable frame metadata.');

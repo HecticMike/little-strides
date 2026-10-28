@@ -97,3 +97,32 @@ light outfit architecture, the review-only core study, exact manual frame/column
 corrections and reproduction commands. The old runtime lying slot remains withheld.
 New editable masters: `hero-training-outfit.aseprite` and `hero-core-study.aseprite`.
 Neither is a claim of clinically validated or finished professional anatomy.
+
+## Core exercise illustrations (2026-10-28)
+
+Four new sibling masters cover abdominal bracing, pelvic tilt, heel slide and
+bilateral bridge: `art/source/hero-core-<exercise-id>.aseprite`. The historical
+`hero-core-study.aseprite` is unchanged and its `lying` slot remains withheld.
+
+These are **illustrative, clinically unvalidated** images, not exercise approval.
+Dead bug, wall push and squat retain their existing locks. Bracing and pelvic tilt
+share a similar supported start position; pelvic movement is deliberately subtle,
+so the existing written cue remains essential. No new dose or movement is prescribed.
+
+Each new master has editable colour/part masks for skin/face, hair, shirt,
+trousers/footwear and outline/details, plus hidden Adventurer/Veteran cuffs. These
+are meaningful pixel layers, not a fully articulated anatomical rig. All stages
+share one physique, canonical identity/palette and the existing progression model.
+The physique prototype is unchanged.
+
+Edit a master in Aseprite, keep the 192x128 frame and registered support baseline,
+then run `npm run art:export`. `scripts/export-core-illustrations.lua` exports four
+columns and three stage rows to `public/art/hero-core-poses.png`; runtime crops
+are defined in `CORE_ILLUSTRATIONS.viewport`. Normal export preserves manual edits.
+`import-core-illustrations.lua` is a one-time seed import and refuses existing masters.
+
+Built-in image generation produced the four seeds. Exact prompts and unchanged
+originals are in `art/direction/core-illustrations/`. Aseprite performs alpha cleanup,
+common-scale sampling and shared-palette conversion. Remaining manual refinement:
+far-arm visibility, exact neck/support contacts, and subtle pelvic movement cues.
+All new artwork stays labelled illustrative in the app.

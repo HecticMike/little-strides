@@ -1,4 +1,4 @@
-import { CHARACTER } from './art-spec.mjs';
+import { CHARACTER, CORE_ILLUSTRATIONS } from './art-spec.mjs';
 export { CHARACTER };
 export const POSES = CHARACTER.poses;
 export const avatarStage = completed => Math.min(2, Math.floor(completed / 3));
@@ -34,4 +34,11 @@ export function avatarFingerprint(atlas, stage) {
   const f=avatarFrame('stand',stage), pixels=atlas.getContext('2d').getImageData(f.x,f.y,f.w,f.h).data;
   let hash=2166136261; for (const n of pixels) hash=Math.imul(hash^n,16777619);
   return (hash>>>0).toString(16);
+}
+
+let corePromise;
+export const coreIllustrationAtlas=()=>corePromise ||= loadImage(CORE_ILLUSTRATIONS.body).catch(error=>{corePromise=undefined;throw error;});
+export function coreIllustrationFrame(id,stage){
+  const index=CORE_ILLUSTRATIONS.poses.indexOf(id);if(index<0||!CHARACTER.stages[stage])throw new Error('Unknown core illustration.');
+  return {x:index*CORE_ILLUSTRATIONS.frameWidth,y:stage*CORE_ILLUSTRATIONS.frameHeight,w:CORE_ILLUSTRATIONS.frameWidth,h:CORE_ILLUSTRATIONS.frameHeight};
 }

@@ -23,3 +23,13 @@
 .plan .row.between .focus-picker {position:relative;}
 .plan .row.between .focus-picker select {appearance:none;-webkit-appearance:none;background:#203f34;color:#fff0c2;padding-right:25px;}
 .plan .row.between .focus-picker::after {content:'';position:absolute;right:9px;top:50%;border:4px solid transparent;border-top-color:#fff0c2;margin-top:-1px;pointer-events:none;}
+
+.workout .exercise-art .core-illustration {width:calc(100% - 24px);height:100%;margin:0 12px;object-fit:contain;image-rendering:pixelated;}
+.reward-promise {font-size:13px;line-height:1.4;color:#ffda88;margin:4px 0 8px;}
+.reward-goal {margin:12px 0;padding:12px;border:1px solid #bda264;background:#203f34;font-size:14px;line-height:1.45;}
+.reward-goal p {margin:6px 0;}
+.reward-goal summary {min-height:44px;padding-block:10px;cursor:pointer;}
+
+/* Reserve the top corner for the countdown instead of covering bent knees. */
+.workout .exercise-art .core-illustration {box-sizing:border-box;padding-top:88px;padding-bottom:16px;object-position:center bottom;}
+@media(max-height:600px) {.workout .exercise-art .core-illustration {padding-top:72px;padding-bottom:14px;}}

@@ -1,4 +1,4 @@
-local names={"hero-body","hero-equipment","hero-training-outfit","hero-core-study","village-ground","workshop-context","buildings","village-foreground","vista","training","tiles","icons"}
+local names={"hero-body","hero-equipment","hero-training-outfit","hero-core-study","hero-core-abdominal-bracing","hero-core-pelvic-tilt","hero-core-heel-slide","hero-core-glute-bridge","village-ground","workshop-context","buildings","village-foreground","vista","training","tiles","icons"}
 local out={}
 local function q(s) return '"'..s:gsub('\\','\\\\'):gsub('"','\\"')..'"' end
 for _,name in ipairs(names) do

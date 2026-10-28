@@ -1,5 +1,16 @@
 # Little Strides development log
 
+## 2026-10-28 - Core illustrations and explicit timber requirements
+
+- Goal: fill the available core exercise image gaps and explain the next workshop reward without changing earning or clinical-eligibility rules.
+- Artwork: four new built-in-image-generation seeds (bracing, pelvic tilt, heel slide, bridge), common-scale/shared-palette Aseprite import, seven editable colour/part layers per master and stage cuff layers. Reproducible atlas covers all four IDs and three canonical stages. Shared avatar identity/stage metadata and nearest-neighbour rendering; original body, village, core study and physique prototype unchanged. All new artwork is labelled illustrative, not clinically validated; existing locks/default opt-ins unchanged.
+- Reward clarity: Today explains whole session -> 1 timber -> Village/Workshop/Restore. Before Start, the selected full duration is explicit. Completion and Journal share the existing reward predicate and explain no activity, partial/skipped activity, preview and early final-countdown exits; earned timber offers an optional workshop link. Pausing and eligible replacement remain allowed. No new currency, reward threshold, planner or data-schema changes.
+- Visual fixes: mobile captures exposed timer overlap on bent knees and an unintended numeric zero in the no-reward summary; corrected layout/rendering and added focused regressions. Sprites remain clear of the countdown at every stage.
+- Files: new four core Aseprite masters, source PNGs/prompts, core atlas/import/export scripts and metadata; artwork/spec/renderer, core catalogue art fields, existing Today/Journal/completion/CSS and reward-explanation helper; relevant tests and art/clinical/app documentation. No other project changed.
+- Checks: 59 unit/art checks PASS; production build PASS (25 cached files); all 18 focused WebKit/Chromium checks PASS, with 4 affected visual/reward reruns also PASS. Verified 24 pose/stage views, actual full workout, single-exercise partial, one-time timber earn/spend, source/stage identity, offline art/history, opt-in locks and phone layout. Aseprite re-export is byte-identical; approved prior character/village PNGs and core-study master unchanged. Screenshots reviewed; git diff --check PASS.
+- Limits/manual: images are illustrations, not clinically reviewed movement demonstrations. Bracing/tilt are intentionally visually subtle; written cues remain essential. Far-arm visibility, exact support contacts and pelvic-motion detail still benefit from manual refinement in the named new Aseprite masters. All doses/suitability still require individual review.
+- Next: review the new images in the actual phone player and use a suitable full session to verify the reward message; physical-device execution/audio/call/wake-lock checks remain. See art/README.md for edit/export instructions and saved prompts.
+
 ## 2026-10-28 - Phase 6 intelligent workout composition
 
 - Goal: improve the audited exercise composition in Little Strides only; preserve eligibility, recovery, data, PWA and frozen artwork/RPG.
