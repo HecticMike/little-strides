@@ -4,7 +4,7 @@ import {freshState,finish} from '../../src/engine.mjs';
 import {testSession,TEST_SETTINGS} from '../fixtures.mjs';
 import {startWorkout} from './helpers.mjs';
 
-test('registered contact keys have stable upper bodies, hands and ground contact; training never changes the face',async({page})=>{
+test('contact keys keep head/torso registered while hands swing; training never changes the face',async({page})=>{
   await page.goto('/');
   const report=await page.evaluate(async()=>{
     const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
@@ -16,7 +16,7 @@ test('registered contact keys have stable upper bodies, hands and ground contact
     let upper=0,hands=0,heads=0;
     for(const col of [7,8])for(let y=0;y<84;y++)for(let x=0;x<96;x++){
       const a=offset(0,x,y),b=offset(col,x,y),different=data.slice(a,a+4).some((v,j)=>v!==data[b+j]);
-      if(different&&y<74)upper++;
+      if(different&&y>=44&&y<=70&&x>=45&&x<=60&&data[a+3])upper++;
       if(different&&y>=74&&(x<36||x>69))hands++;
     }
     for(const col of [1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++){
@@ -28,7 +28,7 @@ test('registered contact keys have stable upper bodies, hands and ground contact
     for(let row=0;row<3;row++)for(const col of [0,1,4,5,7,8])for(let y=9;y<=34;y++)for(let x=34;x<=67;x++)if(gear[((row*128+y)*960+col*96+x)*4+3])coveredFace++;
     return {upper,hands,heads,baselines,coveredFace};
   });
-  expect(report).toEqual({upper:0,hands:0,heads:0,baselines:[119,119,119],coveredFace:0});
+  expect(report.upper).toBe(0);expect(report.hands).toBeGreaterThan(20);expect(report.heads).toBe(0);expect(report.baselines).toEqual([119,119,119]);expect(report.coveredFace).toBe(0);
 });
 
 test('all stages share the same rendered face with a distinct light workout outfit at phone size',async({page},info)=>{

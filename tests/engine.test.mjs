@@ -26,8 +26,9 @@ test('pause excludes time away; restore freezes at durable checkpoint', () => {
   assert.equal(recovered.reason, 'interrupted');
 });
 test('skip and replace retain paused state and exact total duration', () => {
-  const s = freeze(createSession(7, [], start), start + 35000);
-  const replacement = replace(s, start + 36000, {settings:TEST_SETTINGS});
+  const choices={enabledExercises:['abdominal-bracing','pelvic-tilt','heel-slide']};
+  const s = freeze(createSession(3, [], start,{settings:choices}), start + 35000);
+  const replacement = replace(s, start + 36000, {settings:choices});
   assert.notEqual(replacement.segments[1].exerciseId, s.segments[1].exerciseId);
   assert.equal(duration(replacement), duration(s));
   assert.equal(position(skip(replacement, start + 37000), start + 7000).kind, 'rest');

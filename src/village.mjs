@@ -29,7 +29,7 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       this.marker = this.add.image(228,104,'icons',5).setScale(7/15).setDepth(510);
       parent.dataset.iconFrameSize=String(this.marker.frame.width);
       this.focus = this.add.graphics().setDepth(505);
-      this.path=[];this.pending=null;
+      this.path=[];this.pending=null;this.walkDistance=0;
       this.game.events.on('visit',name=>this.visit(name));
       this.chapterObjects=[];this.world=initialWorld;this.showWorld(initialWorld);
       this.game.events.on('workshop-stage',value=>this.showWorkshop(value));
@@ -107,11 +107,11 @@ export async function createVillage(parent, stage, completed, onInteract, initia
       if(!this.player)return;
       if(!reduced)this.foliage?.setFrame(Math.floor(time/1400)%2?10:9);
       if(!this.path.length){this.player.setDepth(Math.round(this.player.y)).setFrame(!reduced&&time%3800>3630?'idle-blink':'stand');this.arrive();this.publish();return;}
-      const [x,y]=this.path[0],dx=x-this.player.x,dy=y-this.player.y,distance=Math.hypot(dx,dy),step=Math.min(delta,50)*.11;
-      if(distance<=step||reduced){this.player.setPosition(x,y);this.path.shift();}
-      else{this.player.x+=dx/distance*step;this.player.y+=dy/distance*step;}
+      const [x,y]=this.path[0],dx=x-this.player.x,dy=y-this.player.y,distance=Math.hypot(dx,dy),step=Math.min(delta,50)*.09;
+      if(distance<=step||reduced){this.walkDistance+=distance;this.player.setPosition(x,y);this.path.shift();}
+      else{this.walkDistance+=step;this.player.x+=dx/distance*step;this.player.y+=dy/distance*step;}
       if(Math.abs(dx)>1)this.player.setFlipX(dx<0);
-      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':['walk-a','stand','walk-b','stand'][Math.floor(time/170)%4]);
+      this.player.setDepth(Math.round(this.player.y)).setFrame(reduced?'stand':['walk-a','walk-a','stand','walk-b','walk-b','stand'][Math.floor(this.walkDistance/10)%6]);
       this.publish();
     }
   }

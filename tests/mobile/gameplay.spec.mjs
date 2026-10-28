@@ -12,10 +12,10 @@ async function seed(page, count=1) {
 }
 async function village(page){await page.getByRole('button',{name:'Village',exact:true}).tap();const map=page.locator('.village-canvas[data-ready=true]');await expect(map).toBeVisible();return map;}
 async function mapTap(page,x,y){const b=await page.locator('.village-canvas canvas').boundingBox();await page.touchscreen.tap(b.x+x*b.width/320,b.y+y*b.height/288);}
-test('unreviewed exercises require explicit review; a cancelled review earns nothing',async({page})=>{
-  await page.goto('/');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
-  const review=page.getByRole('dialog',{name:'Review this unreviewed routine'});await expect(review).toBeVisible();
-  await expect(review).toContainText('Nothing is enabled automatically');
+test('suggested movements need no startup gate; optional review earns nothing',async({page})=>{
+  await page.goto('/');await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeEnabled();await page.getByRole('button',{name:'Review or disable movements'}).tap();
+  const review=page.getByRole('dialog',{name:'Your movement choices'});await expect(review).toBeVisible();
+  await expect(review).toContainText('No candidate here has professional approval recorded.');
   await expect(page.getByRole('timer')).toHaveCount(0);
   await review.getByRole('button',{name:'Go back'}).tap();
   const map=await village(page);await page.getByRole('button',{name:'Workshop',exact:true}).tap();

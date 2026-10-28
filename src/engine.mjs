@@ -2,10 +2,12 @@ import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts, fullEligibleAct
 import { MINUTES, SESSION_MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, JOINTS, exercise, enabledExercise, recoveryConfig, planningMetadata } from './catalog.mjs';
 import { recovery, planSession, eligibleExercises, capacityFits } from './scheduler.mjs';
 export { MINUTES, SESSION_MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, exercise, recovery, planSession, eligibleExercises };
-export const freshState=()=>({schemaVersion:1,deviceId:crypto.randomUUID(),active:null,history:[],world:emptyWorld(),settings:{muted:false,volume:.45,enabledExercises:[]},updatedAt:Date.now(),lastExportAt:null});
-export function createSession(minutes,history=[],now=Date.now(),{mode='workout',settings={}}={}){
+import {withSuggestions} from './suggestions.mjs';
+export const freshState=()=>({schemaVersion:1,deviceId:crypto.randomUUID(),active:null,history:[],world:emptyWorld(),settings:withSuggestions({muted:false,volume:.45}),updatedAt:Date.now(),lastExportAt:null});
+export function createSession(minutes,history=[],now=Date.now(),{mode='workout',settings={},plannedSwaps=[]}={}){
   if(!['workout','preview'].includes(mode))throw new Error('Unknown session mode.');
-  const plan=planSession(minutes,history,now,settings);
+  let plan=planSession(minutes,history,now,settings);
+  for(const swap of plannedSwaps)plan={...plan,segments:swapPlannedMovement(plan.segments,swap.index,swap.exerciseId,{minutes,history,now,settings})};
   if(!plan.segments){const error=new Error(plan.reason);error.availableMinutes=plan.availableMinutes;throw error;}
   return {id:crypto.randomUUID(),qualityVersion:3,engineVersion:2,compositionVersion:1,focus:plan.focus,focusLabel:plan.label,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
 }
@@ -64,22 +66,41 @@ export function performedMovements(s,now=Date.now()){
   }
   return result;
 }
-export function replace(s,now=Date.now(),{history=[],settings={}}={}){
-  const p=position(s,now);if(p.done||p.kind!=='work')return s;
-  if(s.mode==='preview')return {...s,segments:s.segments.map((b,i)=>i===p.index?{...b,previewLabel:b.previewLabel==='Alternative timer card'?'Sample timer card':'Alternative timer card'}:b)};
-  const movements=performedMovements(s,now),record={mode:s.mode,endedAt:now,activeMs:0,groups:[],movements};
-  const candidates=eligibleExercises([...history,record],now,settings).filter(e=>e.id!==p.exerciseId&&e.position===exercise(p.exerciseId).position&&e.loadKind!=='strength'&&(s.minutes!==3||['activation','mobility'].includes(e.loadKind))&&(!s.compositionVersion||s.segments[p.index].durationMs<=planningMetadata(e,settings).maxSeconds*1000));
-  const config=recoveryConfig(settings),prior=recovery(history,now,settings);
-  const fits=e=>{
-    const draft={...s,status:'paused',elapsedMs:duration(s),segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:e.id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:e.id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
-    const projected=performedMovements(draft,now);
-    const load=projected.filter(m=>m.exerciseId===e.id).reduce((n,m)=>n+m.actualMs,0);
-    return load+(prior.used[e.id]||0)<=config.maxRepeatableSeconds*1000&&capacityFits(projected,history,now,settings);
-  };
-  const suitable=candidates.filter(fits);
-  const id=suitable.find(e=>e.id===exercise(p.exerciseId).alternative)?.id||suitable[0]?.id;
-  if(!id)return {...s,replacementMessage:'No suitable enabled replacement remains. Pause, skip or end this session.'};
-  return {...s,replacementMessage:null,segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
+export const samePurpose=(a,b)=>a.loadKind===b.loadKind&&(a.focus==='core')===(b.focus==='core');
+export function plannedAlternatives(segments,index,{minutes,history=[],now=Date.now(),settings={}}){
+ const block=segments?.[index],original=exercise(block?.exerciseId);if(!original||block.kind!=='work')return [];
+ return eligibleExercises(history,now,settings).filter(e=>e.id!==original.id&&e.position===original.position&&samePurpose(e,original)&&(minutes!==3||['activation','mobility'].includes(e.loadKind))).filter(e=>{
+  const meta=planningMetadata(e,settings);if(block.durationMs>meta.maxSeconds*1000||block.durationMs<meta.minSeconds*1000)return false;
+  const next=segments.map((b,i)=>i===index?{...b,exerciseId:e.id}:b),periods=next.filter((b,i)=>b.exerciseId===e.id&&(!b.intentionalContinuation||next[i-1]?.exerciseId!==e.id));
+  if(periods.length>meta.maxBlocks)return false;
+  let followingRest=0;for(let i=index+1;i<next.length&&next[i].kind!=='work';i++)followingRest+=next[i].durationMs;
+  if(next.slice(index+1).some(b=>b.kind==='work')&&followingRest<meta.restSeconds*1000)return false;
+  const projected=next.filter(b=>b.kind==='work').map(b=>({exerciseId:b.exerciseId,actualMs:b.durationMs}));return capacityFits(projected,history,now,settings);
+ });
+}
+export function swapPlannedMovement(segments,index,exerciseId,options){
+ if(!plannedAlternatives(segments,index,options).some(e=>e.id===exerciseId))throw new Error('That same-purpose replacement no longer fits your choices or recovery limits. Refresh your suggestion.');
+ return segments.map((b,i)=>i===index?{...b,exerciseId}:b);
+}
+export function replacementOptions(s,now=Date.now(),{history=[],settings={}}={}){
+ const p=position(s,now),original=exercise(p.exerciseId);if(!original||p.kind!=='work')return [];
+ const movements=performedMovements(s,now),record={mode:s.mode,endedAt:now,activeMs:0,groups:[],movements};
+ return eligibleExercises([...history,record],now,settings).filter(e=>e.id!==p.exerciseId&&e.position===original.position&&samePurpose(e,original)&&(s.minutes!==3||['activation','mobility'].includes(e.loadKind))&&p.remainingMs>=planningMetadata(e,settings).minSeconds*1000&&p.remainingMs<=planningMetadata(e,settings).maxSeconds*1000).filter(e=>{
+  const draft={...s,status:'paused',elapsedMs:duration(s),segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:e.id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:e.id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
+  const meta=planningMetadata(e,settings),projected=performedMovements(draft,now);
+  let periods=0;for(const movement of projected)if(movement.exerciseId===e.id&&movement.actualMs>0){const block=draft.segments[movement.index];if(!block.intentionalContinuation||draft.segments[movement.index-1]?.exerciseId!==e.id)periods++;}
+  if(periods>meta.maxBlocks)return false;
+  let followingRest=0;for(let i=p.index+1;i<draft.segments.length&&draft.segments[i].kind!=='work';i++)followingRest+=draft.segments[i].durationMs;
+  if(draft.segments.slice(p.index+1).some(b=>b.kind==='work')&&followingRest<meta.restSeconds*1000)return false;
+  return capacityFits(projected,history,now,settings);
+ });
+}
+export function replace(s,now=Date.now(),{history=[],settings={},exerciseId}={}){
+ const p=position(s,now);if(p.done||p.kind!=='work')return s;
+ if(s.mode==='preview')return {...s,segments:s.segments.map((b,i)=>i===p.index?{...b,previewLabel:b.previewLabel==='Alternative timer card'?'Sample timer card':'Alternative timer card'}:b)};
+ const options=replacementOptions(s,now,{history,settings}),id=exerciseId?options.find(e=>e.id===exerciseId)?.id:options[0]?.id;
+ if(!id)return {...s,replacementMessage:'No suitable same-purpose replacement remains. Pause, skip or end this session.'};
+ return {...s,replacementMessage:null,segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
 }
 export function finish(state,completed,now=Date.now()){
   const s=state.active;if(!s)return state;
@@ -130,6 +151,8 @@ export function validateBackup(input) {
   }
   if (!(s.settings.exerciseReviewVersion === undefined || Number.isInteger(s.settings.exerciseReviewVersion) && s.settings.exerciseReviewVersion >= 1 && s.settings.exerciseReviewVersion <= EXERCISE_REVIEW_VERSION)) fail();
   if(s.settings.sessionFocus!==undefined&&!['mixed','balanced','core','cardio','recovery'].includes(s.settings.sessionFocus))fail();
+  if(s.settings.suggestionVersion!==undefined&&s.settings.suggestionVersion!==1)fail();
+  if(s.settings.selectionMode!==undefined&&!['suggested','personal'].includes(s.settings.selectionMode))fail();
   if(s.settings.ambience!==undefined&&typeof s.settings.ambience!=='boolean')fail();
   if(s.settings.paceMuted!==undefined&&typeof s.settings.paceMuted!=='boolean')fail();
   if(s.settings.enabledExercises!==undefined&&(!Array.isArray(s.settings.enabledExercises)||!s.settings.enabledExercises.every(id=>exercise(id))))fail();

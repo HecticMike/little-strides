@@ -4,22 +4,22 @@ import {enableCandidates,startWorkout} from './helpers.mjs';
 import {freshState,finish,createSession} from '../../src/engine.mjs';
 const readState=page=>page.evaluate(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});const state=await new Promise(resolve=>{const r=db.transaction('state').objectStore('state').get('current');r.onsuccess=()=>resolve(r.result);});db.close();return state;});
 async function putState(page,state){await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);await page.reload();}
-test('individual opt-ins are persisted, provisional movements stay locked and disabling is immediate',async({page})=>{
-  await page.goto('/');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
-  const review=page.getByRole('dialog');await expect(review.getByRole('button',{name:'Use enabled movements'})).toBeDisabled();
+test('suggested choices persist, provisional movements stay locked and disabling is immediate',async({page})=>{
+  await page.goto('/');await page.getByRole('button',{name:'Review or disable movements'}).tap();
+  const review=page.getByRole('dialog');
   for(const name of ['Wall push','Shallow squat'])await expect(review.getByRole('checkbox',{name:'Enable '+name,exact:true})).toBeDisabled();
-  await expect(review.getByRole('checkbox',{name:'Enable Easy march'})).not.toBeChecked();
-  await review.getByRole('checkbox',{name:'Enable Easy march'}).check();await review.getByRole('button',{name:'Go back'}).tap();
-  await expect(page.getByRole('timer')).toHaveCount(0);await page.getByRole('button',{name:'Review or disable movements'}).tap();
-  await review.getByRole('checkbox',{name:'Enable Easy march'}).uncheck();await review.getByRole('button',{name:'Save choices'}).tap();
-  await page.reload();expect((await readState(page)).settings.enabledExercises).toEqual([]);
+  await expect(review.getByRole('checkbox',{name:'Enable Easy march'})).toBeChecked();
+  for(const input of await review.getByRole('checkbox').all()){await expect(page.getByRole('button',{name:'Save choices',exact:true})).toBeEnabled();if(!['Enable Wall push','Enable Shallow squat','Enable Modified dead bug'].includes(await input.getAttribute('aria-label')))await input.uncheck();}
+  await review.getByRole('button',{name:'Save choices'}).tap();await page.reload();expect((await readState(page)).settings.enabledExercises).toEqual([]);
+  await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();
 });
+
 test('entire ten-minute preparation/movement/rest/wind-down flow saves outcomes and comfort feedback',async({page},info)=>{
   test.setTimeout(150000);mkdirSync('screenshots/phase4',{recursive:true});
   const shot=name=>page.screenshot({path:`${info.outputDir}/${name}.png`});
   await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
-  await shot('today');await page.getByRole('button',{name:'Start 10-minute session'}).tap();
-  await enableCandidates(page);await shot('review');await page.getByRole('dialog').getByRole('button',{name:'Use enabled movements'}).tap();
+  await shot('today');await page.getByRole('button',{name:'Review or disable movements'}).tap();
+  await enableCandidates(page);await shot('review');await page.getByRole('dialog').getByRole('button',{name:'Save choices'}).tap();await page.getByRole('button',{name:'Start 10-minute session'}).tap();
   await expect(page.getByRole('heading',{name:'Preparation',exact:true})).toBeVisible();await shot('preparation');
   const plan=(await readState(page)).active.segments;const setup=plan[0].durationMs,first=plan[1],plannedActivity=plan.filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0);
   await page.clock.runFor(setup);await expect(page.getByRole('heading',{name:'Easy march',exact:true})).toBeVisible();
@@ -41,7 +41,7 @@ test('entire ten-minute preparation/movement/rest/wind-down flow saves outcomes 
 });
 test('insufficient eligible time offers shorter supported sessions or rest, never recovering filler',async({page})=>{
   await page.goto('/');await page.getByRole('button',{name:'Review or disable movements'}).tap();
-  await page.getByRole('checkbox',{name:'Enable Easy march'}).check();await page.getByRole('button',{name:'Save choices'}).tap();
+  for(const input of await page.getByRole('dialog').getByRole('checkbox').all()){await expect(page.getByRole('button',{name:'Save choices',exact:true})).toBeEnabled();if(!['Enable Wall push','Enable Shallow squat','Enable Modified dead bug'].includes(await input.getAttribute('aria-label')))await input.setChecked((await input.getAttribute('aria-label'))==='Enable Easy march');}await page.getByRole('button',{name:'Save choices'}).tap();
   await page.getByRole('button',{name:'20 MIN',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 20-minute session'})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Use 10 minutes'})).toBeVisible();
   const settings={muted:true,volume:.2,enabledExercises:['march']},at=Date.now()-700_000;
@@ -51,13 +51,13 @@ test('insufficient eligible time offers shorter supported sessions or rest, neve
 test('partial skipped and replaced work is recorded honestly; pacing sound preference survives reload',async({page})=>{
   await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Settings',exact:true}).tap();
   await page.getByRole('checkbox',{name:'Pacing sound',exact:true}).uncheck();
-  await page.getByRole('button',{name:'Today',exact:true}).tap();await startWorkout(page,10);await page.clock.runFor(10_000);
-  await page.getByRole('button',{name:'Replace',exact:true}).tap();await page.clock.runFor(15_000);
+  await page.getByRole('button',{name:'Today',exact:true}).tap();await page.getByRole('button',{name:/A smaller step/}).tap();await page.clock.runFor(40_000);
+  await page.getByRole('button',{name:'Replace',exact:true}).tap();await page.getByRole('button',{name:'Use Supine heel slides',exact:true}).tap();await page.clock.runFor(15_000);
   await page.getByRole('button',{name:'Skip',exact:true}).tap();
   page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();
   await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();
   const state=await readState(page),moves=state.history[0].movements.filter(m=>m.actualMs>0);
-  expect(moves.map(m=>m.exerciseId)).toEqual(['march','reach']);expect(moves[0].actualMs).toBeGreaterThanOrEqual(9900);expect(moves[0].actualMs).toBeLessThan(12000);expect(moves[1].skippedMs).toBeGreaterThan(15000);
+  expect(moves.map(m=>m.exerciseId)).toEqual(['abdominal-bracing','heel-slide']);expect(moves[0].actualMs).toBeGreaterThanOrEqual(9900);expect(moves[0].actualMs).toBeLessThan(12000);expect(moves[1].skippedMs).toBeGreaterThan(15000);
   expect(state.settings.paceMuted).toBe(true);expect(state.history[0].completed).toBe(false);
   await page.reload();await page.getByRole('button',{name:'Settings',exact:true}).tap();await expect(page.getByRole('checkbox',{name:'Pacing sound'})).not.toBeChecked();
 });

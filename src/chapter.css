@@ -78,3 +78,17 @@
 .welcome-back{font-size:12px;line-height:1.4;margin-top:5px;color:#d7d3ac;}
 
 .story-card{scroll-margin-top:12px;}
+
+.replacement-picker {width:min(94vw,440px);max-height:calc(100dvh - 40px);overflow:auto;color:#f0d4a0;background:#193d33;border:6px solid transparent;border-image:url('/art/ui-enamel.png') 8 fill / 6px / 0 stretch;padding:18px;}
+.replacement-picker::backdrop {background:#0d251fe8;}
+.replacement-picker h2 {font-size:21px;margin-bottom:12px;}
+.replacement-picker p {font-size:13px;line-height:1.55;margin:10px 0;}
+.replacement-list {display:grid;gap:10px;margin:14px 0;}
+.replacement-list button {text-align:left;min-height:64px;padding:12px;}
+.replacement-list span,.replacement-list small {display:block;font-size:12px;font-weight:400;line-height:1.5;margin-top:5px;}
+.replacement-picker>button {width:100%;min-height:48px;margin-top:12px;}
+.replacement-empty {padding:10px;border-left:3px solid #bdaa73;background:#254a3b;}
+.plan-swap {display:block;min-height:44px;margin:4px 0 8px;font-size:12px;padding:7px 14px;}
+.suggestion-caption {font-size:11px;line-height:1.5;color:#d2d3b5;margin:7px 0;}
+.workout .exercise-art:has(.core-illustration) {background-image:linear-gradient(#f2dfb5b8,#eddbb7dc),url('/art/training.png');}
+.workout .exercise-art .core-illustration {width:calc(100% - 12px);margin:0 6px;padding-bottom:22px;}

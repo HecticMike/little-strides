@@ -3,8 +3,9 @@ import {planningMetadata} from './catalog.mjs';
 // Scores express product preferences, never medical effectiveness or force estimates.
 export const COMPOSITION_WEIGHTS = Object.freeze({duplicate:-150,positionChange:-60,newMovement:8,blockCost:-5,restPer15:-2});
 const BEAM=4;
-export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
+export function compose(minutes,pool,initial,config,settings,focus,{fits,add,variety={}}) {
   if(!pool.length)return null;
+  const recent=variety;
   const small=minutes===3, setup=small?30:15, finish=small?30:15;
   const target=minutes*60,meta=new Map(pool.map(e=>[e.id,planningMetadata(e,settings)]));
   const buckets=Array.from({length:target/15+1},()=>[]),minimumActive=target*(small?.5:.60);
@@ -53,7 +54,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add}) {
           const totals={...node.totals,[e.loadKind]:node.totals[e.loadKind]+seconds};
           if(time===target-finish&&(node.active+seconds<minimumActive||focus==='cardio'&&(totals.aerobic<120||totals.aerobic/(node.active+seconds)<.4)))continue;
           let score=node.score+contribution(e,node.totals[e.loadKind],seconds)+COMPOSITION_WEIGHTS.blockCost+gap/15*COMPOSITION_WEIGHTS.restPer15;
-          if(!count)score+=COMPOSITION_WEIGHTS.newMovement;
+          if(!count)score+=COMPOSITION_WEIGHTS.newMovement-(recent[e.id]||0);
           if(!last&&e.loadKind==='aerobic')score+=10;
           if(e.loadKind==='strength'&&!count&&focus!=='cardio')score+=e.muscles?.includes('trunk')?100:20;
           if(last?.e.id===e.id)score+=COMPOSITION_WEIGHTS.duplicate;

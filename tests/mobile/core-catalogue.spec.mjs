@@ -7,7 +7,7 @@ async function review(page){await page.getByRole('button',{name:'Review or disab
 
 test('individually opted-in core session has honest illustrative art, self pacing and durable history',async({page,context})=>{
   test.setTimeout(120000);await page.clock.install();await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await review(page);
-  for(const n of names){const box=page.getByRole('checkbox',{name:'Enable '+n,exact:true});await expect(box).not.toBeChecked();await box.check();}
+  for(const n of names){const box=page.getByRole('checkbox',{name:'Enable '+n,exact:true});await expect(box).toBeChecked();}
   await expect(page.getByRole('checkbox',{name:'Enable Modified dead bug',exact:true})).toBeDisabled();
   const article=page.getByRole('checkbox',{name:'Enable Supine heel slides',exact:true}).locator('xpath=ancestor::article');await article.getByText('Purpose, loading and artwork',{exact:true}).tap();await expect(article.getByRole('link')).toHaveAttribute('href',/nhs/);
   await page.getByRole('button',{name:'Save choices',exact:true}).tap();await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:'Start 7-minute session',exact:true}).tap();
@@ -19,7 +19,7 @@ test('individually opted-in core session has honest illustrative art, self pacin
 
 test('workflow preview needs no opt-ins and never persists exercise, recovery or rewards',async({page})=>{
   await page.clock.install();await page.goto('/');await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now()+1000)));await page.getByRole('button',{name:'7 MIN',exact:true}).tap();await page.getByRole('button',{name:/^Preview workflow/}).tap();await expect(page.getByText('PREVIEW · NO REWARDS',{exact:true})).toBeVisible();
-  expect((await read(page)).active).toBe(null);expect((await read(page)).settings.enabledExercises).toEqual([]);await page.clock.runFor(30100);
+  expect((await read(page)).active).toBe(null);expect((await read(page)).settings.enabledExercises).toContain('abdominal-bracing');await page.clock.runFor(30100);
   await expect(page.getByRole('heading',{name:'Sample timer card',exact:true})).toBeVisible();await page.getByRole('button',{name:'Replace',exact:true}).tap();await expect(page.getByRole('heading',{name:'Alternative timer card',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Pause',exact:true}).tap();await page.getByRole('button',{name:'Resume',exact:true}).tap();
   for(let i=0;i<createPreviewSession(7).segments.length-1;i++){const skip=page.getByRole('button',{name:'Skip',exact:true});await expect(skip).toBeEnabled();await skip.tap();await page.clock.runFor(300);}
@@ -28,7 +28,7 @@ test('workflow preview needs no opt-ins and never persists exercise, recovery or
 });
 
 test('incomplete core pool and rolling caps offer shorter supported lengths without unlocking dead bug',async({page})=>{
-  await page.goto('/');await review(page);await page.getByRole('checkbox',{name:'Enable Glute bridge',exact:true}).check();await page.getByRole('button',{name:'Save choices',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();
+  await page.goto('/');await review(page);for(const input of await page.getByRole('dialog').getByRole('checkbox').all()){await expect(page.getByRole('button',{name:'Save choices',exact:true})).toBeEnabled();if(!['Enable Wall push','Enable Shallow squat','Enable Modified dead bug'].includes(await input.getAttribute('aria-label')))await input.setChecked((await input.getAttribute('aria-label'))==='Enable Glute bridge');}await page.getByRole('button',{name:'Save choices',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeDisabled();
   await review(page);for(const n of names.slice(0,3))await page.getByRole('checkbox',{name:'Enable '+n,exact:true}).check();await page.getByRole('button',{name:'Save choices',exact:true}).tap();
   await page.getByRole('button',{name:'20 MIN',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 20-minute session'})).toBeDisabled();await expect(page.getByRole('button',{name:'Use 10 minutes',exact:true})).toBeVisible();await page.getByRole('button',{name:'Use 10 minutes',exact:true}).tap();await expect(page.getByRole('button',{name:'Start 10-minute session'})).toBeEnabled();
   const state=await read(page);expect(state.settings.enabledExercises).not.toContain('modified-dead-bug');expect(state.settings.recovery).toBeUndefined();

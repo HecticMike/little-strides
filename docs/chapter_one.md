@@ -9,7 +9,8 @@ No deadlines, streak losses, building decay or exercise multipliers are added.
 The standard selector remains 7/10/15/20 minutes, with 10 on a fresh launch.
 The separate 3-minute shortcut forces an activation/mobility pool, one position,
 30 seconds setup and 30 seconds finish. Remaining activity/rest must fit exactly
-under the existing opt-ins, block limits, discomfort holds and rolling recovery.
+under your movement choices, block limits, discomfort holds and rolling recovery.
+Available candidates are now suggested on first use; explicit exclusions persist.
 It can be unavailable. It is not a promise of symptom prevention or a clinical dose.
 One fully completed eligible session earns one timber at any supported length.
 Partial activity is saved and acknowledged; it earns no timber and loses no progress.

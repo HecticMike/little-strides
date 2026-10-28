@@ -34,8 +34,10 @@ See [Google Chrome's installation guide](https://support.google.com/chrome/answe
 - Settings → Test sound: check the phone's volume, mute and chosen audio output.
 - Preview workflow: try Pause, Resume, Skip and Replace before exercising.
   Preview records no exercise and earns no timber.
-- Review or disable movements: individually enable only candidates you have
-  reviewed as suitable. User opt-in and the illustrations are not clinical approval.
+- Suggestions are ready on first use. Review or disable movements is optional;
+  exclude unsuitable candidates and retain any existing exclusions. Suggestions
+  and illustrations are not professional approval. Settings → Use suggested
+  selection restores the available pool without clearing discomfort holds.
 - When appropriate, run an available full 3-minute small step or a 7- or 10-minute session. Keep it in the
   foreground; let the final countdown finish automatically. One complete session
   earns 1 timber. Village → Workshop → Restore spends it once.

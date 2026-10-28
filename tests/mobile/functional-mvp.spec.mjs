@@ -9,7 +9,7 @@ async function end(page){page.once('dialog',d=>d.accept());await page.getByRole(
 
 test('grouped opt-ins and explicit discomfort reassessment persist offline and in JSON',async({page,context})=>{
   await page.goto('/');await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Start 10-minute session'}).tap();
+  await page.getByRole('button',{name:'Review or disable movements'}).tap();
   const review=page.getByRole('dialog');for(const name of ['Core & Strength','Cardio & Movement','Mobility & Recovery'])await expect(review.getByRole('heading',{name,exact:true})).toBeVisible();
   await expect(review.getByText('No candidate here has professional approval recorded.',{exact:false})).toBeVisible();
   for(const name of ['Wall push','Shallow squat'])await expect(review.getByRole('checkbox',{name:'Enable '+name,exact:true})).toBeDisabled();
@@ -31,7 +31,7 @@ test('grouped opt-ins and explicit discomfort reassessment persist offline and i
 
 test('real ten-minute flow, afternoon and next-day requests adapt without repeating strength',async({page,context})=>{
   test.setTimeout(150000);const morning=new Date(2026,9,27,9).getTime();await page.clock.install({time:morning});await page.goto('/');
-  await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Start 10-minute session'}).tap();await enableCandidates(page);await page.getByRole('button',{name:'Use enabled movements'}).tap();
+  await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Review or disable movements'}).tap();await enableCandidates(page);await page.getByRole('button',{name:'Save choices'}).tap();await page.getByRole('button',{name:'Start 10-minute session'}).tap();
   await expect(page.getByRole('heading',{name:'Preparation',exact:true})).toBeVisible();await page.clock.runFor(600500);
   await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();let state=await read(page);expect(state.history).toHaveLength(1);expect(state.history[0].completed).toBe(true);expect(state.history[0].activeMs).toBe(state.history[0].segments.filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0));expect(state.history[0].qualityVersion).toBe(3);
   await page.getByRole('button',{name:'Comfortable',exact:true}).tap();await page.getByRole('button',{name:'Done',exact:true}).tap();

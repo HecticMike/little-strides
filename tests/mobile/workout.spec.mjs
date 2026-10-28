@@ -53,7 +53,7 @@ test('pause, replacements, interruption, rotation and safe-area layout', async (
   const countdown = await page.getByRole('timer').textContent();
   await page.clock.runFor(60_000); await expect(page.getByRole('timer')).toHaveText(countdown);
   await page.getByRole('button', { name: 'Replace', exact: true }).tap();
-  await expect(page.getByRole('heading', { name: 'Gentle reach' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toContainText('only aerobic candidate');await page.getByRole('button',{name:'Cancel · stay paused',exact:true}).tap();await expect(page.getByRole('heading', { name: 'Easy march' })).toBeVisible();
   await page.getByRole('button', { name: 'Resume', exact: true }).tap();
   await page.clock.runFor(1000); await page.reload();
   await expect(page.getByText(/Interrupted session saved/)).toBeVisible();

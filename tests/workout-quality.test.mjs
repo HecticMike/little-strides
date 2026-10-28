@@ -40,11 +40,13 @@ test('partial time before skip is preserved, rest contributes no work, and real 
   assert.equal(h.activeMs,10_000);const m=h.movements[0];assert.equal(m.status,'partial');assert.equal(m.actualMs,10_000);assert.equal(m.skippedMs,s.segments[1].durationMs-10_000);assert.equal(m.repetitions,null);assert.equal(h.completed,false);
 });
 test('replacement retains both original and performed movements and eligibility is enforced',()=>{
-  let s=createSession(7,[],at,{settings});s=replace(s,at+s.segments[0].durationMs+10_000,{settings});
-  assert.equal(s.plan[1].exerciseId,'march');assert.equal(s.segments[1].exerciseId,'reach');
-  const actual=performedMovements(s,at+s.segments[0].durationMs+25_000);assert.equal(actual[0].exerciseId,'march');assert.equal(actual[0].actualMs,10_000);assert.equal(actual[1].exerciseId,'reach');assert.equal(actual[1].actualMs,15_000);
+  const choices={...settings,enabledExercises:['abdominal-bracing','pelvic-tilt','heel-slide']};
+  let s=createSession(3,[],at,{settings:choices});s=replace(s,at+s.segments[0].durationMs+10_000,{settings:choices,exerciseId:'heel-slide'});
+  assert.equal(s.plan[1].exerciseId,'abdominal-bracing');assert.equal(s.segments[1].exerciseId,'heel-slide');
+  const actual=performedMovements(s,at+s.segments[0].durationMs+25_000);assert.equal(actual[0].exerciseId,'abdominal-bracing');assert.equal(actual[0].actualMs,10_000);assert.equal(actual[1].exerciseId,'heel-slide');assert.equal(actual[1].actualMs,15_000);
   const unavailable=replace(s,at+55_000,{settings:{enabledExercises:[]}});assert.match(unavailable.replacementMessage,/No suitable/);
 });
+
 test('pauses/interruption do not inflate actual activity or movement end timestamps',()=>{
   let s=createSession(7,[],at,{settings});s=freeze(s,at+s.segments[0].durationMs+5_000);s=resume(s,at+s.segments[0].durationMs+65_000);
   const actual=performedMovements(s,at+s.segments[0].durationMs+70_000).filter(m=>m.actualMs>0);assert.equal(actual[0].actualMs,10_000);assert.equal(actual[0].endedAt,at+s.segments[0].durationMs+70_000);
@@ -154,9 +156,9 @@ test('offline worker leaves private authentication to the network and falls back
   let result;events.fetch({request:{url:'https://test.invalid/',method:'GET',mode:'navigate'},respondWith:p=>{result=p;}});assert.equal(await result,'network');assert.equal(network,1);
 });
 // Core candidates are unreviewed app entries; fictional opt-ins are not clinical approval.
-test('NHS core candidates start disabled, have no fabricated poses and retain clinical locks',()=>{
+test('NHS candidates are suggested without clinical approval and retain clinical locks',()=>{
   const state=freshState(),core=EXERCISES.filter(e=>e.focus==='core');assert.equal(core.length,5);
-  for(const e of core){assert.ok(!state.settings.enabledExercises.includes(e.id));assert.equal(e.pose,null);assert.equal(e.artStatus,e.selectable?'illustrative':'missing');assert.ok(e.sourceUrl.includes('.nhs.'));assert.ok(e.instructions.length>=2);assert.notEqual(e.reviewStatus,'reviewed');}
+  for(const e of core){assert.equal(state.settings.enabledExercises.includes(e.id),e.selectable);assert.equal(e.pose,null);assert.equal(e.artStatus,e.selectable?'illustrative':'missing');assert.ok(e.sourceUrl.includes('.nhs.'));assert.ok(e.instructions.length>=2);assert.notEqual(e.reviewStatus,'reviewed');}
   assert.ok(!eligibleExercises([],at,{enabledExercises:core.map(e=>e.id)}).some(e=>e.id==='modified-dead-bug'));
   assert.ok(!eligibleExercises([],at,{enabledExercises:['squat','push']}).length);
 });

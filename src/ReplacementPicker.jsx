@@ -1,0 +1,8 @@
+import React,{useEffect,useRef} from 'react';
+export const purposeName=e=>e.loadKind==='aerobic'?'Cardio':e.focus==='core'?e.loadKind==='strength'?'Core strengthening':'Core activation':e.loadKind==='strength'?'Strengthening':'Mobility';
+export function ReplacementPicker({movement,options,onChoose,onCancel,busy,live,wasRunning}){
+ const ref=useRef();useEffect(()=>{ref.current.showModal();},[]);
+ return <dialog ref={ref} className="replacement-picker" aria-labelledby="replacement-heading" onCancel={e=>{e.preventDefault();onCancel();}}><p className="eyebrow">{live?'WORKOUT PAUSED':'YOUR SUGGESTED ROUTINE'}</p><h2 id="replacement-heading">Replace {movement.name}</h2><p>{purposeName(movement)} · {movement.position}. Alternatives keep the same purpose and position, and must fit your recovery limits.</p>
+ {options.length?<div className="replacement-list">{options.map(e=><button aria-label={'Use '+e.name} disabled={busy} key={e.id} onClick={()=>onChoose(e.id)}><strong>Use {e.name}</strong><span>{purposeName(e)} · {e.cue}</span>{live&&wasRunning&&<small>Use this movement and resume</small>}</button>)}</div>:<p className="replacement-empty" role="status">No same-purpose alternative currently fits. {movement.loadKind==='aerobic'?'Marching is the only aerobic candidate in this catalogue; mobility is not a cardio equivalent.':'Your other candidates may be excluded, recovering, or unsuitable for this time window.'} Keep this movement, or skip/end if it does not suit you.</p>}
+ <p className="small muted">Suggestions and illustrations are unreviewed, not professional approval.</p><button disabled={busy} onClick={onCancel}>{live?'Cancel · stay paused':'Keep current movement'}</button></dialog>;
+}

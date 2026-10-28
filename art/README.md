@@ -158,3 +158,25 @@ See [chapter production and manual-edit notes](../docs/chapter_one.md#artwork-ed
 for registered material masks, the actual-workshop crest patch, native nine-slice
 masters, honestly flattened discovery landscapes and reproducible exports.
 The canonical character and physique prototype were not regenerated.
+
+## Walking and floor-contact refinement (2026-10-28)
+
+`hero-body.aseprite` Walk A/B (columns 8/9, zero-based 7/8) now use a wider
+alternating stride, lifted swing foot and opposing forearms. Head/central shirt
+registration and the y=119 supporting sole remain fixed. The existing gait cycles
+with distance travelled; Reduce Motion intentionally simplifies travel.
+`hero-equipment.aseprite` cloak masks follow the changed silhouette. No height,
+face, physique prototype or other pose was changed.
+
+Each `hero-core-{abdominal-bracing,pelvic-tilt,heel-slide,glute-bridge}.aseprite`
+now has a separate editable **Shared mat and contact shadow** layer. Anatomy is
+unchanged and remains illustrative, not clinically validated. The old
+`hero-core-study.aseprite` is untouched and withheld.
+
+Edit walk knee/boot joins on the existing Outfit and boots layer, and wrist joins
+on Skin and face. Keep the canonical head/torso and supporting sole registered.
+Review both keys at 48×64 and in the village. Floor pose neck support, far-arm
+separation and joint positions still need manual/individual review; the mat does
+not validate anatomy. Run `npm run art:export`, then `npm run art:compare`.
+`scripts/enhance-motion-and-ground.lua` records the one-time transformation;
+normal exports preserve manual edits rather than rerunning this authoring step.

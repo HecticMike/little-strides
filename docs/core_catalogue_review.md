@@ -41,8 +41,10 @@ strength-equivalent substitutions or automatically suitable for shoulder pain.
 
 ### Status, pacing and recovery
 
-- Four lower-level entries are selectable for individual opt-in, **unreviewed and
-  disabled by default**. Modified dead bug remains pending-review/locked. Existing
+- Four lower-level entries remain **clinically unreviewed**. Following the user's
+  later request, available candidates are preselected for first-use suggestions;
+  explicit exclusions and discomfort holds persist. Suggestions are not clinical
+  approval. Modified dead bug remains pending-review/locked. Existing
   wall push/squat locks remain. NHS publication is not app or personal approval.
 - Update 2026-10-28: four selectable candidates now have their own canonical-character
   illustrations. These are explicitly unvalidated artwork, not clinical demonstrations.

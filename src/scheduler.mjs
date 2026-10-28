@@ -1,3 +1,4 @@
+import {varietyCosts} from './suggestions.mjs';
 import { compose } from './composition.mjs';
 import { EXERCISES, MINUTES, SESSION_MINUTES, exercise, enabledExercise, recoveryConfig, planningMetadata, normaliseFocus, SESSION_FOCUSES } from './catalog.mjs';
 export function recovery(history,now=Date.now(),settings={}) {
@@ -66,7 +67,8 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   const choices=exerciseEligibility(history,now,settings),eligible=choices.filter(e=>e.status==='eligible');
   const pool=eligible.filter(e=>focus==='core'?e.focus==='core':focus==='recovery'?['activation','mobility'].includes(e.loadKind):true);
   const enabled=EXERCISES.filter(e=>enabledExercise(e.id,settings)&&(focus!=='core'||e.focus==='core'));
-  const build=m=>focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?null:compose(m,pool,load,config,settings,focus,{fits,add});
+  const compositionContext={fits,add,variety:varietyCosts(history,now)};
+  const build=m=>focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?null:compose(m,pool,load,config,settings,focus,compositionContext);
   const selected=build(minutes),plans=new Map([[minutes,selected]]);
   for(const m of lengths)if(m!==minutes)plans.set(m,build(m));
   const availableMinutes=lengths.filter(m=>plans.get(m));
@@ -74,6 +76,7 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   const summary={strength:0,activation:0,mobility:0,aerobic:0};
   for(const b of selected?.segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
   const notes=[];
+  if(Object.keys(compositionContext.variety).length)notes.push('Recent performed movements influence variety; recovery limits still take priority.');
   if(choices.some(e=>e.focus==='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Core strengthening is recovering from your previous session.');
   if(choices.some(e=>e.focus!=='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Other strengthening is recovering from your previous session.');
   if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='limit'))notes.push('Rolling movement or joint-exposure allowances limit the available options.');
@@ -84,5 +87,5 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(selected&&focus==='balanced'&&summary.strength&&summary.aerobic>0&&summary.aerobic<120000){label='Strength with brief movement';notes.push('Only brief marching fits. This is primarily a strength/activation session, not sustained aerobic work.');}
   if(selected&&focus==='core'&&!summary.strength){label='Core activation & mobility';notes.push('No core strengthening is included. Gentle activation is not a strength-equivalent substitute.');}
   if(selected&&!selected.segments.some(b=>b.phase==='warmup'))notes.push('No suitable active preparation is available; setup is a passive countdown, not a warm-up.');
-  return {segments:selected?.segments||null,availableMinutes,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',{fits,add})?'balanced':null};
+  return {segments:selected?.segments||null,availableMinutes,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
 }
