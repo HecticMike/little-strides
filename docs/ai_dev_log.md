@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-28 - GitHub Pages mobile deployment
+
+- Goal: use GitHub Pages as the ongoing app address instead of private preview hosting. User subsequently authorized making the repository public after GitHub rejected private-repository Pages on the account's current plan.
+- Completed: created HecticMike/little-strides, explicitly changed visibility to public, uploaded the existing Git history, and enabled Pages with GitHub Actions. Main pushes run unit/art checks, build with the Pages base path and publish only dist. No artwork, scheduling, exercise eligibility, schema or rewards changed.
+- Files: .github/workflows/pages.yml, vite.config.mjs, src/main.jsx install copy, tests/mobile/pages-hosting.spec.mjs, README.md, docs/alpha_mobile.md and this log. Added current phone-install steps and old-domain JSON export/new-domain import instructions; retained old preview for backup access.
+- Checks: 61 unit/art checks PASS locally and in GitHub Actions; production /little-strides/ build PASS; four focused WebKit/Chromium mobile checks PASS (scope, manifest/icons, asset paths, touch village, backup/preferences and offline reload). Inspected mobile Today/Village screenshots. Live HTTPS app returned 200 with no page errors in both engines; correct worker scope, Offline ready and offline village verified. Common credential-signature scan across 13 existing revisions found no matches; git diff --check PASS.
+- Deployment: https://hecticmike.github.io/little-strides/; public source https://github.com/HecticMike/little-strides. Future publishing uses GitHub, not Sites. Browser histories remain local and do not transfer across domains automatically.
+- Remaining: native phone installation, OS icon/splash, silent/Bluetooth audio, calls/background interruptions, wake lock and storage retention still require physical iPhone/Android acceptance. No cloud sync or automatic history migration.
+- Next: export existing preview data, install the Pages app, import the JSON, verify Journal/recovery state and complete a suitable phone session.
+
 ## 2026-10-28 - Aseprite icons and mobile alpha handoff
 
 - Goal: replace weak app icons and refine related small UI artwork, then provide real-phone alpha installation/testing instructions.
