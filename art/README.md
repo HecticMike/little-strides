@@ -202,10 +202,10 @@ Minimum remaining manual exercise-art work (all sources are 192×128):
 
 | Aseprite master | Specific attention |
 | --- | --- |
-| `hero-core-abdominal-bracing.aseprite` | Head/neck support silhouette (approximately x8–50, y76–119); separate the far forearm/hand from the near arm. |
-| `hero-core-pelvic-tilt.aseprite` | Same support/forearm review; the intended subtle pelvic change is difficult to distinguish. Determine an appropriate depiction before changing anatomy. |
-| `hero-core-heel-slide.aseprite` | Head/neck support and far forearm; review the extended heel/sole contact and knee silhouette. |
-| `hero-core-glute-bridge.aseprite` | Neck/upper-back contact and the near/far arm separation; review hip-to-knee alignment as one pose. |
+| `hero-core-abdominal-bracing.aseprite` | Review the precise neck/shoulder junction (approximately x34–54, y96–109) and hand contours; separate arm layers are now present. |
+| `hero-core-pelvic-tilt.aseprite` | Review the refined neck/arm contacts; the intended subtle pelvic change is difficult to distinguish. Determine an appropriate depiction before changing anatomy. |
+| `hero-core-heel-slide.aseprite` | Review precise neck/shoulder contact and hand contours, plus the extended heel/sole contact and knee silhouette. |
+| `hero-core-glute-bridge.aseprite` | Review precise neck/upper-back contact, far-arm perspective and hip-to-knee alignment as one pose. |
 
 Use the existing Skin and face, Chestnut hair, Teal training shirt, Trousers and
 footwear, Pose outline and details layers. Keep head/face/hair registered together; keep cuffs and Shared mat and contact shadow
