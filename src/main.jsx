@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { EXERCISES, EXERCISE_REVIEW_VERSION, planSession, eligibleExercises, performedMovements, setFeedback, MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
+import { EXERCISES, EXERCISE_REVIEW_VERSION, planSession, eligibleExercises, performedMovements, setFeedback, setExerciseHold, canResumeSession, MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
 import { loadState, saveState, backup } from './storage.mjs';
 import { avatarAtlas, avatarStage, avatarFrame, avatarFingerprint, CHARACTER } from './avatar.mjs';
 import { Cues } from './audio.mjs';
 import { ScreenLock } from './wake.mjs';
 import { workshopState, restoreWorkshop } from './gameplay.mjs';
 import { watchOffline } from './offline.mjs';
-import { ExerciseReview, SessionCompletion, MovementRecord } from './WorkoutQuality.jsx';
+import { ExerciseReview, SessionCompletion } from './WorkoutQuality.jsx';
 import { enabledExercise } from './catalog.mjs';
+import {Journal} from './Journal.jsx';
 import './style.css';
+import './functional.css';
 
 const cues = new Cues(), wake = new ScreenLock();
 const clock = ms => { const seconds = Math.ceil(Math.max(0, ms) / 1000); return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; };
@@ -88,14 +90,15 @@ function App() {
     try { await saveState(value); if (!optimistic) set(value); setError(''); return true; }
     catch {
       const s = current.current;
-      const safe = s.active ? { ...s, active: freeze(s.active, Date.now(), 'interrupted') } : s;
+      const safe = s.active ? { ...s, active: freeze(s.active, Math.min(Date.now(),lastTick.current), 'interrupted') } : s;
       set(safe); wake.release();
       setError('Local saving failed. ' + (s.active ? 'Your workout is paused. ' : 'Your change is not confirmed as saved. ') + 'Export a backup or retry saving before continuing.');
       return false;
     }
     finally { writes.current--; if (!writes.current) setSaving(false); }
   }
-  function interrupt(at = Date.now()) {
+  function interrupt(at = Math.min(Date.now(),lastTick.current)) {
+    if(finishing.current)return;
     const s = current.current;
     if (s?.active?.status === 'running') {
       lastCue.current = '';
@@ -150,10 +153,11 @@ function App() {
       const p = position(s.active, t);
       if (p.done) {
         if (finishing.current) return;
-        finishing.current = true; wake.release(); cues.play('transition');
-        const next = finish(s, true, t);
+        finishing.current = true; wake.release();
+        const stopped={...s,active:freeze(s.active,t)};set(stopped);
+        const next = finish(stopped, true, t);
         void commit(next, false).then(saved => {
-          if (saved) {setCompletionId(s.active.id);setNotice(progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
+          if (saved) {cues.play('transition');setCompletionId(s.active.id);setNotice(progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
           finishing.current = false;
         });
         return;
@@ -193,8 +197,7 @@ function App() {
     } else {
       const remaining=s.active.segments.slice(position(s.active).index).filter(b=>b.kind==='work');
       if (remaining.some(b=>!enabledExercise(b.exerciseId,s.settings))) {setSessionWarning('This saved plan contains disabled or pending-review movements. Skip or replace those blocks, or end it and start an eligible routine.');setPendingReview('resume');return;}
-      const eligible=new Set(eligibleExercises(s.history,t,s.settings).map(e=>e.id));
-      if(remaining.some(b=>!eligible.has(b.exerciseId))){setSessionWarning('A remaining movement is recovering, flagged or at its rolling limit. Replace or skip it, or end and generate a suitable routine.');return;}
+      if(!canResumeSession(s.active,s.history,t,s.settings)){setSessionWarning('A remaining movement is recovering, flagged or at its rolling limit. Replace or skip it, or end and generate a suitable routine.');return;}
       setSessionWarning('');
       await cues.enable();
       lastTick.current = Date.now(); lastCue.current = '';
@@ -254,14 +257,14 @@ function App() {
   cues.settings = data.settings;
   const count = progress(data.history), stage = avatarStage(count), s = data.active, workshop = workshopState(data);
   const p = s ? position(s, now) : null, e = p && !p.done ? exercise(p.exerciseId) : null;
-  const resting = recovery(data.history, now,data.settings);
-  const proposal=planSession(minutes,data.history,now,data.settings), completedRecord=data.history.find(h=>h.id===completionId);
+
+  const proposal=s?null:planSession(minutes,data.history,now,data.settings), completedRecord=data.history.find(h=>h.id===completionId);
   const audioControls = <div className="audio-controls">
     <button disabled={saving} aria-label={data.settings.muted ? 'Unmute sound' : 'Mute sound'} aria-pressed={data.settings.muted} onClick={() => settings({ muted: !data.settings.muted })}>{data.settings.muted ? 'Sound off' : 'Sound on'}</button>
     <label>Volume<input aria-label="Cue volume" type="range" min="0" max="1" step="0.05" value={data.settings.volume} onChange={event => settings({ volume: Number(event.target.value) })} /></label>
   </div>;
   return <div className={`app ${s ? 'in-session' : ''}`}>
-    {pendingReview && <ExerciseReview purpose={pendingReview} settings={data.settings} busy={busy||saving} onToggle={(id,on)=>settings({enabledExercises:on?[...new Set([...(current.current.settings.enabledExercises||[]),id])]:(current.current.settings.enabledExercises||[]).filter(x=>x!==id)})} onRecovery={value=>settings({recovery:value})} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
+    {pendingReview && <ExerciseReview purpose={pendingReview} settings={data.settings} history={data.history} now={now} busy={busy||saving} onFlag={(id,flag)=>action(()=>commit(setExerciseHold(current.current,id,flag)))} onToggle={(id,on)=>settings({enabledExercises:on?[...new Set([...(current.current.settings.enabledExercises||[]),id])]:(current.current.settings.enabledExercises||[]).filter(x=>x!==id)})} onRecovery={value=>settings({recovery:value})} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
     {error && <div className="error" role="alert">{error}<div className="row"><button onClick={() => action(() => commit(current.current))}>Retry saving</button><button onClick={exportData}>Export backup</button></div></div>}
     {s ? <main className="workout">
       <header className="workout-heading"><span className="brand">{s.mode === 'preview' ? 'PREVIEW · NO REWARDS' : 'LITTLE STRIDES'}</span><span className="pill">{clock(duration(s) - elapsed(s, now))} left</span></header>
@@ -270,9 +273,9 @@ function App() {
       <section className="workout-readout" aria-label="Exercise timing"><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : p?.kind === 'prepare' ? 'PREPARATION' : p?.kind === 'cooldown' ? 'WIND DOWN' : 'REST · 15 SEC'}</span><p>{p?.kind === 'prepare' ? 'Check your space. Get ready for ' + (exercise(s.segments.find(b=>b.kind==='work')?.exerciseId)?.name||'your next movement') + '.' : p?.kind === 'cooldown' ? 'The session is winding down. Stay comfortable.' : p?.kind === 'rest' ? 'Pause your movement. Next: ' + (exercise(s.segments.slice(p.index+1).find(b=>b.kind==='work')?.exerciseId)?.name||'wind down') + '.' : e?.cue}</p></section>
       <div className="workout-footer">
         {s.reason === 'interrupted' && <p className="recovery" role="status">Interrupted session saved. Time away was not counted. Resume when ready.</p>}
-        {sessionWarning&&<p className="recovery" role="status">{sessionWarning}</p>}{audioControls}
-        <div className="workout-actions"><button disabled={busy || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(replaceMovement)}>Replace</button></div>
-        <div className="session-meta"><button className="text-button" disabled={busy} onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
+        {sessionWarning&&<div className="recovery" role="status">{sessionWarning}<button onClick={()=>setPendingReview('resume')}>Review choices and recovery</button></div>}{audioControls}
+        <div className="workout-actions"><button disabled={busy || finishing.current || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || finishing.current || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || finishing.current || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(replaceMovement)}>Replace</button></div>
+        <div className="session-meta"><button className="text-button" disabled={busy||finishing.current} onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
       </div>
     </main> : <>
       <header className="app-header"><a className="brand" href="./"><Icon index={0} />LITTLE STRIDES</a><span className="pill">{cached ? offline ? 'Offline' : 'Offline ready' : offlineSetup.status === 'error' ? 'Offline unavailable' : offlineSetup.status === 'update' ? 'Update ready' : 'Preparing offline'}</span></header>
@@ -287,7 +290,7 @@ function App() {
           <div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{workshop.balance + ' timber available · ' + CHARACTER.stages[stage].name}</p></div><span className="stage">{stage + 1}/3</span></div>
         </>}
         {tab === 'Village' && <Village completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} />}
-        {tab === 'Journal' && <><p className="eyebrow">EVERY LITTLE STRIDE COUNTS</p><h1>Your journal</h1><article className="card"><h2>Suggested recovery</h2><p>{resting.resting.length ? 'Your next session uses easy mobility while these groups rest:' : 'Your next session includes a gentle mix of moves.'}</p>{resting.resting.map(g => <p key={g}>{g === 'legs' ? 'Legs' : 'Upper body'} · varied moves return {new Date(resting.until[g]).toLocaleDateString()} at {time(resting.until[g])}</p>)}<p className="small muted">Rolling recovery and cumulative limits are configurable heuristics, not a guarantee of safety.</p></article><h2 className="section-title">Session history</h2>{data.history.length === 0 ? <p className="muted">Your first session will appear here.</p> : <ul className="history">{[...data.history].reverse().map(h => <li key={h.id}><div><strong>{h.minutes}-minute stride</strong><p>{new Date(h.endedAt).toLocaleDateString()} · {Math.floor(h.activeMs / 1000)} seconds timed</p><MovementRecord record={h}/>{h.feedback&&<p>Comfort: {h.feedback.comfort}{h.feedback.joints.length?' · '+h.feedback.joints.join(', '):''}</p>}</div><span className="pill">{h.mode === 'preview' ? 'Preview' : h.completed ? 'Complete' : 'Partial'}</span></li>)}</ul>}</>}
+        {tab === 'Journal' && <Journal history={data.history} settings={data.settings} now={now}/>}
         {tab === 'Settings' && <><p className="eyebrow">MAKE YOURSELF AT HOME</p><h1>Your settings</h1><section className="card"><h2>Exercises and recovery</h2><p>Unreviewed candidates require individual opt-in. Wall-push and squat are locked pending review.</p><button onClick={()=>setPendingReview('settings')}>Review or disable movements</button></section><section className="card"><h2>Workout sound</h2>{audioControls}<button onClick={() => action(async () => { await cues.enable(); cues.play('transition'); setNotice(cues.status); })}>Test sound</button><label className="pace-option"><input aria-label="Pacing sound" type="checkbox" checked={!data.settings.paceMuted} onChange={event=>settings({paceMuted:!event.target.checked})}/>Pacing sound (transition cues stay on)</label><p className="small muted">{cues.status}. Sound only plays during active workouts.</p></section><section className="card"><h2>Stored on this device</h2><p>Your history and interrupted sessions live locally. Cloud sync is not connected.</p><p className="small muted">{data.lastExportAt ? `Last export requested ${new Date(data.lastExportAt).toLocaleString()}. Keep the downloaded JSON file.` : 'No backup exported yet. Browser data can be cleared; keep a JSON backup.'}</p><div className="row"><button onClick={exportData}>Export JSON</button><button onClick={() => importRef.current.click()}>Import JSON</button></div><input hidden ref={importRef} type="file" accept="application/json,.json" onChange={event => action(() => importData(event.target.files[0]))} /></section><section className="card"><h2>Install Little Strides</h2><p>{cached ? 'Core app, village, artwork and sounds are cached for offline use.' : offlineSetup.message || 'Caching the app, art and sounds. This check times out after 20 seconds; failures can be retried.'}</p>{install ? <button onClick={async () => { await install.prompt(); setInstall(null); }}>Install app</button> : <p className="small muted">iPhone: Safari → Share → Add to Home Screen. Android: Chrome menu → Install app / Add to Home screen.</p>}<p className="small muted">Use HTTPS on your phone. Screen lock and sounds depend on device and browser settings.</p></section></>}
       </main>
       <nav className="bottom-nav" aria-label="Main navigation">{['Today', 'Village', 'Journal', 'Settings'].map((name, icon) => <button key={name} aria-current={tab === name ? 'page' : undefined} onClick={() => { setTab(name); if (name === 'Village') setNotice(''); }}><Icon index={icon} />{name}</button>)}</nav>

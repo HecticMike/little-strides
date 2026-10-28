@@ -97,5 +97,6 @@ test('preview-only completion earns no timber and does not schedule recovery',as
   await page.getByRole('button',{name:'Workshop',exact:true}).tap();await page.clock.runFor(2200);
   await expect(page.getByRole('button',{name:'Need 1 timber'})).toBeDisabled();
   await page.getByRole('button',{name:'Journal',exact:true}).tap();await expect(page.getByText('Preview',{exact:true})).toBeVisible();
-  await expect(page.getByText('Your next session includes a gentle mix of moves.',{exact:true})).toBeVisible();
+  await expect(page.getByText('No current recovery or discomfort restrictions. Only your enabled movements can be selected.',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Activity totals'})).toContainText('0 completed sessions');
 });

@@ -58,6 +58,7 @@ test('approved artwork remains painted, touch accessible and consistent across a
       expect(box.height).toBeGreaterThanOrEqual(44);expect(box.y+box.height).toBeLessThanOrEqual(page.viewportSize().height);
     }
     page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'End session',exact:true}).tap();
+    await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();
   }
   await context.setOffline(true);await page.reload();
   await expect(page.locator('.home-scene .avatar[data-ready=true]')).toHaveAttribute('data-avatar-stage','veteran');

@@ -15,12 +15,17 @@ self.addEventListener('activate', event => {
   })());
 });
 self.addEventListener('fetch', event => {
+  const path=new URL(event.request.url).pathname;
+  // Hosted authentication must reach Sites, never the cached app shell.
+  if (['/signin-with-chatgpt','/signout-with-chatgpt','/callback'].includes(path)) return;
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith((async () => {
+    try {
     const cache = await caches.open(CACHE);
     const request = event.request.mode === 'navigate' ? new URL('./index.html', self.registration.scope).href : event.request;
     // Only our own fixed build assets enter this cache. Their bytes do not vary
     // by Origin, even when the static server adds Vary: Origin for module loads.
     return await cache.match(request, { ignoreVary: true }) || fetch(event.request);
+    } catch { return fetch(event.request); }
   })());
 });

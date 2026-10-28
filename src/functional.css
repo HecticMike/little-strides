@@ -1,0 +1,7 @@
+/* Functional exercise review and compact activity summaries; existing art/theme retained. */
+.exercise-options h3 {font-size:16px;margin:16px 0 5px;}
+.exercise-options details summary {font-size:12px;}
+.review-actions {position:sticky;bottom:-18px;background:#25333d;padding:8px 0 4px;z-index:1;}
+.activity-periods {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;}
+.activity-periods h3 {font-size:15px;margin:0 0 5px;}
+.activity-periods p {font-size:12px;}

@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-28 - Phase 5 functional exercise MVP
+
+- Goal: complete regular short-workout journeys while preserving art, prototype, eligibility locks, data and RPG features.
+- Fixed: grouped candidate opt-ins; persistent discomfort/reassessment without auto-enabling; shared-muscle recovery, combined joint exposure and projected replacement/resume limits. Pending exercises remain locked; no new candidates or clinical approval.
+- Recording/reliability: all scheduled eligible movement time is required for new completion/rewards; legacy rewards retained. Freeze at last observed time; stop automatic completion synchronously before durable save to prevent resurrection. Hosted authentication bypasses offline app-shell caching; cache read failures fall back to network without deleting history.
+- Journal: today/week completed counts, actual aerobic/strengthening/mobility minutes, recent movement, restrictions, discomfort and history. Validated additive fields preserve schema/database versions. Repetition pacing is not measured repetitions.
+- Files: catalogue/scheduler/engine/gameplay reward predicate/main/WorkoutQuality, new activity.mjs/Journal.jsx/functional.css, service worker, focused tests, README and verification notes. No avatar/village/original-style/lockfile changes; 66 art/prototype files byte-identical. Only Little Strides modified.
+- Checks: 39 unit/art and build PASS. All 78 mobile scenarios verified (74/78 initial full run, 12/12 affected reruns after fixture waits and Journal-copy updates). Full ten-minute flows, afternoon/next-day adaptation, discomfort/backup/offline persistence and completion races pass in both engines. Native phone captures reviewed, no overflow. Regression screenshots retained; optional broad cleanup was rejected by automatic approval review.
+- Remaining: personal suitability/limits need review; all candidates unreviewed, wall push/squat/core unavailable as appropriate. Physical iPhone/Android audio, calls, wake lock, installation/storage/airplane-mode and real-time acceptance remain.
+- Next: identify suitable existing movements and perform the physical-phone ten-minute check. No additional feature work is required for the verified eligible-workout journey. See docs/phase5_verification.md.
 ## 2026-10-27 - Targeted sprite corrections
 
 - Goal: refine only the existing core study and Walk A/B; preserve approved identity, village, pipeline and exercise locks.

@@ -1,0 +1,20 @@
+{
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "art": {
+    "width": 343,
+    "height": 328.15625
+  },
+  "canvas": {
+    "left": 14,
+    "top": 2,
+    "width": 231,
+    "height": 324.15625,
+    "paddingTop": 10,
+    "paddingBottom": 20
+  },
+  "imageRendering": "pixelated",
+  "cssSha256": "a33b498d659e14c5997e894044d2057eb8267c911f4f7b4aa751b79e20a5faba"
+}

@@ -2,6 +2,11 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { CHARACTER, WORLD, PALETTE } from '../src/art-spec.mjs';
 import {EXERCISES} from '../src/catalog.mjs';
+// Review-only branch: never writes public art or live/core masters.
+if (process.argv.includes('--progression-prototype')) {
+  await import('./export-progression.mjs');
+  process.exit(0);
+}
 const executable = process.env.ASEPRITE_PATH || 'C:/Program Files/Aseprite/Aseprite.exe';
 if (!existsSync(executable)) throw new Error('Set ASEPRITE_PATH to the local Aseprite executable.');
 const characterPalette = readFileSync('art/palette.gpl','utf8').split(/\r?\n/).filter(l=>/^\s*\d+\s+\d+\s+\d+/.test(l)).map(l=>'#'+l.trim().split(/\s+/).slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join(''));

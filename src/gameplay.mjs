@@ -1,7 +1,12 @@
+import {exercise} from './catalog.mjs';
+export function fullEligibleActivity(h) {
+  const planned=h.segments.filter(b=>b.kind==='work').reduce((n,b)=>n+b.durationMs,0);
+  return planned>0&&Array.isArray(h.movements)&&h.movements.reduce((n,m)=>n+m.actualMs,0)===planned&&h.movements.every(m=>m.actualMs===m.plannedMs&&exercise(m.exerciseId)?.selectable);
+}
 // Rewards are derived from unique completed workout records, never from UI events.
 export function rewardedWorkouts(history) {
   const records = new Map();
-  for (const h of history) if (h.completed && h.mode !== 'preview' && h.activeMs >= 30_000 && h.elapsedMs === h.minutes * 60_000) records.set(h.id, h);
+  for (const h of history) if (h.completed && h.mode !== 'preview' && h.activeMs >= 30_000 && h.elapsedMs === h.minutes * 60_000 && (h.qualityVersion!==3||fullEligibleActivity(h))) records.set(h.id, h);
   return [...records.values()];
 }
 export const emptyWorld = () => ({ schemaVersion: 1, workshop: { stage: 0, spentRewardIds: [], restoredAt: null } });

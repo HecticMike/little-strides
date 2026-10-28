@@ -1,13 +1,13 @@
-import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts } from './gameplay.mjs';
+import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts, fullEligibleActivity } from './gameplay.mjs';
 import { MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, JOINTS, exercise, enabledExercise, recoveryConfig } from './catalog.mjs';
-import { recovery, planSession, eligibleExercises } from './scheduler.mjs';
+import { recovery, planSession, eligibleExercises, capacityFits } from './scheduler.mjs';
 export { MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, exercise, recovery, planSession, eligibleExercises };
 export const freshState=()=>({schemaVersion:1,deviceId:crypto.randomUUID(),active:null,history:[],world:emptyWorld(),settings:{muted:false,volume:.45,enabledExercises:[]},updatedAt:Date.now(),lastExportAt:null});
 export function createSession(minutes,history=[],now=Date.now(),{mode='workout',settings={}}={}){
   if(!['workout','preview'].includes(mode))throw new Error('Unknown session mode.');
   const plan=planSession(minutes,history,now,settings);
   if(!plan.segments){const error=new Error(plan.reason);error.availableMinutes=plan.availableMinutes;throw error;}
-  return {id:crypto.randomUUID(),engineVersion:2,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
+  return {id:crypto.randomUUID(),qualityVersion:3,engineVersion:2,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
 }
 export const duration=s=>s.segments.reduce((n,b)=>n+b.durationMs,0);
 export const elapsed=(s,now=Date.now())=>Math.min(duration(s),Math.max(0,s.elapsedMs+(s.status==='running'?Math.max(0,now-s.runningSince):0)));
@@ -65,7 +65,7 @@ export function replace(s,now=Date.now(),{history=[],settings={}}={}){
     const draft={...s,status:'paused',elapsedMs:duration(s),segments:s.segments.map((b,i)=>i===p.index?{...b,exerciseId:e.id}:b),events:[...s.events,{type:'replace',index:p.index,fromExerciseId:p.exerciseId,exerciseId:e.id,segmentElapsedMs:p.segmentElapsedMs,at:now}]};
     const projected=performedMovements(draft,now);
     const load=projected.filter(m=>m.exerciseId===e.id).reduce((n,m)=>n+m.actualMs,0);
-    return load+(prior.used[e.id]||0)<=config.maxRepeatableSeconds*1000;
+    return load+(prior.used[e.id]||0)<=config.maxRepeatableSeconds*1000&&capacityFits(projected,history,now,settings);
   };
   const suitable=candidates.filter(fits);
   const id=suitable.find(e=>e.id===exercise(p.exerciseId).alternative)?.id||suitable[0]?.id;
@@ -76,13 +76,25 @@ export function finish(state,completed,now=Date.now()){
   const s=state.active;if(!s)return state;
   const consumed=elapsed(s,now),movements=performedMovements(s,now),activeMs=movements.reduce((n,m)=>n+m.actualMs,0);
   const groups=[...new Set(movements.filter(m=>m.actualMs>0).map(m=>exercise(m.exerciseId).group))];
-  const record={schemaVersion:1,...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movementAccounting:'legacy-estimate'})};
+  const record={schemaVersion:1,qualityVersion:3,...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s)&&fullEligibleActivity({segments:s.segments,movements}),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movements,movementAccounting:'legacy-estimate'})};
   return {...state,active:null,history:[...state.history.filter(h=>h.id!==s.id),record],updatedAt:now};
 }
 export const progress=history=>rewardedWorkouts(history).length;
 export function setFeedback(state,id,comfort,joints=[],now=Date.now()){
   if(!['comfortable','difficult','discomfort'].includes(comfort)||!Array.isArray(joints)||!joints.every(j=>JOINTS.includes(j)))throw new Error('Invalid comfort feedback.');
-  return {...state,history:state.history.map(h=>h.id===id?{...h,feedback:{comfort,joints:[...new Set(joints)],updatedAt:now}}:h),updatedAt:now};
+  return {...state,history:state.history.map(h=>h.id===id?{...h,feedback:{comfort,joints:[...new Set(joints)],updatedAt:now},...(comfort==='discomfort'?{discomfort:{at:now,joints:[...new Set(joints)]}}:{})}:h),updatedAt:now};
+}
+export function setExerciseHold(state,id,flag,now=Date.now()){
+  if(!exercise(id))throw new Error('Unknown movement.');
+  const holds={...state.settings.exerciseHolds},reviews={...state.settings.exerciseReassessedAt};
+  if(flag){holds[id]=now;delete reviews[id];}else{delete holds[id];reviews[id]=now;}
+  return {...state,settings:{...state.settings,exerciseHolds:holds,exerciseReassessedAt:reviews,enabledExercises:(state.settings.enabledExercises||[]).filter(x=>x!==id)},updatedAt:now};
+}
+export function canResumeSession(s,history,now,settings){
+  const current=position(s,now),remaining=s.segments.slice(current.index).filter(b=>b.kind==='work');
+  const eligible=new Set(eligibleExercises(history,now,settings).map(e=>e.id));
+  if(remaining.some(b=>!eligible.has(b.exerciseId)))return false;
+  return capacityFits(performedMovements({...s,status:'paused',elapsedMs:duration(s)},now),history,now,settings);
 }
 export function validateBackup(input) {
   const fail = () => { throw new Error('This is not a valid Little Strides backup. Your current data is unchanged.'); };
@@ -94,6 +106,7 @@ export function validateBackup(input) {
   if (!input || input.format !== 'little-strides' || input.schemaVersion !== 1) fail();
   const s = input.data;
   if (!s || s.schemaVersion !== 1 || typeof s.deviceId !== 'string' || s.deviceId.length > 100 || !num(s.updatedAt) || !(s.lastExportAt === null || num(s.lastExportAt)) || !s.settings || typeof s.settings.muted !== 'boolean' || !num(s.settings.volume) || s.settings.volume > 1 || !Array.isArray(s.history) || s.history.length > 100_000) fail();
+  for(const key of ['exerciseHolds','exerciseReassessedAt'])if(s.settings[key]!==undefined&&(!s.settings[key]||Array.isArray(s.settings[key])||typeof s.settings[key]!=='object'||Object.entries(s.settings[key]).some(([id,at])=>!exercise(id)||!num(at))))fail();
   const ids = new Set();
   for (const h of s.history) {
     if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion) || !eventsOk(h.events, h.segments.length)) fail();
@@ -106,8 +119,11 @@ export function validateBackup(input) {
   if (!(s.settings.exerciseReviewVersion === undefined || Number.isInteger(s.settings.exerciseReviewVersion) && s.settings.exerciseReviewVersion >= 1 && s.settings.exerciseReviewVersion <= EXERCISE_REVIEW_VERSION)) fail();
   if(s.settings.paceMuted!==undefined&&typeof s.settings.paceMuted!=='boolean')fail();
   if(s.settings.enabledExercises!==undefined&&(!Array.isArray(s.settings.enabledExercises)||!s.settings.enabledExercises.every(id=>exercise(id))))fail();
-  if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200)fail();}
+  if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200||!Number.isFinite(c.maxJointSeconds)||c.maxJointSeconds<90||c.maxJointSeconds>2400)fail();}
   for(const h of [...s.history,...(s.active?[s.active]:[])]){
+    if(h.qualityVersion!==undefined&&h.qualityVersion!==3)fail();
+    if(h.qualityVersion===3&&h!==s.active&&(!Array.isArray(h.movements)||(h.completed&&!fullEligibleActivity(h))))fail();
+    if(h.discomfort!==undefined&&(!h.discomfort||!num(h.discomfort.at)||!Array.isArray(h.discomfort.joints)||!h.discomfort.joints.every(j=>JOINTS.includes(j))))fail();
     if(h.engineVersion!==undefined&&h.engineVersion!==2)fail();
     if(h.engineVersion===2&&(!segmentsOk(h.plan,h.minutes,2)||!Array.isArray(h.timeline)||h.timeline.length>10000||!h.timeline.length||h.timeline.some((a,i)=>!num(a.at)||!num(a.position)||a.position>h.minutes*60_000||(i>0&&(a.at<h.timeline[i-1].at||a.position<h.timeline[i-1].position)))||h.events.some(e=>!num(e.segmentElapsedMs)||e.segmentElapsedMs>h.segments[e.index].durationMs)))fail();
     if(h.movements!==undefined){
