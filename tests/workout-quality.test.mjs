@@ -200,3 +200,47 @@ test('adding core opt-ins cannot hide a feasible mixed twenty-minute plan',()=>{
   const load={};for(const b of plan.segments.filter(b=>b.kind==='work'))for(const j of EXERCISES.find(e=>e.id===b.exerciseId).joints)load[j]=(load[j]||0)+b.durationMs;
   assert.ok(Object.values(load).every(ms=>ms<=600000));
 });
+
+test('sound test explains app mute and zero volume without reporting playback', async () => {
+  const { Cues } = await import('../src/audio.mjs');
+  const cues = new Cues(); let enabled = 0;
+  cues.enable = async () => { enabled++; };
+  cues.settings = { muted: true, volume: .45 };
+  assert.match(await cues.test(), /Sound is off/);
+  cues.settings = { muted: false, volume: 0 };
+  assert.match(await cues.test(), /volume is zero/);
+  assert.equal(enabled, 0);
+});
+
+test('iPhone playback category is requested before resume and sound test uses saved volume', async t => {
+  const { Cues } = await import('../src/audio.mjs');
+  const old = globalThis.window;
+  t.after(() => { if (old === undefined) delete globalThis.window; else globalThis.window = old; });
+  const session = { type: 'auto' }; let starts = 0, volume;
+  class Audio {
+    state = 'suspended'; destination = {};
+    async resume() { assert.equal(session.type, 'playback'); this.state = 'running'; }
+    createBufferSource() { return { connect() {}, start() { starts++; } }; }
+    createGain() { const gain = { gain: { value: 0 }, connect() { volume = gain.gain.value; } }; return gain; }
+  }
+  globalThis.window = { navigator: { audioSession: session }, AudioContext: Audio };
+  const cues = new Cues(); cues.buffers = { transition: {}, pace: {} }; cues.settings.volume = .2;
+  assert.match(await cues.test(), /Test tone sent/);
+  assert.equal(starts, 1); assert.equal(volume, .2);
+  cues.context.state = 'interrupted'; cues.context.onstatechange();
+  assert.equal(cues.play('transition'), false); assert.equal(starts, 1);
+});
+
+test('unsupported audio-session settings are harmless; blocked or failed audio never reports a sent test', async t => {
+  const { Cues } = await import('../src/audio.mjs');
+  const old = globalThis.window;
+  t.after(() => { if (old === undefined) delete globalThis.window; else globalThis.window = old; });
+  const session = {}; Object.defineProperty(session, 'type', { set() { throw new Error('Unsupported'); } });
+  class Audio { state = 'suspended'; async resume() {} }
+  globalThis.window = { navigator: { audioSession: session }, AudioContext: Audio };
+  const cues = new Cues(); cues.buffers = { transition: {}, pace: {} };
+  assert.match(await cues.test(), /retry/);
+  cues.context.resume = async () => { throw new Error('Blocked'); };
+  assert.match(await cues.test(), /Sound unavailable/);
+  assert.equal(cues.lastPlayed, undefined);
+});

@@ -7,7 +7,10 @@ export class Cues {
     try {
       const Audio = window.AudioContext || window.webkitAudioContext;
       if (!Audio) throw new Error('unavailable');
-      if (!this.context) {
+      // Web Audio defaults to ambient on iOS and can be silenced by the ringer
+      // switch. Request media playback when supported; other browsers ignore it.
+      try { if (window.navigator?.audioSession) window.navigator.audioSession.type = 'playback'; } catch {}
+      if (!this.context || this.context.state === 'closed') {
         this.context = new Audio();
         this.context.onstatechange = () => {
           if (['suspended', 'interrupted'].includes(this.context.state)) this.onInterruption?.();
@@ -25,10 +28,21 @@ export class Cues {
     } catch { this.status = 'Sound unavailable; visual cues stay on'; }
   }
   play(name) {
-    if (this.settings.muted || (name === 'pace' && this.settings.paceMuted) || !this.context || this.context.state !== 'running' || !this.buffers[name]) return;
-    const node = this.context.createBufferSource(), gain = this.context.createGain();
-    node.buffer = this.buffers[name]; gain.gain.value = this.settings.volume;
-    node.connect(gain); gain.connect(this.context.destination); node.start();
-    this.lastPlayed = name;
+    if (this.settings.muted || this.settings.volume <= 0 || (name === 'pace' && this.settings.paceMuted) || !this.context || this.context.state !== 'running' || !this.buffers[name]) return false;
+    try {
+      const node = this.context.createBufferSource(), gain = this.context.createGain();
+      node.buffer = this.buffers[name]; gain.gain.value = this.settings.volume;
+      node.connect(gain); gain.connect(this.context.destination); node.start();
+      this.lastPlayed = name;
+      return true;
+    } catch { this.status = 'Sound unavailable; visual cues stay on'; return false; }
+  }
+  async test() {
+    if (this.settings.muted) return 'Sound is off. Turn Sound on before testing.';
+    if (this.settings.volume <= 0) return 'Cue volume is zero. Raise Volume before testing.';
+    await this.enable();
+    if (this.status !== 'Sound ready' || !this.play('transition')) return this.status;
+    // Playback APIs cannot confirm that the phone speaker was audible.
+    return 'Test tone sent. If silent, check your phone’s media volume, Silent Mode and Bluetooth output.';
   }
 }
