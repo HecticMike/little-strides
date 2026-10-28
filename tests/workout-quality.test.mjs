@@ -153,3 +153,49 @@ test('offline worker leaves private authentication to the network and falls back
   for(const route of ['signin-with-chatgpt','signout-with-chatgpt','callback'])events.fetch({request:{url:'https://test.invalid/'+route,method:'GET',mode:'navigate'},respondWith:()=>assert.fail('Authentication was intercepted')});
   let result;events.fetch({request:{url:'https://test.invalid/',method:'GET',mode:'navigate'},respondWith:p=>{result=p;}});assert.equal(await result,'network');assert.equal(network,1);
 });
+// Core candidates are unreviewed app entries; fictional opt-ins are not clinical approval.
+test('NHS core candidates start disabled, have no fabricated poses and retain clinical locks',()=>{
+  const state=freshState(),core=EXERCISES.filter(e=>e.focus==='core');assert.equal(core.length,5);
+  for(const e of core){assert.ok(!state.settings.enabledExercises.includes(e.id));assert.equal(e.pose,null);assert.equal(e.artStatus,'missing');assert.ok(e.sourceUrl.includes('.nhs.'));assert.ok(e.instructions.length>=2);assert.notEqual(e.reviewStatus,'reviewed');}
+  assert.ok(!eligibleExercises([],at,{enabledExercises:core.map(e=>e.id)}).some(e=>e.id==='modified-dead-bug'));
+  assert.ok(!eligibleExercises([],at,{enabledExercises:['squat','push']}).length);
+});
+const coreSettings={...settings,sessionFocus:'core',enabledExercises:['abdominal-bracing','pelvic-tilt','heel-slide','glute-bridge']};
+test('core plans use only opted-in core movements, distinguish activation and fit exact supported durations',()=>{
+  for(const m of [7,10]){const plan=planSession(m,[],at,coreSettings);assert.ok(plan.segments);assert.equal(plan.segments.reduce((n,b)=>n+b.durationMs,0),m*60000);assert.ok(plan.segments.filter(b=>b.kind==='work').every(b=>EXERCISES.find(e=>e.id===b.exerciseId).focus==='core'));assert.equal(plan.summary.aerobic,0);assert.equal(plan.summary.strength,90000);}
+  for(const m of [15,20])assert.equal(planSession(m,[],at,coreSettings).segments,null,'do not bypass combined joint limits');
+  const reviewedLimits={...coreSettings,recovery:{maxJointSeconds:1200}};
+  for(const m of [7,10,15,20])assert.ok(planSession(m,[],at,reviewedLimits).segments);
+});
+test('same-day and next-day core strength recovers while gentle activation stays distinct',()=>{
+  const config={...coreSettings,recovery:{maxJointSeconds:1200}};const first=completed(10,[],at,config);
+  for(const now of [at+6*3600000,at+25*3600000]){const plan=planSession(7,first.history,now,config);assert.ok(plan.segments);assert.equal(plan.summary.strength,0);assert.ok(!plan.segments.some(b=>b.exerciseId==='glute-bridge'));}
+  assert.ok(eligibleExercises(first.history,at+49*3600000,config).some(e=>e.id==='glute-bridge'));
+  const second=completed(7,first.history,at+6*3600000,config);assert.equal(activitySummary(second.history,at+7*3600000).all.strengthMs,90000);
+  assert.deepEqual(validateBackup({format:'little-strides',schemaVersion:1,data:second}),second);
+});
+test('incomplete, held and recovering core pools offer honest alternatives without filler',()=>{
+  assert.equal(planSession(7,[],at,{...coreSettings,enabledExercises:['glute-bridge']}).segments,null);
+  assert.match(planSession(10,[],at,{...coreSettings,enabledExercises:['march']}).reason,/No core movements enabled/);
+  let state=freshState();state.settings=coreSettings;state=setExerciseHold(state,'heel-slide',true,at);
+  assert.ok(!createSession(7,[],at,{settings:state.settings}).segments.some(b=>b.exerciseId==='heel-slide'));
+  const first=completed(10,[],at,coreSettings);assert.equal(planSession(7,first.history,at+700000,coreSettings).segments,null);
+});
+test('self-paced core blocks do not invent a repetition target or use unrelated artwork',()=>{
+  const s=createSession(7,[],at,{settings:coreSettings});const p=position(s,at+31000);assert.equal(p.paceTotal,0);assert.equal(p.rep,0);assert.equal(EXERCISES.find(e=>e.id===p.exerciseId).pose,null);
+});
+test('workflow preview is inert and cannot create history, recovery, records or rewards',async()=>{
+  const {createPreviewSession,persistableState}=await import('../src/engine.mjs');const {backup}=await import('../src/storage.mjs');
+  for(const m of [7,10,15,20]){
+    let state=freshState();state.active=createPreviewSession(m,at);assert.ok(state.active.segments.every(b=>b.exerciseId===null));assert.equal(state.active.segments.reduce((n,b)=>n+b.durationMs,0),m*60000);
+    assert.equal(persistableState(state).active,null);assert.equal(JSON.parse(backup(state)).data.active,null);
+    let preview=skip(state.active,at+10000);preview=replace(preview,at+11000);assert.equal(position(preview,at+11000).previewLabel,'Alternative timer card');
+    state=finish(state,true,at+m*60000);assert.equal(state.active,null);assert.equal(state.history.length,0);assert.equal(progress(state.history),0);assert.deepEqual(recovery(state.history).resting,[]);
+  }
+});
+test('adding core opt-ins cannot hide a feasible mixed twenty-minute plan',()=>{
+  const all={...settings,enabledExercises:EXERCISES.filter(e=>e.selectable).map(e=>e.id)};
+  const plan=planSession(20,[],at,all);assert.ok(plan.segments);assert.equal(plan.segments.reduce((n,b)=>n+b.durationMs,0),1200000);
+  const load={};for(const b of plan.segments.filter(b=>b.kind==='work'))for(const j of EXERCISES.find(e=>e.id===b.exerciseId).joints)load[j]=(load[j]||0)+b.durationMs;
+  assert.ok(Object.values(load).every(ms=>ms<=600000));
+});

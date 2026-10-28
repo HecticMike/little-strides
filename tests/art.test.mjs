@@ -12,7 +12,7 @@ test('exported character sheets fit the canonical frame grid', () => {
   assert.equal(metadata.id,CHARACTER.id); assert.deepEqual(metadata.stages,CHARACTER.stages);
 });
 test('supported exercises map to their own poses and lying remains an art study', () => {
-  for (const e of EXERCISES) { assert.equal(CHARACTER.exercisePoses[e.id],e.pose); assert.ok(CHARACTER.poses.includes(e.pose)); }
+  for (const e of EXERCISES) { if(e.pose===null){assert.equal(e.artStatus,'missing');assert.equal(e.focus,'core');}else{assert.equal(CHARACTER.exercisePoses[e.id],e.pose);assert.ok(CHARACTER.poses.includes(e.pose));} }
   const metadata=JSON.parse(readFileSync('public/art/avatar.json','utf8'));
   assert.equal(metadata.frames.find(f=>f.id==='lying').usage,'identity-study-only');
   assert.ok(!EXERCISES.some(e=>e.pose==='lying'));

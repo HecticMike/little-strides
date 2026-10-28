@@ -1,4 +1,4 @@
-import { freshState, validateBackup } from './engine.mjs';
+import { freshState, validateBackup, persistableState } from './engine.mjs';
 let database;
 let queue = Promise.resolve();
 async function db() {
@@ -21,7 +21,7 @@ export async function loadState() {
   return stored ? validateBackup({ format: 'little-strides', schemaVersion: 1, data: stored }) : freshState();
 }
 export function saveState(state) {
-  const snapshot = structuredClone(state);
+  const snapshot = structuredClone(persistableState(state));
   const operation = queue.catch(() => {}).then(async () => {
     const d = await db();
     await new Promise((resolve, reject) => {
@@ -35,4 +35,4 @@ export function saveState(state) {
   queue = operation;
   return operation;
 }
-export const backup = state => JSON.stringify({ format: 'little-strides', schemaVersion: 1, exportedAt: Date.now(), data: state }, null, 2);
+export const backup = state => JSON.stringify({ format: 'little-strides', schemaVersion: 1, exportedAt: Date.now(), data: persistableState(state) }, null, 2);

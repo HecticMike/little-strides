@@ -1,5 +1,15 @@
 # Little Strides development log
 
+## 2026-10-28 - NHS-informed core catalogue
+
+- Goal: enable personally reviewed core-focused routines without changing art, RPG, dependencies or existing records.
+- Audit/fixes: no real core entries, missing demonstrations, no core focus and a hardcoded backup group list blocked routines. The greedy scheduler also rejected a feasible mixed 20-minute plan after core opt-ins. Added core-group validation/focus and memoised constraint-preserving profile search, retaining all prior recovery/exposure checks and position grouping. Cached idle plan computation avoids quarter-second replanning.
+- Catalogue: NHS-informed bracing, pelvic tilt, heel slide and basic bilateral bridge are unreviewed, default-disabled individual opt-ins. Modified dead bug is documented but locked because guided variation/shoulder suitability remain unresolved. Metadata includes source/context, instructions, purpose, joint/muscle notes, self-pacing and assessment reasons. No core illustration exists; work blocks use honest text-only fallback. Activation is separate from strengthening/aerobic activity.
+- Preview: inert timer cards have no exercise IDs or prescription; no new history, recovery load or reward. Storage/export remove transient preview activity; reload ends it. Historical preview records remain intact. Real workout history/schema and existing RPG reward rules preserved.
+- Files: core-candidates, existing catalogue/scheduler/engine/storage/main/review components, narrowly scoped functional CSS, relevant tests, README/research notes and phone captures. All 66 existing art/prototype files unchanged; no atlas, Aseprite, avatar/village or package changes.
+- Checks: 46 unit/art tests, production build and 16 focused WebKit/Chromium scenarios PASS. Covered opt-ins/locks, default and sufficient-capacity durations, same/next-day recovery, incomplete pools, full core workflow, self-paced text-only art, inert preview, normal ten-minute workouts and existing partial/replace/offline history. Fixed an over-exact preview notice test selector; no product workaround. Full-pool desktop planning about 2.3 ms/request. Phone screenshots reviewed; controls remain visible without horizontal overflow.
+- Remaining: all entries clinically unreviewed; dead bug needs physiotherapist-guided variation selection. NHS condition-specific leaflets and app timing/caps are not personal clearance or an NHS-prescribed dose. Physical floor access, execution/range, dose and real-device checks remain. See docs/core_catalogue_review.md for sources and caveats.
+- Next: individual candidate/suitability review and physical-phone text-cue validation; do not fabricate demonstrations or unlock higher-level variants automatically.
 ## 2026-10-28 - Phase 5 functional exercise MVP
 
 - Goal: complete regular short-workout journeys while preserving art, prototype, eligibility locks, data and RPG features.

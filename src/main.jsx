@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import { EXERCISES, EXERCISE_REVIEW_VERSION, planSession, eligibleExercises, performedMovements, setFeedback, setExerciseHold, canResumeSession, MINUTES, exercise, createSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
+import { EXERCISES, EXERCISE_REVIEW_VERSION, planSession, eligibleExercises, performedMovements, setFeedback, setExerciseHold, canResumeSession, MINUTES, exercise, createSession, createPreviewSession, elapsed, duration, position, freeze, resume, restore, skip, replace, finish, recovery, progress, freshState, validateBackup } from './engine.mjs';
 import { loadState, saveState, backup } from './storage.mjs';
 import { avatarAtlas, avatarStage, avatarFrame, avatarFingerprint, CHARACTER } from './avatar.mjs';
 import { Cues } from './audio.mjs';
@@ -83,6 +83,7 @@ function App() {
   const [busy, setBusy] = useState(false), busyRef = useRef(false), [otherTab, setOtherTab] = useState(false);
   const [saving, setSaving] = useState(false), writes = useRef(0);
   const lastTick = useRef(Date.now()), lastSave = useRef(0), lastCue = useRef(''), importRef = useRef();
+  const proposal=useMemo(()=>data&&!data.active?planSession(minutes,data.history,now,data.settings):null,[minutes,data?.history,data?.settings,!!data?.active,Math.floor(now/60000)]);
   const set = value => { current.current = value; setData(value); };
   async function commit(value, optimistic = true) {
     if (optimistic) set(value);
@@ -157,7 +158,7 @@ function App() {
         const stopped={...s,active:freeze(s.active,t)};set(stopped);
         const next = finish(stopped, true, t);
         void commit(next, false).then(saved => {
-          if (saved) {cues.play('transition');setCompletionId(s.active.id);setNotice(progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
+          if (saved) {cues.play('transition');setCompletionId(s.active.mode==='preview'?null:s.active.id);setNotice(s.active.mode==='preview'?'Workflow preview finished. No exercise recorded or rewards granted.':progress(next.history) > progress(s.history) ? 'Session complete. 1 timber earned. Visit the workshop when ready.' : 'Session saved. No restoration reward earned.');}
           finishing.current = false;
         });
         return;
@@ -190,13 +191,19 @@ function App() {
     const saved = await commit({ ...current.current, active: createSession(minutes, current.current.history, t, {settings:current.current.settings}), updatedAt: t });
     if (saved) { cues.play('transition'); void wake.acquire(); }
   }
+  async function beginPreview(){
+    if(current.current.active)return;
+    setCompletionId(null);setSessionWarning('');setNotice('');await cues.enable();
+    const at=Date.now();lastTick.current=at;lastCue.current='';
+    if(await commit({...current.current,active:createPreviewSession(minutes,at),updatedAt:at})){cues.play('transition');void wake.acquire();}
+  }
   async function toggle() {
     const s = current.current, t = Date.now();
     if (s.active.status === 'running') {
       wake.release(); await commit({ ...s, active: freeze(s.active, t), updatedAt: t });
     } else {
       const remaining=s.active.segments.slice(position(s.active).index).filter(b=>b.kind==='work');
-      if (remaining.some(b=>!enabledExercise(b.exerciseId,s.settings))) {setSessionWarning('This saved plan contains disabled or pending-review movements. Skip or replace those blocks, or end it and start an eligible routine.');setPendingReview('resume');return;}
+      if (s.active.mode!=='preview'&&remaining.some(b=>!enabledExercise(b.exerciseId,s.settings))) {setSessionWarning('This saved plan contains disabled or pending-review movements. Skip or replace those blocks, or end it and start an eligible routine.');setPendingReview('resume');return;}
       if(!canResumeSession(s.active,s.history,t,s.settings)){setSessionWarning('A remaining movement is recovering, flagged or at its rolling limit. Replace or skip it, or end and generate a suitable routine.');return;}
       setSessionWarning('');
       await cues.enable();
@@ -211,13 +218,13 @@ function App() {
     if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') {const remaining=next.active.segments.slice(position(next.active).index).filter(b=>b.kind==='work');if(remaining.every(b=>enabledExercise(b.exerciseId,next.settings)))await toggle();} else if(purpose!=='settings') await begin(); }
   }
   async function endWorkout() {
-    if (!confirm('End this session and save it as partial?')) return;
+    if (!confirm(current.current.active.mode==='preview'?'End this workflow preview? Nothing will be recorded.':'End this session and save it as partial?')) return;
     const snapshot=current.current, at=Date.now(), id=snapshot.active.id;
     // Freeze synchronously so neither the checkpoint timer nor visibility events
     // can enqueue an old active snapshot after the final history write.
     const stopped={...snapshot,active:freeze(snapshot.active,at),updatedAt:at};
     set(stopped);wake.release();
-    if(await commit(finish(stopped,false,at),false))setCompletionId(id);
+    if(await commit(finish(stopped,false,at),false)){setCompletionId(snapshot.active.mode==='preview'?null:id);if(snapshot.active.mode==='preview')setNotice('Workflow preview finished. No exercise recorded or rewards granted.');}
   }
   async function replaceMovement() {
     const next=replace(current.current.active,Date.now(),{history:current.current.history,settings:current.current.settings});
@@ -258,21 +265,21 @@ function App() {
   const count = progress(data.history), stage = avatarStage(count), s = data.active, workshop = workshopState(data);
   const p = s ? position(s, now) : null, e = p && !p.done ? exercise(p.exerciseId) : null;
 
-  const proposal=s?null:planSession(minutes,data.history,now,data.settings), completedRecord=data.history.find(h=>h.id===completionId);
+  const completedRecord=data.history.find(h=>h.id===completionId);
   const audioControls = <div className="audio-controls">
     <button disabled={saving} aria-label={data.settings.muted ? 'Unmute sound' : 'Mute sound'} aria-pressed={data.settings.muted} onClick={() => settings({ muted: !data.settings.muted })}>{data.settings.muted ? 'Sound off' : 'Sound on'}</button>
     <label>Volume<input aria-label="Cue volume" type="range" min="0" max="1" step="0.05" value={data.settings.volume} onChange={event => settings({ volume: Number(event.target.value) })} /></label>
   </div>;
   return <div className={`app ${s ? 'in-session' : ''}`}>
-    {pendingReview && <ExerciseReview purpose={pendingReview} settings={data.settings} history={data.history} now={now} busy={busy||saving} onFlag={(id,flag)=>action(()=>commit(setExerciseHold(current.current,id,flag)))} onToggle={(id,on)=>settings({enabledExercises:on?[...new Set([...(current.current.settings.enabledExercises||[]),id])]:(current.current.settings.enabledExercises||[]).filter(x=>x!==id)})} onRecovery={value=>settings({recovery:value})} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
+    {pendingReview && <ExerciseReview purpose={pendingReview} settings={data.settings} history={data.history} now={now} busy={busy||saving} onFlag={(id,flag)=>action(()=>commit(setExerciseHold(current.current,id,flag)))} onToggle={(id,on)=>settings({enabledExercises:on?[...new Set([...(current.current.settings.enabledExercises||[]),id])]:(current.current.settings.enabledExercises||[]).filter(x=>x!==id)})} onFocus={value=>settings({sessionFocus:value})} onRecovery={value=>settings({recovery:value})} onCancel={() => setPendingReview(null)} onAccept={() => action(acceptReview)} />}
     {error && <div className="error" role="alert">{error}<div className="row"><button onClick={() => action(() => commit(current.current))}>Retry saving</button><button onClick={exportData}>Export backup</button></div></div>}
     {s ? <main className="workout">
       <header className="workout-heading"><span className="brand">{s.mode === 'preview' ? 'PREVIEW · NO REWARDS' : 'LITTLE STRIDES'}</span><span className="pill">{clock(duration(s) - elapsed(s, now))} left</span></header>
-      <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'prepare' ? 'GET READY' : p?.kind === 'cooldown' ? 'WIND DOWN' : p?.kind === 'rest' ? 'REST / TRANSITION' : 'TIMED MOVEMENT'}</p><h1>{p?.done ? 'All done' : p?.kind === 'prepare' ? 'Preparation' : p?.kind === 'cooldown' ? 'Wind down' : p?.kind === 'rest' ? 'Take a breath' : e?.name}</h1></section>
-      <div className="exercise-art"><Avatar pose={p?.kind !== 'work' || e?.artStatus === 'provisional' ? 'stand' : e?.pose || 'stand'} stage={stage} outfit="training" /><div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="pose-note">{e?.artStatus==='provisional'?'Provisional artwork · demonstration withheld':'Stylised pose · timed activity, not measured repetitions'}</span></div>
-      <section className="workout-readout" aria-label="Exercise timing"><span className="reps">{p?.kind === 'work' ? `PACE ${p.rep} / 15` : p?.kind === 'prepare' ? 'PREPARATION' : p?.kind === 'cooldown' ? 'WIND DOWN' : 'REST · 15 SEC'}</span><p>{p?.kind === 'prepare' ? 'Check your space. Get ready for ' + (exercise(s.segments.find(b=>b.kind==='work')?.exerciseId)?.name||'your next movement') + '.' : p?.kind === 'cooldown' ? 'The session is winding down. Stay comfortable.' : p?.kind === 'rest' ? 'Pause your movement. Next: ' + (exercise(s.segments.slice(p.index+1).find(b=>b.kind==='work')?.exerciseId)?.name||'wind down') + '.' : e?.cue}</p></section>
+      <section className="exercise-heading"><p className="eyebrow">{s.status === 'paused' ? 'PAUSED' : p?.kind === 'prepare' ? 'GET READY' : p?.kind === 'cooldown' ? 'WIND DOWN' : p?.kind === 'rest' ? 'REST / TRANSITION' : 'TIMED MOVEMENT'}</p><h1>{p?.done ? 'All done' : p?.kind === 'prepare' ? 'Preparation' : p?.kind === 'cooldown' ? 'Wind down' : p?.kind === 'rest' ? 'Take a breath' : s.mode==='preview'?(p?.previewLabel||'Preview timer card'):e?.name}</h1></section>
+      <div className="exercise-art">{s.mode==='preview'?<div className="text-only-art"><strong>Workflow preview</strong><p>No exercise is prescribed. Try the timer controls without performing a movement.</p></div>:p?.kind==='work'&&(!e?.pose||e?.artStatus!=='stylised')?<div className="text-only-art"><strong>Text-only exercise</strong><p>No reliable demonstration is available. Read the written instructions and suitability notes; do not copy an unrelated character pose.</p></div>:<Avatar pose={p?.kind==='work'?e.pose:'stand'} stage={stage} outfit="training" />}<div className="countdown" role="timer" aria-label="Seconds remaining">{Math.ceil((p?.remainingMs || 0) / 1000)}<small>SEC</small></div><span className="pose-note">{s.mode==='preview'?'Workflow only · no records or rewards':p?.kind==='work'&&(!e?.pose||e?.artStatus!=='stylised')?'Demonstration unavailable · text instructions only':'Stylised pose · timed activity, not measured repetitions'}</span></div>
+      <section className="workout-readout" aria-label="Exercise timing"><span className="reps">{p?.kind === 'work' ? s.mode==='preview'?'WORKFLOW PREVIEW':p.paceTotal?`PACE ${p.rep} / ${p.paceTotal}`:'SELF-PACED · NO REP TARGET' : p?.kind === 'prepare' ? 'PREPARATION' : p?.kind === 'cooldown' ? 'WIND DOWN' : 'REST · 15 SEC'}</span><p>{s.mode==='preview'?'Workflow preview only. No exercise is prescribed or recorded.':p?.kind === 'prepare' ? 'Check your space. Get ready for ' + (exercise(s.segments.find(b=>b.kind==='work')?.exerciseId)?.name||'your next movement') + '.' : p?.kind === 'cooldown' ? 'The session is winding down. Stay comfortable.' : p?.kind === 'rest' ? 'Pause your movement. Next: ' + (exercise(s.segments.slice(p.index+1).find(b=>b.kind==='work')?.exerciseId)?.name||'wind down') + '.' : e?.cue}</p></section>
       <div className="workout-footer">
-        {s.reason === 'interrupted' && <p className="recovery" role="status">Interrupted session saved. Time away was not counted. Resume when ready.</p>}
+        {s.reason === 'interrupted' && <p className="recovery" role="status">{s.mode==='preview'?'Preview paused; nothing was recorded.':'Interrupted session saved. Time away was not counted. Resume when ready.'}</p>}
         {sessionWarning&&<div className="recovery" role="status">{sessionWarning}<button onClick={()=>setPendingReview('resume')}>Review choices and recovery</button></div>}{audioControls}
         <div className="workout-actions"><button disabled={busy || finishing.current || !!error} onClick={() => action(toggle)} className="primary">{s.status === 'running' ? 'Pause' : 'Resume'}</button><button disabled={busy || finishing.current || !!error} onClick={() => action(() => commit({ ...current.current, active: skip(current.current.active) }))}>Skip</button><button disabled={busy || finishing.current || !!error || p?.kind !== 'work' || p?.done} onClick={() => action(replaceMovement)}>Replace</button></div>
         <div className="session-meta"><button className="text-button" disabled={busy||finishing.current} onClick={() => action(endWorkout)}>End session</button><span>{s.status === 'running' ? wake.status : 'Resume to continue'}</span></div>
@@ -286,7 +293,7 @@ function App() {
           {completedRecord&&<SessionCompletion record={completedRecord} rewarded={completedRecord.completed&&completedRecord.mode!=='preview'&&completedRecord.activeMs>=30000} busy={busy||saving} onFeedback={(comfort,joints)=>action(()=>feedback(completedRecord.id,comfort,joints))} onDone={()=>{setCompletionId(null);setNotice('');}}/>}
           <h1>Your next stride</h1><p className="intro milestone">{workshop.stage ? stage === 2 ? 'Workshop restored · Veteran outfit unlocked.' : 'Workshop restored · Next outfit in ' + ((stage + 1) * 3 - count) + ' strides.' : workshop.balance ? workshop.balance + ' timber ready. Visit the workshop to restore it.' : 'Next: earn 1 timber and restore the workshop.'}</p>
           <div className="home-scene"><span className="scene-label">HEARTHWOOD · VILLAGE GREEN</span><Avatar stage={stage} /><span className="hero-stage"><Icon index={5} />{CHARACTER.stages[stage].name}</span></div>
-          <section className="plan"><div className="row between"><h2>Choose your quest</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><button className="primary start" disabled={busy || !!error || ((data.settings.enabledExercises||[]).length>0&&!proposal.segments)} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><p className="muted plan-description">{proposal.reason||'30s preparation · 45s movement / 15s rest · 30s wind-down'}</p><button className="text-button review-link" onClick={()=>setPendingReview('settings')}>Review or disable movements</button>{!proposal.segments&&proposal.availableMinutes.filter(m=>m<minutes).length>0&&<div className="shorter-options">{proposal.availableMinutes.filter(m=>m<minutes).map(m=><button key={m} onClick={()=>setMinutes(m)}>Use {m} minutes</button>)}<p className="small muted">Or rest; no recovering movement is repeated to fill time.</p></div>}<p className="small muted">Standing movements. Mat optional.</p></section>
+          <section className="plan"><div className="row between"><h2>Choose your quest</h2><span className="muted">No equipment</span></div><div className="duration-options" aria-label="Workout duration">{MINUTES.map(m => <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m}<small>MIN</small></button>)}</div><button className="primary start" disabled={busy || !!error || ((data.settings.enabledExercises||[]).length>0&&!proposal.segments)} onClick={() => action(begin)}>{busy ? 'Preparing…' : 'Start ' + minutes + '-minute session'}<Icon index={0} /></button><p className="muted plan-description">{data.settings.sessionFocus==='core'&&proposal.segments?`Core focus: ${(proposal.summary.strength/60000).toFixed(1)} min strengthening; ${((proposal.summary.activation+proposal.summary.mobility)/60000).toFixed(1)} min activation/mobility. `:''}{proposal.reason||'30s preparation · 45s movement / 15s rest · 30s wind-down'}</p><button className="text-button review-link" onClick={()=>setPendingReview('settings')}>Review or disable movements</button>{!proposal.segments&&proposal.availableMinutes.filter(m=>m<minutes).length>0&&<div className="shorter-options">{proposal.availableMinutes.filter(m=>m<minutes).map(m=><button key={m} onClick={()=>setMinutes(m)}>Use {m} minutes</button>)}<p className="small muted">Or rest; no recovering movement is repeated to fill time.</p></div>}<button className="text-button review-link" disabled={busy||!!error} onClick={()=>action(beginPreview)}>Preview workflow — no exercise recorded</button><p className="small muted">{data.settings.sessionFocus==='core'?'Core focus: floor movements, mat optional.':'Mixed focus; review floor and standing movements individually.'}</p></section>
           <div className="progress-strip"><Icon index={4} /><div><strong>{count} little strides</strong><p>{workshop.balance + ' timber available · ' + CHARACTER.stages[stage].name}</p></div><span className="stage">{stage + 1}/3</span></div>
         </>}
         {tab === 'Village' && <Village completed={count} workshop={workshop} busy={busy || saving || !!error} onRestore={() => action(restoreBuilding)} />}

@@ -92,11 +92,11 @@ test('preview-only completion earns no timber and does not schedule recovery',as
   await page.evaluate(async state=>{const db=await new Promise(resolve=>{const r=indexedDB.open('little-strides',1);r.onsuccess=()=>resolve(r.result);});await new Promise(resolve=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(state,'current');tx.oncomplete=resolve;});db.close();},state);
   await page.reload();await expect(page.getByText('PREVIEW · NO REWARDS',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Resume',exact:true}).tap();await page.clock.runFor(1500);
-  await expect(page.getByText('Session saved. No restoration reward earned.')).toBeVisible();
+  await expect(page.getByText('Workflow preview finished. No exercise recorded or rewards granted.')).toBeVisible();
   const map=await village(page);await expect(map).toHaveAttribute('data-building-stage','original');
   await page.getByRole('button',{name:'Workshop',exact:true}).tap();await page.clock.runFor(2200);
   await expect(page.getByRole('button',{name:'Need 1 timber'})).toBeDisabled();
-  await page.getByRole('button',{name:'Journal',exact:true}).tap();await expect(page.getByText('Preview',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Journal',exact:true}).tap();await expect(page.getByText('Your first session will appear here.')).toBeVisible();
   await expect(page.getByText('No current recovery or discomfort restrictions. Only your enabled movements can be selected.',{exact:true})).toBeVisible();
   await expect(page.getByRole('region',{name:'Activity totals'})).toContainText('0 completed sessions');
 });

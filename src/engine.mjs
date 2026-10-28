@@ -9,13 +9,21 @@ export function createSession(minutes,history=[],now=Date.now(),{mode='workout',
   if(!plan.segments){const error=new Error(plan.reason);error.availableMinutes=plan.availableMinutes;throw error;}
   return {id:crypto.randomUUID(),qualityVersion:3,engineVersion:2,mode,minutes,startedAt:now,segments:plan.segments,plan:structuredClone(plan.segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
 }
+export function createPreviewSession(minutes=10,now=Date.now()){
+  if(!MINUTES.includes(minutes))throw new Error('Choose 7, 10, 15 or 20 minutes.');
+  const segments=[{kind:'prepare',exerciseId:null,durationMs:30000}];
+  for(let i=0;i<minutes-1;i++)segments.push({kind:'work',exerciseId:null,previewLabel:'Sample timer card',durationMs:45000},{kind:'rest',exerciseId:null,durationMs:15000});
+  segments.push({kind:'cooldown',exerciseId:null,durationMs:30000});
+  return {id:crypto.randomUUID(),engineVersion:2,mode:'preview',minutes,startedAt:now,segments,plan:structuredClone(segments),elapsedMs:0,runningSince:now,checkpointAt:now,status:'running',reason:null,events:[],timeline:[{at:now,position:0}]};
+}
+export const persistableState=state=>state.active?.mode==='preview'?{...state,active:null}:state;
 export const duration=s=>s.segments.reduce((n,b)=>n+b.durationMs,0);
 export const elapsed=(s,now=Date.now())=>Math.min(duration(s),Math.max(0,s.elapsedMs+(s.status==='running'?Math.max(0,now-s.runningSince):0)));
 export function position(s,now=Date.now()){
   let remaining=elapsed(s,now);
   for(let index=0;index<s.segments.length;index++){
     const segment=s.segments[index];
-    if(remaining<segment.durationMs)return {...segment,index,segmentElapsedMs:remaining,remainingMs:segment.durationMs-remaining,rep:Math.floor(remaining/3000)+1};
+    if(remaining<segment.durationMs){const pace=exercise(segment.exerciseId)?.paceMs??3000;return {...segment,index,segmentElapsedMs:remaining,remainingMs:segment.durationMs-remaining,rep:pace?Math.floor(remaining/pace)+1:0,paceTotal:pace?Math.ceil(segment.durationMs/pace):0};}
     remaining-=segment.durationMs;
   }
   return {done:true,index:s.segments.length,remainingMs:0};
@@ -58,6 +66,7 @@ export function performedMovements(s,now=Date.now()){
 }
 export function replace(s,now=Date.now(),{history=[],settings={}}={}){
   const p=position(s,now);if(p.done||p.kind!=='work')return s;
+  if(s.mode==='preview')return {...s,segments:s.segments.map((b,i)=>i===p.index?{...b,previewLabel:b.previewLabel==='Alternative timer card'?'Sample timer card':'Alternative timer card'}:b)};
   const movements=performedMovements(s,now),record={mode:s.mode,endedAt:now,activeMs:0,groups:[],movements};
   const candidates=eligibleExercises([...history,record],now,settings).filter(e=>e.id!==p.exerciseId&&e.position===exercise(p.exerciseId).position&&e.loadKind!=='strength');
   const config=recoveryConfig(settings),prior=recovery(history,now,settings);
@@ -74,6 +83,7 @@ export function replace(s,now=Date.now(),{history=[],settings={}}={}){
 }
 export function finish(state,completed,now=Date.now()){
   const s=state.active;if(!s)return state;
+  if(s.mode==='preview')return {...state,active:null,updatedAt:now};
   const consumed=elapsed(s,now),movements=performedMovements(s,now),activeMs=movements.reduce((n,m)=>n+m.actualMs,0);
   const groups=[...new Set(movements.filter(m=>m.actualMs>0).map(m=>exercise(m.exerciseId).group))];
   const record={schemaVersion:1,qualityVersion:3,...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s)&&fullEligibleActivity({segments:s.segments,movements}),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movements,movementAccounting:'legacy-estimate'})};
@@ -91,6 +101,7 @@ export function setExerciseHold(state,id,flag,now=Date.now()){
   return {...state,settings:{...state.settings,exerciseHolds:holds,exerciseReassessedAt:reviews,enabledExercises:(state.settings.enabledExercises||[]).filter(x=>x!==id)},updatedAt:now};
 }
 export function canResumeSession(s,history,now,settings){
+  if(s.mode==='preview')return true;
   const current=position(s,now),remaining=s.segments.slice(current.index).filter(b=>b.kind==='work');
   const eligible=new Set(eligibleExercises(history,now,settings).map(e=>e.id));
   if(remaining.some(b=>!eligible.has(b.exerciseId)))return false;
@@ -109,7 +120,7 @@ export function validateBackup(input) {
   for(const key of ['exerciseHolds','exerciseReassessedAt'])if(s.settings[key]!==undefined&&(!s.settings[key]||Array.isArray(s.settings[key])||typeof s.settings[key]!=='object'||Object.entries(s.settings[key]).some(([id,at])=>!exercise(id)||!num(at))))fail();
   const ids = new Set();
   for (const h of s.history) {
-    if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion) || !eventsOk(h.events, h.segments.length)) fail();
+    if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility','core'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion) || !eventsOk(h.events, h.segments.length)) fail();
     ids.add(h.id);
   }
   if (s.active !== null) {
@@ -117,6 +128,7 @@ export function validateBackup(input) {
     if (!(a.mode === undefined || ['workout', 'preview'].includes(a.mode)) || !identity(a) || ids.has(a.id) || !MINUTES.includes(a.minutes) || !num(a.startedAt) || !num(a.checkpointAt) || a.checkpointAt < a.startedAt || !num(a.elapsedMs) || a.elapsedMs > a.minutes * 60_000 || !['running', 'paused'].includes(a.status) || !(a.reason === null || ['paused', 'interrupted'].includes(a.reason)) || (a.status === 'running' ? !num(a.runningSince) || a.runningSince > a.checkpointAt : a.runningSince !== null) || !segmentsOk(a.segments, a.minutes, a.engineVersion) || !eventsOk(a.events, a.segments.length)) fail();
   }
   if (!(s.settings.exerciseReviewVersion === undefined || Number.isInteger(s.settings.exerciseReviewVersion) && s.settings.exerciseReviewVersion >= 1 && s.settings.exerciseReviewVersion <= EXERCISE_REVIEW_VERSION)) fail();
+  if(s.settings.sessionFocus!==undefined&&!['mixed','core'].includes(s.settings.sessionFocus))fail();
   if(s.settings.paceMuted!==undefined&&typeof s.settings.paceMuted!=='boolean')fail();
   if(s.settings.enabledExercises!==undefined&&(!Array.isArray(s.settings.enabledExercises)||!s.settings.enabledExercises.every(id=>exercise(id))))fail();
   if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200||!Number.isFinite(c.maxJointSeconds)||c.maxJointSeconds<90||c.maxJointSeconds>2400)fail();}

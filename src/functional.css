@@ -5,3 +5,6 @@
 .activity-periods {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;}
 .activity-periods h3 {font-size:15px;margin:0 0 5px;}
 .activity-periods p {font-size:12px;}
+.text-only-art {width:calc(100% - 112px);margin:12px;padding:8px;line-height:1.4;font-size:14px;color:#173b32;}
+.text-only-art strong {display:block;margin-bottom:8px;font-size:18px;}
+.exercise-options a {display:inline-block;text-decoration:underline;min-height:44px;padding-block:10px;}

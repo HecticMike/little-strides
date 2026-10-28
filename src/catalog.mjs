@@ -1,3 +1,4 @@
+import {CORE_CANDIDATES} from './core-candidates.mjs';
 export const MINUTES = [7,10,15,20];
 export const EXERCISE_REVIEW_VERSION = 2;
 export const JOINTS = ['ankles','knees','hips','back','shoulders','elbows','wrists'];
@@ -9,6 +10,7 @@ export const EXERCISES = [
   {id:'calf',category:'Core & Strength',pattern:'ankle-raise',muscles:['calves'],name:'Calf raise',reviewStatus:'unreviewed',selectable:true,group:'legs',loadKind:'strength',position:'standing',joints:['ankles','knees'],pose:'calf',artStatus:'stylised',cue:'Hold support if needed. Lift heels, lower slowly.',considerations:'Body-weight loading through ankles and calves; balance and ankle tolerance matter. Support is optional.',alternative:'march'},
   {id:'reach',category:'Mobility & Recovery',pattern:'reach',muscles:['shoulder-mobility'],name:'Gentle reach',reviewStatus:'unreviewed',selectable:true,group:'mobility',loadKind:'mobility',position:'standing',joints:['shoulders','back'],pose:'reach',artStatus:'stylised',cue:'Reach up comfortably, then lower your arms.',considerations:'Shoulder elevation and trunk position; keep the range comfortable rather than forcing it.',alternative:'march'},
 ];
+EXERCISES.push(...CORE_CANDIDATES);
 export const exercise = id => EXERCISES.find(e=>e.id===id);
 export const enabledExercise = (id,settings={}) => !!exercise(id)?.selectable && (settings.enabledExercises||[]).includes(id);
 export function recoveryConfig(settings={}) {
