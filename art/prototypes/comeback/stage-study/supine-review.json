@@ -1,0 +1,32 @@
+{
+  "integrated": false,
+  "anatomyStatus": "provisional-unreviewed",
+  "armSectionSkinPixels": [
+    10,
+    11,
+    13
+  ],
+  "changedPixels": [
+    0,
+    19,
+    42
+  ],
+  "protectedJunctionDifference": 0,
+  "limbAnchorDifference": 0,
+  "mobile": {
+    "viewport": 375,
+    "scrollWidth": 375,
+    "workoutWidths": [
+      343,
+      343,
+      343
+    ],
+    "nearestNeighbour": true
+  },
+  "pose": "supine",
+  "artPurpose": "starting-position-only",
+  "exerciseIds": [
+    "abdominal-bracing",
+    "pelvic-tilt"
+  ]
+}

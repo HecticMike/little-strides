@@ -1,0 +1,31 @@
+{
+  "integrated": false,
+  "anatomyStatus": "provisional-unreviewed",
+  "armSectionSkinPixels": [
+    9,
+    10,
+    12
+  ],
+  "changedPixels": [
+    0,
+    20,
+    44
+  ],
+  "protectedJunctionDifference": 0,
+  "limbAnchorDifference": 0,
+  "mobile": {
+    "viewport": 375,
+    "scrollWidth": 375,
+    "workoutWidths": [
+      343,
+      343,
+      343
+    ],
+    "nearestNeighbour": true
+  },
+  "pose": "bridge",
+  "artPurpose": "raised-position-only",
+  "exerciseIds": [
+    "glute-bridge"
+  ]
+}

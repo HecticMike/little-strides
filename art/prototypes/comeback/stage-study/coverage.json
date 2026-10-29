@@ -1,0 +1,114 @@
+{
+  "integrated": false,
+  "artStatus": "provisional-unreviewed",
+  "thresholdsShown": [
+    0,
+    24,
+    96
+  ],
+  "remainingThresholds": [
+    8,
+    48
+  ],
+  "exerciseIds": [
+    "march",
+    "calf",
+    "heel-slide",
+    "abdominal-bracing",
+    "pelvic-tilt",
+    "glute-bridge"
+  ],
+  "exercisePoseCount": 5,
+  "exerciseStageCells": 15,
+  "columns": [
+    {
+      "id": "stand",
+      "label": "Standing reference",
+      "exercises": [],
+      "stems": [
+        "starting",
+        "form-standing",
+        "developed-silhouette"
+      ],
+      "w": 96,
+      "h": 128,
+      "purpose": "standing-idle"
+    },
+    {
+      "id": "march",
+      "label": "March",
+      "exercises": [
+        "march"
+      ],
+      "stems": [
+        "starting-march",
+        "form-march",
+        "developed-march"
+      ],
+      "w": 96,
+      "h": 128,
+      "purpose": "single-pose"
+    },
+    {
+      "id": "calf",
+      "label": "Calf raise",
+      "exercises": [
+        "calf"
+      ],
+      "stems": [
+        "starting-calf",
+        "form-calf",
+        "developed-calf"
+      ],
+      "w": 96,
+      "h": 132,
+      "purpose": "raised-position-only"
+    },
+    {
+      "id": "heel-slide",
+      "label": "Heel slide",
+      "exercises": [
+        "heel-slide"
+      ],
+      "stems": [
+        "starting-heel-slide",
+        "form-heel-slide",
+        "developed-heel-slide"
+      ],
+      "w": 192,
+      "h": 128,
+      "purpose": "single-pose"
+    },
+    {
+      "id": "supine",
+      "label": "Bracing / pelvic tilt",
+      "exercises": [
+        "abdominal-bracing",
+        "pelvic-tilt"
+      ],
+      "stems": [
+        "starting-supine",
+        "form-supine",
+        "developed-supine"
+      ],
+      "w": 192,
+      "h": 128,
+      "purpose": "starting-position-only"
+    },
+    {
+      "id": "bridge",
+      "label": "Bridge",
+      "exercises": [
+        "glute-bridge"
+      ],
+      "stems": [
+        "starting-bridge",
+        "form-bridge",
+        "developed-bridge"
+      ],
+      "w": 192,
+      "h": 128,
+      "purpose": "raised-position-only"
+    }
+  ]
+}

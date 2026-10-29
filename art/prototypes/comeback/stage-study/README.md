@@ -136,3 +136,60 @@ shirt planes x20-26/y24-32. Keep the original elbow/wrist positions and the same
 head/neck registration. Differences remain restrained at native size. Remaining
 neutral supine/bridge/calf pose development and8/48 stages still need work before
 live integration. The later naming and native Aseprite icon task remains queued.
+
+
+## Neutral supine, bridge and calf coverage
+
+`coverage.png` / self-contained `coverage.html` now show the whole0/24/96 study
+set: five exercise poses covering the six existing catalogue movements, plus
+standing references. `coverage.json` names the catalogue IDs, pose purposes,
+source files and remaining8/48 thresholds. This is provisional study coverage;
+it does not mean five live physiques or clinically reviewed demonstrations.
+
+New editable floor masters: `form-supine.aseprite`, `developed-supine.aseprite`,
+`form-bridge.aseprite`, `developed-bridge.aseprite`, frame1,192x128 working
+pixels with the source1px detail. Named source body/limb regions remain separate;
+two native study layers adjust visible arm form and shirt planes. The entire
+source head/neck/shoulder region is protected and recomposed at export. Source
+legs/hands to the left of x104 and floor-contact rows y>=118 are unchanged.
+Supine changes19/42 pixels; bridge changes20/44. Outer silhouettes and source
+bounds remain unchanged. The build differences are restrained and do not yet
+establish finished whole-body physique development.
+
+Supine is a starting-position image for bracing and pelvic tilt; those movements
+are not depicted. Bridge is a raised-position still, not a timed-hold instruction
+or complete lift/lower cycle. Matching labels are present in native reports and
+comparison pages. No exercise is unlocked or prescribed by the artwork.
+
+`form-calf.aseprite` and `developed-calf.aseprite` are96x132 working /48x66
+logical pixels. Editable lower-body regions preserve the original raised-heel
+legs/trainers and toe contacts. Their upper-body preview is context only: export
+reads the corresponding standing study master/output authoritatively for rows0-73.
+Edit physique in `form-standing.aseprite` or `developed-silhouette.aseprite`; edit
+trainers/leg contacts in the calf masters. Preview layers may need refreshing in
+Aseprite after a standing edit; normal export never overwrites manual layers.
+Final calf PNGs automatically use the current standing upper body. This avoids
+independent physique drawings for the identical upper-body pose. Canonical upper
+body and source lower-body differences are0; foot baseline remains127.
+
+Use the existing isolated export command. Supine/bridge comparison pages include
+whole knees, head and contacts in every detail crop; pixel bounds are checked
+against those crops. Both also have375px mobile reviews with343px workout crops.
+Calf reviews preserve the96x132 ratio:144px width and198px height, alongside the
+144x192 standing reference. The pages are artwork reviews, not live app screens.
+All new assets remain out of normal runtime exports/offline cache.
+
+Manual artist review, frame1: supine visible-arm/sleeve x113-120/y104-111 and
+tee folds x110-125/y96-105; bridge arm/forearm joins x112-119/y105-116 and
+tee folds x105-124/y90-103. Keep both supplied bridge forearms legible and do
+not alter support or the head/neck junction. Calf trainer/toe regions below y114
+remain source artwork and require artist judgement rather than automated
+anatomy claims. Source floor shoulders and legs are unchanged, so further whole-
+body stage review is still needed. Complete8/48 coverage and review before live
+integration; naming and layered native Aseprite PWA icon work remain queued.
+
+
+Current preservation checks deliberately require unchanged protected contacts and
+approved source masters. A deliberate future anatomical correction to those
+regions needs a reviewed baseline update; the checks must not be silently relaxed
+to make an unreviewed edit pass. Ordinary native study-layer edits remain editable.

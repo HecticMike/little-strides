@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "integrated": false,
-  "source": "Starting standing and heel-slide bodies with separately editable native-pixel study overlays; authoritative upright head and intact source floor junction",
+  "source": "Canonical Starting pose regions with native physique study layers, shared upright head, intact floor junctions and shared standing upper body for calf",
   "preservedApprovedMasters": 11,
   "preservedRuntimeFiles": 10,
   "unchangedHashes": {
@@ -31,7 +31,13 @@
     "art/prototypes/comeback/stage-study/form-heel-slide.aseprite": "5e72f8fbaea9a2f5772c6efe8b613cc6a7859f9da8a8c2e4c0439e9b76e8afbc",
     "art/prototypes/comeback/stage-study/developed-heel-slide.aseprite": "2674d5d57d3aeecf9cba00984ea62c68d7cfeb20680c5efa0858d56a32e62c78",
     "art/prototypes/comeback/stage-study/form-march.aseprite": "ba8bc4649ccbe595b3a420ade69a787d281073da8a2f28480d430f831fd7dcea",
-    "art/prototypes/comeback/stage-study/developed-march.aseprite": "a32bb071693753269bb98f792537af0ac4f3d7bf004ce6355e0b0fc64bc28d0c"
+    "art/prototypes/comeback/stage-study/developed-march.aseprite": "a32bb071693753269bb98f792537af0ac4f3d7bf004ce6355e0b0fc64bc28d0c",
+    "art/prototypes/comeback/stage-study/form-supine.aseprite": "64ba27b565a1252b760ec054e99d5f95f4cb23a7e504e52e077139477a76bc05",
+    "art/prototypes/comeback/stage-study/developed-supine.aseprite": "3d8280f69c8eb961a7665577657215631efb20d99080f743f045b35cc19f295c",
+    "art/prototypes/comeback/stage-study/form-bridge.aseprite": "0797ed36d467228a75f75fb6b853b51d9599c66ae13ad0be4e09a01bb7a608aa",
+    "art/prototypes/comeback/stage-study/developed-bridge.aseprite": "f0296151f38e6d902c845641b0ff2dce3bb8834dd9d9650b7b8d306283f43a4d",
+    "art/prototypes/comeback/stage-study/form-calf.aseprite": "0dc65e5441e0efe80d5c89cf3eb6ef5040abfc00d2828e4e60e8f6f5536f2dd4",
+    "art/prototypes/comeback/stage-study/developed-calf.aseprite": "75e6a7b650d267c2969d829c46c82867528951bfebdc3a4f16e7ff20d6bedd0f"
   },
   "exportHashes": {
     "starting.png": "6a3f4c144ed253f8cafa9f150bad6a152a55f14254be3403c03ca9d900089410",
@@ -60,7 +66,35 @@
     "march-comparison.html": "2cd61bdd42714e856217ef1c70080428d6c37a09691dddefe84c85d3e1130eb3",
     "march-comparison.png": "17e9adae7b52ed1dd974291794c5eae0b8b06394a923240e5efc1e00115e262b",
     "march-mobile.html": "0c669b039a3dccbc21ea9a5bbe76e130dc5024e3c909386a2583308f05020eca",
-    "march-mobile.png": "3ec3a60d1aad961fec4904e9ed4d2b9fa711d74fe1626d0d5215175786448854"
+    "march-mobile.png": "3ec3a60d1aad961fec4904e9ed4d2b9fa711d74fe1626d0d5215175786448854",
+    "starting-supine.png": "e5fbb98c72bff922ecff8c203d2afa0ac9d33075f774a5923abaea1a4c41b4c1",
+    "form-supine.png": "32c8a0bb5d0fbdc4e342692a6a97d03c282ebab256b0d97bfb07f1cee9c3b1d4",
+    "developed-supine.png": "6ebe274996468fc867e8fb04bbaaaa5f4cdb42b4f4c8bde02473b6f1c9978664",
+    "supine-report.json": "af6175f4027f551a552fe95d2fa46eab2e66f231af1de9bc87f950c21984189b",
+    "supine-comparison.html": "ebb05a05880e960f1a51ec13d223fc0da95a7b3aff5eb61d0febd090be1fec73",
+    "supine-comparison.png": "19268c59792c164e2028fe4ef9a0cc61129a26d3725d7347dd303dcb152eb811",
+    "supine-mobile.png": "7f79e920f7a3b60df3c6336e493edcf6462786d1016a96b4ab9db9fa6dadfea1",
+    "supine-review.json": "895d5cb7b0f44fc730ec990c1ed8ad66ebac94bde5a0857432ca9e827da3b3f9",
+    "starting-bridge.png": "3d51e44a90d4a87c13b755f85c7aa4cfd8b5617924adccf4719baa4b3660c2fd",
+    "form-bridge.png": "9b01438ee8f5229bfacb02024554c7c2e512d31cd7c2d44e769483946cab7956",
+    "developed-bridge.png": "e7076a43727d9e883e8c627fdb2fc4d3861f88426e4dd50204a4cb0bb05c4486",
+    "bridge-report.json": "f49ea2116035a08a8533191cc10c97f43b23923c643c82490546dfcb0a54f2bc",
+    "bridge-comparison.html": "dcb79b92972200fa97822f5033de269f01f24ca87735ad5a78424b756f3e270e",
+    "bridge-comparison.png": "b2d82daadc99e8319c809a5a2e527a8b80f3d844696e77b1f298eb784f918d6e",
+    "bridge-mobile.png": "c0bc5da89bd1dd87aa9c2ab77afe9de57a4b3cfac657e4940de6deedbfbd5a11",
+    "bridge-review.json": "7fe9a7be85155034a3d6e11b4ad2b9c4c06be286f506ab05124502b4aee2980a",
+    "starting-calf.png": "293daf1eaae9b651272083c5a730e7a2193cbd7ad4d0dde1cf49fbe1e0efef9c",
+    "form-calf.png": "6630fff55196ff4f719824a28582869303c806d0aa1eb2284bf520e8b95b13bf",
+    "developed-calf.png": "6483e464363c3aa775d45aabb31a2b930b7b03fc5559c070d2af5c00899cf62d",
+    "form-calf-export.json": "86a0131728ee67913a20a75d72e6acfc4aac5fc0d81a0a85a80dd39acd4294b4",
+    "developed-calf-export.json": "72403fd53ccfc5d9f882ccd7a9178373e5c518253db71bd5d4eac4f4bf40e780",
+    "calf-comparison.html": "b32645909876e63ad5ef55ae7255d273c6bb329c6ae981907e8f5013afb4bb69",
+    "calf-comparison.png": "88f378cd4ffe1d5d1ae46984318e3000019616dffca9904767625d29847efb32",
+    "calf-mobile.html": "40613e2c506a808c32cca17fc38971223d6311377aef90ddd77cea51a1b95eb4",
+    "calf-mobile.png": "448a171616ad3e4795cc507d7e2e97a2045cdfc2f1db4bdab1e9d994c4def514",
+    "coverage.json": "2b3b056e1b0148f7af87acedff69e69e7f0648077aa7fd2df9f6cb4c3545178c",
+    "coverage.html": "630a1665e60d8277d5c665b9e147a047d793ab1d5beb4619fcec6627c2927e22",
+    "coverage.png": "6d612ffa23e5e913c8b589974e8b43dce2b6c7e5b07096b83c9b73c1310cbb75"
   },
   "checks": {
     "headDifference": 0,
@@ -127,6 +161,107 @@
       },
       "headDifference": 0,
       "protectedLowerBodyDifference": 0
+    },
+    "supineStudy": {
+      "integrated": false,
+      "anatomyStatus": "provisional-unreviewed",
+      "armSectionSkinPixels": [
+        10,
+        11,
+        13
+      ],
+      "changedPixels": [
+        0,
+        19,
+        42
+      ],
+      "protectedJunctionDifference": 0,
+      "limbAnchorDifference": 0,
+      "mobile": {
+        "viewport": 375,
+        "scrollWidth": 375,
+        "workoutWidths": [
+          343,
+          343,
+          343
+        ],
+        "nearestNeighbour": true
+      },
+      "pose": "supine",
+      "artPurpose": "starting-position-only",
+      "exerciseIds": [
+        "abdominal-bracing",
+        "pelvic-tilt"
+      ]
+    },
+    "bridgeStudy": {
+      "integrated": false,
+      "anatomyStatus": "provisional-unreviewed",
+      "armSectionSkinPixels": [
+        9,
+        10,
+        12
+      ],
+      "changedPixels": [
+        0,
+        20,
+        44
+      ],
+      "protectedJunctionDifference": 0,
+      "limbAnchorDifference": 0,
+      "mobile": {
+        "viewport": 375,
+        "scrollWidth": 375,
+        "workoutWidths": [
+          343,
+          343,
+          343
+        ],
+        "nearestNeighbour": true
+      },
+      "pose": "bridge",
+      "artPurpose": "raised-position-only",
+      "exerciseIds": [
+        "glute-bridge"
+      ]
+    },
+    "calfStudy": {
+      "canonicalUpperBodyDifference": 0,
+      "sourceLowerBodyDifference": 0,
+      "footBaseline": 127,
+      "mobile": {
+        "viewport": 375,
+        "scrollWidth": 375,
+        "imageWidths": [
+          144,
+          144,
+          144,
+          144,
+          144,
+          144
+        ],
+        "raisedFigureHeights": [
+          198,
+          198,
+          198
+        ],
+        "nearestNeighbour": true
+      }
+    },
+    "coverage": {
+      "exerciseIds": [
+        "march",
+        "calf",
+        "heel-slide",
+        "abdominal-bracing",
+        "pelvic-tilt",
+        "glute-bridge"
+      ],
+      "exerciseStageCells": 15,
+      "remainingThresholds": [
+        8,
+        48
+      ]
     }
   }
 }
