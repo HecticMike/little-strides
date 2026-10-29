@@ -26,15 +26,19 @@
     "public/art/comeback-march-developed.png": "98a7e3218d8120e98905d78d385495ed8fd9cbcc4a4d2efd809068640e0b4c34",
     "public/art/comeback-march.png": "a696e2915abf070260ae284d4921ce79c96585f5fd22b94eebb4ed17f65f7d33",
     "public/art/comeback-room.png": "9888c930558cae3a83d6390554d85787b2c39f3d48bbb68f3ba98aaa49c61604",
-    "art/prototypes/comeback/stage-study/developed-silhouette.aseprite": "a602ec7dad24e69dcf1408b6435f3f721e082a5efd7b504e242dfcdb9c322d29"
+    "art/prototypes/comeback/stage-study/developed-silhouette.aseprite": "8edbc9928888a2ea75911726805f06752a9415bc5b9b4602f4fbad5381e42062",
+    "art/prototypes/comeback/stage-study/form-standing.aseprite": "da8ff7a1432514b594bd307c3ed0993a50d8c7171a88c33140edc1f08fa12127"
   },
   "exportHashes": {
     "starting.png": "6a3f4c144ed253f8cafa9f150bad6a152a55f14254be3403c03ca9d900089410",
-    "developed-silhouette.png": "a32dc31f9a85e8307f67cd75c904531d356e721f5140c84c3580e6e3b94dcb31",
+    "developed-silhouette.png": "39318d4dd5da9f4eea468c397b049e629ccfed810779e2966c23fd1bf83367fa",
+    "form-standing.png": "3719903b9a925be7d2b5524f554af7c77df7777d8a393cb9e1e04aef4310b3cf",
     "developed.png": "f0349c7463e76bffd20dbd3a4b01e9cc575c7690171d862aed9be3144e3ad8dd",
-    "report.json": "939bf5b081a9bf0d162741ac07d3434adc41012b716e4f93bba5be4f72f7e792",
-    "comparison.html": "1ce80797e945bdc2a716ebf7ef81e4b73584e20f108ab62afbbfb9fb2d36d96f",
-    "comparison.png": "d431d3292a23f3707713b7fa0c13b6f4840161c0a5a2907ea90667d8d572868a"
+    "report.json": "1001804edf2721229c13077bec6fc1d84e610f9be00e04a1b7f2b4291eb265bf",
+    "form-export.json": "78ab1b1b11bdf874adac1bd69079e0d38d7bc46a2cf442de45c69320f54248f4",
+    "range-report.json": "970c157329ed9241db46e771c190cbf5b54a47c5186541622e1ace85c46252e4",
+    "comparison.html": "131f8f1a135a50856d40c28e3a939f91016ee6029d83b5fc641fe3105c4979d1",
+    "comparison.png": "96c3839758df20a41d648ef9aed31d25b5282e06bc13608cee6cdbc68a820dbd"
   },
   "checks": {
     "headDifference": 0,
@@ -42,6 +46,17 @@
     "brokenLogicalBlocks": 0,
     "partialAlphaPixels": 0,
     "components": 1,
-    "sharedPalette": true
+    "sharedPalette": true,
+    "standingThresholds": [
+      0,
+      24,
+      96
+    ],
+    "shoulderWidths": [
+      17,
+      19,
+      21
+    ],
+    "allStudiesValidated": true
   }
 }

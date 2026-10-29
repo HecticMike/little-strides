@@ -1,49 +1,55 @@
-# Isolated comeback silhouette study
+# Isolated comeback standing range
 
-Review `comparison.png` or self-contained `comparison.html`. Columns are Starting,
-a proposed broader Developed silhouette, and the existing Developed artwork.
-This is one standing-idle study, not a new live stage or an exercise demonstration.
-No runtime assets, rewards, progression thresholds or exercise eligibility change.
+Review `comparison.png` or self-contained `comparison.html`. Columns are Starting
+(0 units), Finding form study (24), and refined Developed study (96). These are
+standing-idle art proofs, not live stages or exercise demonstrations. The original
+approved Starting/Developed masters, all runtime artwork, progression thresholds
+and exercise eligibility remain unchanged. `developed.png` retains the original
+Developed reference outside the main three-build comparison.
 
-## Findings
+## Result
 
-The approved endpoints have nearly identical outer silhouettes. Shading-only
-middle stages would be difficult to distinguish at native mobile scale. An initial
-24-unit shading trial was rejected during this pass for that reason. The revised
-study tests a stronger endpoint range before attempting intermediate physiques.
-The broader shoulders/arms read more clearly at 144px figure width, but the change
-remains modest at 48x64. This does not yet establish five distinct stages.
+The three standing builds have progressively wider shoulder silhouettes:17/19/21
+logical pixels at row23, with identical head, height, hands, legs and sole anchors.
+The final study's sleeve edges, elbows and waist gap were refined; the new middle
+study uses independently editable, hand-selected shoulder/arm/shirt clusters.
+This establishes a small standing range rather than five finished physiques.
+Differences remain modest at48x64. The8/48 builds and matching exercise poses are
+not produced; live characters still use the approved two endpoint appearances.
 
-## Editable source
+## Aseprite editing and export
 
-Open `developed-silhouette.aseprite` in Aseprite: 96x128 working pixels / 48x64
-logical pixels. Keep its 2x2 grid and existing 27-colour palette. Ten named Starting
-body-region layers remain editable, with three separate native-pixel study layers
-for shoulders/sleeves, upper arms and shirt planes. This is visible pixel artwork,
-not an articulated rig. It reuses the supplied body; only the study edits are
-native-authored. No generated image, resampling, head transplant or anatomy
-stretch was used. The shared head preview is context; `user-art/heads.aseprite`
-remains authoritative at export. Head, lower body, hands and soles stay registered.
+Open `form-standing.aseprite` or `developed-silhouette.aseprite`:96x128 working
+pixels /48x64 logical pixels, a2x2 grid and the existing27-colour palette. Ten
+named Starting body-region layers remain editable. Separate study layers contain
+shoulder/sleeve silhouettes, upper-arm form and shirt planes. The final study also
+has `Refinement / Sleeve edges, elbow and waist`. These are editable visible pixel
+regions, not an articulated rig or reconstructed hidden anatomy. Base artwork
+comes from the supplied canonical character; only the study changes are native
+pixel edits. No new generated image, raster stretching or head transplant.
 
-Export edited layers with:
+The shared head preview provides context; `user-art/heads.aseprite` remains the
+authoritative head at export. Export reads both masters without modifying them:
 
     npm run art:export -- --comeback-stage-study
 
-This isolated branch reads the master, exports PNGs, renders the labelled
-comparison with existing Playwright, and checks palette/grid/connectivity,
-head/lower-body equality and preservation of all 11 approved masters plus 10
-runtime art/metadata files. Normal live exports do not include this study.
-`prepare-comeback-stage-study.lua` is guarded preparation history; do not reimport
-over manual edits. `report.json` and `verification.json` contain measured checks.
+The isolated branch exports PNGs, generates the existing Playwright comparison,
+and validates both studies' palette, logical grid, connected silhouette and exact
+head/lower-body equality. It also checks preservation of all11 approved masters
+and10 active runtime art/metadata files. Normal runtime exports omit these proofs.
+`report.json`, `form-export.json`, `range-report.json` and `verification.json`
+record the measured results. Guarded prepare/refine scripts are preparation
+history; edit existing masters directly rather than rerunning them.
 
-## Review and remaining work
+## Remaining artist review
 
-Review the middle column's broader build, especially the shoulder slope and sleeve
-caps (logical x13-33, y21-26), biceps/elbow junctions (x13-18 and x28-33, y27-32),
-and shirt folds (x19-27, y25-34). These clusters need artist judgement; passing
-pixel checks is not a claim of finished anatomy or professional sprite quality.
-The study retains Starting leg silhouettes and does not establish final whole-body
-physique progression. Do not copy these pixel patches into floor poses. After
-visual approval, refine the agreed build, then author and review the intermediate
-standing stages and matching pose-specific anatomy. No further generated image
-is requested for this study. No walking work is planned.
+Frame1 of both masters: review the shoulder-to-sleeve slope (logical x13-33,
+y21-26), near/far upper-arm and elbow transitions (x13-18 and x28-33,y27-32),
+and shirt taper/folds (x18-27,y25-35). The final study has a deliberately clearer
+arm/waist gap; do not accidentally fill it. Check all corrections at48x64 as well
+as enlarged. These pixel checks do not validate anatomy or professional art quality.
+
+Standing legs retain Starting anatomy. Matching exercise-stage development needs
+pose-specific authoring and anatomy review; do not copy upright shoulder/arm
+patches into lying poses. Next is to establish matching exercise artwork before
+replacing any live stage. No new source image or walking artwork is requested.

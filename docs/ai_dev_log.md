@@ -1,3 +1,11 @@
+## 2026-10-29 - Refined standing range and intermediate build
+
+- Continued the broader-build direction after owner go-ahead. Refined the isolated Developed study's sleeve edges, elbow shading and arm/waist gap, preserving the exact head, height, hands, legs and soles. Added one independently editable24-unit standing study using the same canonical source, palette and logical grid; no image generation, body scaling, walking or runtime character changes.
+- Comparison now shows0/24/96 standing builds enlarged, at144px figure width, at48x64 and as silhouettes. Measured shoulder spans at logical row23 are17/19/21px. Visually reviewed the generated sheet: upper-body progression is clearer; native-scale distinctions remain modest. This is a three-build standing range, not five completed physiques or exercise anatomy approval.
+- Files: existing developed-silhouette master/PNG refined; new form-standing.aseprite/PNG and form/range reports; focused native refinement recipe, read-only export scripts, regenerated comparison/verification and editing notes. The original Developed reference remains exported unchanged. Normal live art exports exclude the study.
+- Checks:28 relevant art/runtime/ledger tests PASS; read-only repeat exports byte-identical; both studies have exact canonical heads and lower-body pixels, binary alpha, unbroken2x2 blocks, palette-only colours and one connected silhouette. Existing11 approved masters and10 active runtime art/metadata outputs retain prior hashes. git diff --check PASS. No full app/mobile regression required for isolated art; app code and current live artwork unchanged. All14 pre-existing screenshot edits preserved.
+- Remaining/next:8/48 standing stages and matching exercise-stage artwork are unfinished. Frame1 manual artist review points: shoulder/sleeve x13-33/y21-26; upper-arm/elbow x13-18 and x28-33/y27-32; shirt taper x18-27/y25-35. Establish matching pose-specific exercise artwork before any live stage replacement; do not transplant upright anatomy into floor poses. No new generated source requested now.
+
 ## 2026-10-29 - Isolated character silhouette study; phone sound confirmed
 
 - Owner confirmed the iPhone15 Home Screen sound retest after the published audio fix. Other physical-device interruption, wake-lock, storage/update and distance-legibility checks remain pending.
