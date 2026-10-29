@@ -1,3 +1,54 @@
+# Five-stage character artwork
+
+The current app uses `public/art/comeback-stages.png`:864x660, five132px rows,
+six registered poses per row. `five-stage/comparison.png` shows all30 frames.
+Stages are Starting0, Rhythm8, Form24, Confident48 and Developed96. Five exercise
+poses cover six supported movements; neutral supine is shared by bracing/tilt.
+All illustrations remain provisional/unreviewed stills. Physical-development
+changes are gradual, especially in floor views; they do not measure the user.
+
+Export current production artwork from editable native sources:
+
+    npm run art:export -- --comeback-stages
+
+Normal `npm run art:export` and the comeback-runtime branch also export this
+atlas after their compatibility artwork. No preparation recipe runs during export.
+New guarded `prepare-comeback-milestones.lua` records the one-time hand-selected
+8/48 clusters; never rerun it over manual work. These are explicit pixel edits,
+not image blending, skeleton morphing, new generated imagery or anatomy scaling.
+
+Canonical sources, all frame1:
+
+| Stage | Standing master | Other pose masters in this directory |
+| --- | --- | --- |
+| Starting | `../user-art/character.aseprite` + `heads.aseprite` | Original `march.aseprite`, `calf.aseprite`, `supine-start.aseprite`, `bridge.aseprite`; heel slide in character master. |
+| Rhythm8 | `rhythm-standing.aseprite` | `rhythm-march.aseprite`, `rhythm-calf.aseprite`, `rhythm-heel-slide.aseprite`, `rhythm-supine.aseprite`, `rhythm-bridge.aseprite` |
+| Form24 | `form-standing.aseprite` | Same five pose suffixes with `form-` prefix. |
+| Confident48 | `confident-standing.aseprite` | Same five pose suffixes with `confident-` prefix. |
+| Developed96 | `developed-silhouette.aseprite` | Same five pose suffixes with `developed-` prefix. |
+
+Standing/march use96x128 working pixels on the2x2 grid. Calf96x132 retains its
+raised-heel source lower body; its upper body is read directly from the matching
+standing master in the same export, not duplicated from a preview. Floor192x128
+sources retain their existing1px detail and complete pose-specific head/neck/
+shoulder junctions. Never paste an upright head or sleeve into a floor pose.
+
+`five-stage/report.json` lists per-frame master paths, frame rectangles, unchanged
+heads/limbs/contacts, exact calf sharing, palette/grid/connectivity, distinct
+adjacent frames and source baselines. `verification.json` records source and PNG
+hashes. Export checks all original11 masters and10 compatibility runtime files
+unchanged. Only the new atlas/metadata are added to runtime caching. Earlier
+0/24/96 proof exports below remain useful review history; their 'not live' wording
+refers to those archived standalone proof pages, not the current compiled atlas.
+
+Artist review remains necessary: frame1 shoulder/sleeve transitions and bent-arm
+shading in upright masters; biceps/sleeve joins and source head/neck support in
+floor masters. Protected source legs/contacts remain unchanged. Floor physique
+changes are modest; do not describe the stills as full motion cycles or clinical
+validation. Deliberate protected-region corrections need reviewed baselines.
+
+---
+
 # Isolated comeback standing range
 
 Review `comparison.png` or self-contained `comparison.html`. Columns are Starting

@@ -3,8 +3,9 @@
 App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
 
-The comeback alpha is published. Settings must show **Comeback alpha** and
-**Build ed7ce29124ca** for this release (later releases may have a new identifier).
+The comeback alpha is published. Settings must show **Comeback alpha**, a
+twelve-character Build identifier, and five character builds under **What to expect
+in this alpha**. Later releases may have a different build identifier.
 The address stays the same; no sign-in is needed. Deployment and fresh WebKit/Chromium
 offline checks passed. Physical-phone checks below are still pending.
 
@@ -32,11 +33,15 @@ Do not assume a desktop or another installation synchronises automatically.
 Android: open in Chrome and choose Install app or Add to Home screen, then open the
 installed icon online until Offline ready appears.
 
-## Retest the iPhone sound update
+## iPhone sound and update checks
+
+The owner previously confirmed audible Test sound and workout cues on the
+iPhone15 Home Screen. Check again after updates or output-route changes.
 
 Wait for Update ready while online, then fully close Little Strides from the App
 Switcher and close any Little Strides Safari tabs. Reopen the Home Screen icon and
-check Settings says Build ed7ce29124ca. Do not uninstall or clear stored data.
+check Settings describes all five character builds. Note the Build identifier if
+reporting a problem. Do not uninstall or clear stored data.
 
 Turn Sound on, set app Volume above zero, raise the phone's media volume and tap
 Test sound. The confirmation should mention **iPhone media playback**. If it is
@@ -47,9 +52,9 @@ offline use. No recording permission or background silent loop is involved.
 
 ## What this alpha contains
 
-- A static Sunlit apartment/Journey and Starting/Developed character artwork.
-  The visual physique change is at 96 comeback steps. Milestones at 8/24/48 are
-  recorded, but intermediate physiques and illustrated scenes are unfinished.
+- A static Sunlit apartment/Journey and five shared character builds at0/8/24/48/96
+  comeback steps. Today, Journey and workouts use the same stage. Changes are
+  gradual at phone size; illustrated story scenes remain unfinished.
 - Core-led recommendations using existing candidates and your recorded constraints.
   Suggestions and artwork are unreviewed, not professional approval. Review or
   disable unsuitable movements; existing locks and discomfort holds remain.
@@ -60,13 +65,13 @@ offline use. No recording permission or background silent loop is involved.
 - A full real session earns one permanent comeback step at every length. Partial
   sessions earn their actual movement fraction. Rest, preparation, preview and
   suspended time earn none. Stopping never removes existing progress.
-- All six currently profile-eligible movements have matching artwork at both
-  existing stages. Setup/raised-position stills are labelled; no full movement
+- All six currently profile-eligible movements have matching artwork at all
+  five stages. Setup/raised-position stills are labelled; no full movement
   cycle, clinically validated demonstration or measured repetitions are implied.
 - Optional effort, later symptoms and manually entered Fitbit readings remain local
   and are included in JSON backups. Device data never overrides symptom restrictions.
 
-## Physical-phone checks - all still pending
+## Physical-phone checks
 
 | Check | Expected result |
 | --- | --- |

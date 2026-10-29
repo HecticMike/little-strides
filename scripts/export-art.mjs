@@ -2,6 +2,10 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { CHARACTER, WORLD, PALETTE, CORE_ILLUSTRATIONS } from '../src/art-spec.mjs';
 import {EXERCISES} from '../src/catalog.mjs';
+if (process.argv.includes('--comeback-stages')) {
+  await import('./export-comeback-stages.mjs');
+  process.exit(0);
+}
 // Isolated standing silhouette study; never exports live assets.
 if (process.argv.includes('--comeback-stage-study')) {
   await import('./export-comeback-stage-study.mjs');

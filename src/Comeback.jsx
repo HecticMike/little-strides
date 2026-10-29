@@ -1,18 +1,18 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {COMEBACK_CHARACTER,loadComebackImage,comebackPoseFrame,comebackFingerprint,hasComebackExerciseArt,isSupineStartingPose} from './comeback-art.mjs';
+import {COMEBACK_CHARACTER,loadComebackImage,COMEBACK_STAGE_ASSET,comebackStageFrame,comebackStageFingerprint,hasComebackExerciseArt,isSupineStartingPose} from './comeback-art.mjs';
 import {comebackProgress,COMEBACK_MILESTONES} from './comeback.mjs';
 import {PROJECTS} from './gameplay.mjs';
 export function ComebackScene({appearance='starting',pose='stand',className='',label='Your home training space'}){
  const ref=useRef(),[failed,setFailed]=useState(false),bridge=pose==='glute-bridge',supineStart=isSupineStartingPose(pose),floor=pose==='heel-slide'||isSupineStartingPose(pose)||pose==='glute-bridge',march=pose==='march',calf=pose==='calf',standingExercise=march||calf;
  useEffect(()=>{
   let disposed=false;ref.current.dataset.ready='false';ref.current.getContext('2d').clearRect(0,0,ref.current.width,ref.current.height);
-  const source=calf?COMEBACK_CHARACTER.calf:bridge?(appearance==='developed'?COMEBACK_CHARACTER.bridgeDeveloped:COMEBACK_CHARACTER.bridge):supineStart?(appearance==='developed'?COMEBACK_CHARACTER.bracingDeveloped:COMEBACK_CHARACTER.bracing):march?(appearance==='developed'?COMEBACK_CHARACTER.marchDeveloped:COMEBACK_CHARACTER.march):COMEBACK_CHARACTER.body;
-  Promise.all([loadComebackImage(COMEBACK_CHARACTER.body),loadComebackImage(COMEBACK_CHARACTER.room),loadComebackImage(source)]).then(([canonical,room,art])=>{
-   if(disposed)return;const c=ref.current,ctx=c.getContext('2d'),f=comebackPoseFrame(pose,appearance);ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);
+  const source=COMEBACK_STAGE_ASSET;
+  Promise.all([loadComebackImage(source),loadComebackImage(COMEBACK_CHARACTER.room)]).then(([art,room])=>{
+   if(disposed)return;const c=ref.current,ctx=c.getContext('2d'),f=comebackStageFrame(pose,appearance);ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);
    if(floor){ctx.drawImage(room,room.width*38/160,room.height*42/96,room.width*96/160,room.height*42/96,0,0,c.width,c.height);ctx.drawImage(art,f.x,f.y,f.w,f.h,0,-23*9,864,576);}
    else if(standingExercise){const cropH=room.height*.72,cropW=cropH*c.width/c.height;ctx.drawImage(room,(room.width-cropW)/2,room.height*.2,cropW,cropH,0,0,c.width,c.height);ctx.fillStyle='rgba(36,60,66,.13)';if(calf){for(const [x,y] of [[30,122],[66,124]]){ctx.beginPath();ctx.ellipse(246+x*3.375,8+y*3.375,12,3,0,0,Math.PI*2);ctx.fill();}}else{ctx.beginPath();ctx.ellipse(246+38*3.375,8+124*3.375,38,6,0,0,Math.PI*2);ctx.fill();}ctx.drawImage(art,f.x,f.y,f.w,f.h,246,calf?-5.5:8,324,f.h*3.375);}
    else{ctx.drawImage(room,0,room.height/6,room.width,room.height*5/6,0,0,c.width,c.height);ctx.drawImage(art,f.x,f.y,f.w,f.h,82*6.4,0,48*6.4,64*6.4);}
-   c.dataset.ready='true';c.dataset.artSource=source;c.dataset.avatarFingerprint=comebackFingerprint(canonical,appearance);setFailed(false);
+   c.dataset.ready='true';c.dataset.artSource=source;c.dataset.artFrame=JSON.stringify(f);c.dataset.avatarFingerprint=comebackStageFingerprint(art,appearance);setFailed(false);
   }).catch(()=>{if(!disposed)setFailed(true)});return()=>{disposed=true};
  },[appearance,pose,floor,march,calf,standingExercise,supineStart,bridge]);
  return <div className={'comeback-scene '+className}><canvas ref={ref} width={floor?864:standingExercise?768:1024} height={floor?378:standingExercise?456:512} role="img" aria-label={label} data-avatar-id={COMEBACK_CHARACTER.id} data-avatar-appearance={appearance} data-exercise-id={floor||standingExercise?pose:undefined} data-art-purpose={bridge||calf?'raised-position-only':supineStart?'starting-position-only':floor||standingExercise?'exercise-still':'character'} data-pose={pose}/>{failed&&<p className="art-fallback">Artwork unavailable. Your activity remains saved.</p>}</div>;

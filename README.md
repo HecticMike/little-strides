@@ -4,7 +4,7 @@
 
 The modern Sunlit apartment, canonical character, core-led recommendations, feedback and permanent comeback progress run with `npm run build:comeback`. The comeback alpha is published at https://hecticmike.github.io/little-strides/ after unit and mobile update checks; `npm run build` retains the legacy compatibility profile.
 
-Use [the phone alpha guide](docs/alpha_mobile.md) for version checks, installation, updates and backups, and [integration status](docs/comeback-integration.md) for remaining milestone artwork and exercise coverage limits. The implementation notes below describe the earlier village build.
+Use [the phone alpha guide](docs/alpha_mobile.md) for version checks, installation, updates and backups, and [integration status](docs/comeback-integration.md) for remaining story-art, physical-phone and exercise coverage limits. Five fictional character builds at0/8/24/48/96 share one native Aseprite atlas across Today, Journey and all supported exercise views. See [the character comparison](art/prototypes/comeback/stage-study/five-stage/comparison.png) and [editable-source guide](art/prototypes/comeback/stage-study/README.md). The implementation notes below describe the earlier village build.
 
 
 Mobile-first workout PWA. The comeback UI uses React; the earlier Phaser village remains in the legacy build.

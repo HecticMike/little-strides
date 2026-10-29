@@ -49,7 +49,7 @@ jobs:
       - name: Install mobile test browsers
         run: npx playwright install --with-deps chromium webkit
       - name: Verify alpha installation and same-origin update
-        run: npx playwright test comeback-alpha.spec.mjs settings-sound.spec.mjs iphone-audio.spec.mjs --reporter=line,github
+        run: npx playwright test comeback-alpha.spec.mjs settings-sound.spec.mjs iphone-audio.spec.mjs comeback-stages.spec.mjs --reporter=line,github
         env:
           LS_COMEBACK: '1'
           LS_APP_PATH: ${{ steps.pages.outputs.base_path }}/

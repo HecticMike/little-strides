@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "id": "little-strides-comeback",
+  "asset": "./art/comeback-stages.png",
+  "width": 864,
+  "height": 660,
+  "rowHeight": 132,
+  "stages": [
+    {
+      "id": "starting",
+      "at": 0
+    },
+    {
+      "id": "rhythm",
+      "at": 8
+    },
+    {
+      "id": "form",
+      "at": 24
+    },
+    {
+      "id": "confident",
+      "at": 48
+    },
+    {
+      "id": "developed",
+      "at": 96
+    }
+  ],
+  "poses": {
+    "stand": {
+      "x": 0,
+      "w": 96,
+      "h": 128,
+      "purpose": "character"
+    },
+    "march": {
+      "x": 96,
+      "w": 96,
+      "h": 128,
+      "purpose": "exercise-still"
+    },
+    "calf": {
+      "x": 192,
+      "w": 96,
+      "h": 132,
+      "purpose": "raised-position-only"
+    },
+    "heel-slide": {
+      "x": 288,
+      "w": 192,
+      "h": 128,
+      "purpose": "exercise-still"
+    },
+    "supine": {
+      "x": 480,
+      "w": 192,
+      "h": 128,
+      "purpose": "starting-position-only"
+    },
+    "bridge": {
+      "x": 672,
+      "w": 192,
+      "h": 128,
+      "purpose": "raised-position-only"
+    }
+  },
+  "clinicalStatus": "unreviewed-illustrations",
+  "animation": false,
+  "headTransforms": false
+}

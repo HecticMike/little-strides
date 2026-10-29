@@ -1,3 +1,4 @@
+import {comebackAppearance} from './comeback-stages.mjs';
 import {exercise} from './catalog.mjs';
 import {rewardedWorkouts,migrateWorld,validWorld} from './gameplay.mjs';
 export const COMEBACK_MILESTONES=[
@@ -21,7 +22,7 @@ export function comebackProgress(input=[]){
  const records=new Map();if(ledger){for(const e of ledger.entries)if(e.units>0)records.set(e.sessionId,e.units);}else for(const h of history){const credit=comebackCredit(h);if(credit>0)records.set(h.id,Math.max(records.get(h.id)||0,credit));}
  const units=[...records.values()].reduce((n,v)=>n+v,0);let milestone=0;for(let i=0;i<COMEBACK_MILESTONES.length;i++)if(units+1e-9>=COMEBACK_MILESTONES[i].at)milestone=i;
  const next=COMEBACK_MILESTONES[milestone+1]||null;
- return {units,sessionCount:records.size,milestone,current:COMEBACK_MILESTONES[milestone],next,fraction:next?Math.max(0,Math.min(1,(units-COMEBACK_MILESTONES[milestone].at)/(next.at-COMEBACK_MILESTONES[milestone].at))):1,appearance:units+1e-9>=96?'developed':'starting',unlocks:ledger?.milestones||[]};
+ return {units,sessionCount:records.size,milestone,current:COMEBACK_MILESTONES[milestone],next,fraction:next?Math.max(0,Math.min(1,(units-COMEBACK_MILESTONES[milestone].at)/(next.at-COMEBACK_MILESTONES[milestone].at))):1,appearance:comebackAppearance(units),unlocks:ledger?.milestones||[]};
 }
 export const creditLabel=(record,ledger)=>{const n=comebackCredit(record,ledger);return n>0?(n===1?'1 comeback step earned':n<.01?'Less than 0.01 comeback step earned':n.toFixed(2)+' comeback step earned'):'Activity saved; your existing progress is kept.';};
 // V1 is an immutable earning policy, not the current clinical eligibility catalogue.
