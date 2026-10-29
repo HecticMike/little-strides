@@ -30,7 +30,7 @@ export class MediaCues {
   try{
    if(!this.audio){try{const session=window.navigator?.audioSession;if(session){session.type='playback';session.addEventListener?.('statechange',()=>{if(session.state==='interrupted'){this.stop();this.interrupt();}});}}catch{}this.audio=new window.Audio();this.audio.preload='auto';this.audio.setAttribute?.('playsinline','');this.audio.onended=()=>{this.expectedPlaying=false;};this.audio.onpause=()=>{if(this.expectedPlaying&&!this.audio.ended&&this.audio.paused){this.expectedPlaying=false;this.ready=false;this.interrupt();}};this.audio.onerror=()=>{if(this.audio.error)this.fail();};}
    // Invoke play during the original tap, before fetch/decode/IndexedDB awaits.
-   this.audio.src=primeSource();this.audio.muted=false;this.audio.volume=1;
+   this.audio.src=primeSource();this.audio.muted=false;
    const priming=this.audio.play();this.status('Preparing sound');
    await audioDeadline(Promise.all([priming,this.prepare(settings.volume)]),this.timeout);
    if(generation!==this.generation||document.hidden)return false;
