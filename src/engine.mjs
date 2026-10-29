@@ -1,3 +1,5 @@
+import {awardComeback,validComeback,frozenFullActivity,frozenSmallPlan} from './comeback.mjs';
+import {validateTraining} from './training.mjs';
 import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts, fullEligibleActivity } from './gameplay.mjs';
 import { MINUTES, SESSION_MINUTES, EXERCISES, EXERCISE_REVIEW_VERSION, JOINTS, exercise, enabledExercise, recoveryConfig, planningMetadata } from './catalog.mjs';
 import { recovery, planSession, eligibleExercises, capacityFits } from './scheduler.mjs';
@@ -104,11 +106,11 @@ export function replace(s,now=Date.now(),{history=[],settings={},exerciseId}={})
 }
 export function finish(state,completed,now=Date.now()){
   const s=state.active;if(!s)return state;
-  if(s.mode==='preview')return {...state,active:null,updatedAt:now};
+  if(s.mode==='preview'||state.history.some(h=>h.id===s.id))return {...state,active:null,updatedAt:now};
   const consumed=elapsed(s,now),movements=performedMovements(s,now),activeMs=movements.reduce((n,m)=>n+m.actualMs,0);
   const groups=[...new Set(movements.filter(m=>m.actualMs>0).map(m=>exercise(m.exerciseId).group))];
   const record={schemaVersion:1,qualityVersion:3,...(s.compositionVersion?{compositionVersion:s.compositionVersion,focus:s.focus,focusLabel:s.focusLabel}:{}),...(s.engineVersion===2?{engineVersion:2,plan:s.plan,timeline:s.timeline}:{}),id:s.id,deviceId:state.deviceId,startedAt:s.startedAt,endedAt:now,minutes:s.minutes,elapsedMs:consumed,activeMs,mode:s.mode||'workout',completed:completed&&consumed===duration(s)&&fullEligibleActivity({segments:s.segments,movements}),groups,segments:s.segments,events:s.events,...(s.engineVersion===2?{movements}:{movements,movementAccounting:'legacy-estimate'})};
-  return {...state,active:null,history:[...state.history.filter(h=>h.id!==s.id),record],updatedAt:now};
+  return awardComeback({...state,active:null,history:[...state.history,record],updatedAt:now},record,now);
 }
 export const progress=history=>rewardedWorkouts(history).length;
 export function setFeedback(state,id,comfort,joints=[],now=Date.now()){
@@ -124,6 +126,7 @@ export function setExerciseHold(state,id,flag,now=Date.now()){
 export function canResumeSession(s,history,now,settings){
   if(s.mode==='preview')return true;
   const current=position(s,now),remaining=s.segments.slice(current.index).filter(b=>b.kind==='work');
+  if(s.minutes===3&&remaining.some(b=>!['activation','mobility'].includes(exercise(b.exerciseId)?.loadKind)))return false;
   const eligible=new Set(eligibleExercises(history,now,settings).map(e=>e.id));
   if(remaining.some(b=>!eligible.has(b.exerciseId)))return false;
   return capacityFits(performedMovements({...s,status:'paused',elapsedMs:duration(s)},now),history,now,settings);
@@ -140,6 +143,7 @@ export function validateBackup(input) {
   if (!s || s.schemaVersion !== 1 || typeof s.deviceId !== 'string' || s.deviceId.length > 100 || !num(s.updatedAt) || !(s.lastExportAt === null || num(s.lastExportAt)) || !s.settings || typeof s.settings.muted !== 'boolean' || !num(s.settings.volume) || s.settings.volume > 1 || !Array.isArray(s.history) || s.history.length > 100_000) fail();
   if(s.settings.planning!==undefined&&(!s.settings.planning||Array.isArray(s.settings.planning)||typeof s.settings.planning!=='object'||Object.entries(s.settings.planning).some(([id,v])=>!exercise(id)||!v||Array.isArray(v)||typeof v!=='object'||Object.entries(v).some(([k,n])=>!['maxSeconds','preferredSeconds','restSeconds'].includes(k)||!Number.isFinite(n)||n<15||n>600||n%15))))fail();
   for(const key of ['exerciseHolds','exerciseReassessedAt'])if(s.settings[key]!==undefined&&(!s.settings[key]||Array.isArray(s.settings[key])||typeof s.settings[key]!=='object'||Object.entries(s.settings[key]).some(([id,at])=>!exercise(id)||!num(at))))fail();
+  if(!validateTraining(s))fail();
   const ids = new Set();
   for (const h of s.history) {
     if (!(h.mode === undefined || ['workout', 'preview'].includes(h.mode)) || !identity(h) || ids.has(h.id) || h.schemaVersion !== 1 || typeof h.deviceId !== 'string' || !SESSION_MINUTES.includes(h.minutes) || !num(h.startedAt) || !num(h.endedAt) || h.endedAt < h.startedAt || !num(h.elapsedMs) || h.elapsedMs > h.minutes * 60_000 || !num(h.activeMs) || h.activeMs > h.elapsedMs || typeof h.completed !== 'boolean' || !Array.isArray(h.groups) || !h.groups.every(g => ['upper', 'legs', 'mobility','core'].includes(g)) || !segmentsOk(h.segments, h.minutes, h.engineVersion,h.compositionVersion) || !eventsOk(h.events, h.segments.length)) fail();
@@ -159,8 +163,8 @@ export function validateBackup(input) {
   if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200||!Number.isFinite(c.maxJointSeconds)||c.maxJointSeconds<90||c.maxJointSeconds>2400)fail();}
   for(const h of [...s.history,...(s.active?[s.active]:[])]){
     if(h.qualityVersion!==undefined&&h.qualityVersion!==3)fail();
-    if(h.minutes===3&&h.mode!=='preview'&&(h.compositionVersion!==1||h.focus!=='recovery'||h.segments[0].durationMs!==30000||h.segments.at(-1).durationMs!==30000||new Set(h.segments.filter(b=>b.kind==='work').map(b=>exercise(b.exerciseId)?.position)).size>1||h.segments.some(b=>b.kind==='work'&&!['activation','mobility'].includes(exercise(b.exerciseId)?.loadKind))))fail();
-    if(h.qualityVersion===3&&h!==s.active&&(!Array.isArray(h.movements)||(h.completed&&!fullEligibleActivity(h))))fail();
+    if(h.minutes===3&&h.mode!=='preview'&&(h.compositionVersion!==1||h.focus!=='recovery'||h.segments[0].durationMs!==30000||h.segments.at(-1).durationMs!==30000||(s.comeback?!frozenSmallPlan(h):new Set(h.segments.filter(b=>b.kind==='work').map(b=>exercise(b.exerciseId)?.position)).size>1||h.segments.some(b=>b.kind==='work'&&!['activation','mobility'].includes(exercise(b.exerciseId)?.loadKind)))))fail();
+    if(h.qualityVersion===3&&h!==s.active&&(!Array.isArray(h.movements)||(h.completed&&!fullEligibleActivity(h)&&!(s.comeback&&frozenFullActivity(h)))))fail();
     if(h.discomfort!==undefined&&(!h.discomfort||!num(h.discomfort.at)||!Array.isArray(h.discomfort.joints)||!h.discomfort.joints.every(j=>JOINTS.includes(j))))fail();
     if(h.compositionVersion!==undefined&&(h.compositionVersion!==1||h.engineVersion!==2||!['balanced','core','cardio','recovery'].includes(h.focus)))fail();
     if(h.engineVersion!==undefined&&h.engineVersion!==2)fail();
@@ -171,7 +175,8 @@ export function validateBackup(input) {
     }
     if(h.feedback!==undefined&&(!h.feedback||!['comfortable','difficult','discomfort'].includes(h.feedback.comfort)||!Array.isArray(h.feedback.joints)||!h.feedback.joints.every(j=>JOINTS.includes(j))||!num(h.feedback.updatedAt)))fail();
   }
+  if(!validComeback(s))fail();
   const world = migrateWorld(s);
-  if (!validWorld(world, s.history)) fail();
+  if (!validWorld(world, s.history, s.comeback?.legacy.earnedTimberIds)) fail();
   return structuredClone({ ...s, world });
 }

@@ -2,6 +2,20 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { CHARACTER, WORLD, PALETTE, CORE_ILLUSTRATIONS } from '../src/art-spec.mjs';
 import {EXERCISES} from '../src/catalog.mjs';
+if (process.argv.includes('--comeback-runtime')) {
+  await import('./export-comeback-runtime.mjs');
+  process.exit(0);
+}
+// Prepared user-uploaded references; isolated from live exports.
+if (process.argv.includes('--comeback-user-art')) {
+  await import('./export-comeback-user-art.mjs');
+  process.exit(0);
+}
+// Isolated native-grid comeback proof; never invokes live asset exports.
+if (process.argv.includes('--comeback-proof')) {
+  await import('./export-comeback-proof.mjs');
+  process.exit(0);
+}
 // Review-only branch: never writes public art or live/core masters.
 if (process.argv.includes('--progression-prototype')) {
   await import('./export-progression.mjs');
@@ -29,4 +43,5 @@ run(['-b', '--script', 'scripts/export-character-study.lua']);
 run(['-b', '--script', 'scripts/export-core-illustrations.lua']);
 run(['-b', '--script', 'scripts/export-interface-art.lua']);
 run(['-b', '--script', 'scripts/audit-art.lua']);
+if (existsSync('art/prototypes/comeback/user-art/motion.aseprite')) await import('./export-comeback-runtime.mjs');
 console.log('Aseprite masters exported with stable frame metadata.');

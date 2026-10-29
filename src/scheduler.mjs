@@ -1,3 +1,4 @@
+import {profileRestriction,currentAdjustment,affectedByAreas} from './training.mjs';
 import {varietyCosts} from './suggestions.mjs';
 import { compose } from './composition.mjs';
 import { EXERCISES, MINUTES, SESSION_MINUTES, exercise, enabledExercise, recoveryConfig, planningMetadata, normaliseFocus, SESSION_FOCUSES } from './catalog.mjs';
@@ -9,7 +10,7 @@ export function recovery(history,now=Date.now(),settings={}) {
     if(h.mode==='preview')continue;
     const report=h.discomfort||(h.feedback?.comfort==='discomfort'?{at:h.feedback.updatedAt,joints:h.feedback.joints}:null);
     if(report&&report.at<=now){
-      const affected=report.joints.length?EXERCISES.filter(e=>e.joints.some(j=>report.joints.includes(j))).map(e=>e.id):[...new Set(h.movements?h.movements.filter(m=>m.actualMs>0).map(m=>m.exerciseId):h.activeMs>0?h.segments.filter(b=>b.kind==='work').map(b=>b.exerciseId):[])];
+      const affected=report.joints.length?EXERCISES.filter(e=>affectedByAreas(e,report.joints)).map(e=>e.id):[...new Set(h.movements?h.movements.filter(m=>m.actualMs>0).map(m=>m.exerciseId):h.activeMs>0?h.segments.filter(b=>b.kind==='work').map(b=>b.exerciseId):[])];
       for(const id of affected){hold(id,report.at,'Reported session discomfort');flagged[id]=Math.max(flagged[id]||0,report.at+config.discomfortHours*3600_000);}
       for(const j of report.joints)jointsUntil[j]=Math.max(jointsUntil[j]||0,report.at+config.discomfortHours*3600_000);
     }
@@ -48,9 +49,10 @@ export function exerciseEligibility(history=[],now=Date.now(),settings={}){
   const r=recovery(history,now,settings),c=recoveryConfig(settings);
   return EXERCISES.map(e=>{
     const strengthUntil=e.loadKind==='strength'?Math.max(r.until[e.group]||0,...(e.muscles||[]).map(m=>r.musclesUntil[m]||0)):0;
-    const jointUntil=Math.max(0,...e.joints.map(j=>r.jointsUntil[j]||0));
+    const jointUntil=Math.max(0,...[...e.joints,...(e.contactAreas||[])].map(j=>r.jointsUntil[j]||0));
     let status='eligible',reason='Eligible under your current choices';let availableAt=null;
     if(!e.selectable){status='locked';reason='Locked pending suitability and artwork review';}
+    else if(profileRestriction(e,settings,now)){status='profile';reason=profileRestriction(e,settings,now);}
     else if(r.discomfort[e.id]){status='discomfort';reason='Discomfort hold: reassess this movement before enabling it';}
     else if(strengthUntil>now){status='recovering';reason='Strength recovery';availableAt=strengthUntil;}
     else if(jointUntil>now){status='recovering';reason='Minimum hold after reported joint discomfort';availableAt=jointUntil;}
@@ -72,10 +74,17 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   const selected=build(minutes),plans=new Map([[minutes,selected]]);
   for(const m of lengths)if(m!==minutes)plans.set(m,build(m));
   const availableMinutes=lengths.filter(m=>plans.get(m));
-  const reason=selected?'':small?'A three-minute step needs enough individually enabled activation or mobility in one position, within your recovery limits. Review movements or rest.':focus==='recovery'&&!pool.length?'No eligible activation or mobility movements remain for recovery focus. Choose another focus or rest.':!enabled.length?(focus==='core'?'No core movements enabled. Review appropriate core candidates individually or choose balanced focus.':'No movements enabled. Review and explicitly enable suitable candidates.'):focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?'No eligible aerobic movement remains for cardio focus. Choose another focus or rest.':availableMinutes.length?'Not enough eligible movement time for this length. Choose a shorter available session or rest.':pool.length?'Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest.':'Enabled movements are recovering, flagged, or at their rolling activity limit. Not enough suitable time remains for seven minutes. Rest or review your choices.';
+  let reason=selected?'':small?'A three-minute step needs enough individually enabled activation or mobility in one position, within your recovery limits. Review movements or rest.':focus==='recovery'&&!pool.length?'No eligible activation or mobility movements remain for recovery focus. Choose another focus or rest.':!enabled.length?(focus==='core'?'No core movements enabled. Review appropriate core candidates individually or choose balanced focus.':'No movements enabled. Review and explicitly enable suitable candidates.'):focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?'No eligible aerobic movement remains for cardio focus. Choose another focus or rest.':availableMinutes.length?'Not enough eligible movement time for this length. Choose a shorter available session or rest.':pool.length?'Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest.':'Enabled movements are recovering, flagged, or at their rolling activity limit. Not enough suitable time remains for seven minutes. Rest or review your choices.';
+  if(!selected&&choices.some(e=>e.status==='profile'))reason+=' Your profile or current symptom adjustment excludes additional movements; review the restriction or rest.';
   const summary={strength:0,activation:0,mobility:0,aerobic:0};
   for(const b of selected?.segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
   const notes=[];
+  if(settings.exerciseProfile?.coreEmphasis){notes.push('Core-led preference: activation and mobility remain distinct from strengthening. Bridge primarily trains hips/glutes with trunk involvement; full-body strength coverage is limited.');}
+  if(settings.exerciseProfile?.avoidOverhead)notes.push('Overhead reach excluded by your profile; light knee/shoulder loading still requires individual tolerance.');
+  const adjustment=currentAdjustment(settings,now);
+  if(!adjustment&&settings.exerciseProfile)notes.push('Symptoms and fatigue are unknown until you choose Adjust today.');
+  if(adjustment?.areas.length)notes.push('Your current affected areas are excluded. Worsening holds persist until movement reassessment.');
+  if(adjustment?.fatigue==='high'||settings.trainingContext?.gentleOnly)notes.push('Reported fatigue or high effort narrows suggestions to activation and mobility for now.');
   if(Object.keys(compositionContext.variety).length)notes.push('Recent performed movements influence variety; recovery limits still take priority.');
   if(choices.some(e=>e.focus==='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Core strengthening is recovering from your previous session.');
   if(choices.some(e=>e.focus!=='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Other strengthening is recovering from your previous session.');
@@ -87,5 +96,6 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(selected&&focus==='balanced'&&summary.strength&&summary.aerobic>0&&summary.aerobic<120000){label='Strength with brief movement';notes.push('Only brief marching fits. This is primarily a strength/activation session, not sustained aerobic work.');}
   if(selected&&focus==='core'&&!summary.strength){label='Core activation & mobility';notes.push('No core strengthening is included. Gentle activation is not a strength-equivalent substitute.');}
   if(selected&&!selected.segments.some(b=>b.phase==='warmup'))notes.push('No suitable active preparation is available; setup is a passive countdown, not a warm-up.');
+  if(selected&&focus==='balanced'&&settings.exerciseProfile?.coreEmphasis&&selected.segments.some(b=>exercise(b.exerciseId)?.focus==='core'))label='Core-led: '+label.toLowerCase();
   return {segments:selected?.segments||null,availableMinutes,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
 }

@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-28",
+  "status": "proposal-only-no-live-eligibility-changes",
+  "scenario": "Fictional profile: low-impact activity, light knee/shoulder loading, floor access possible; no diagnosis or personal health record stored.",
+  "sources": {
+    "general": "https://www.nhs.uk/conditions/psoriatic-arthritis/",
+    "flare": "https://www.arthritis-uk.org/information-and-support/understanding-arthritis/managing-arthritis-symptoms/managing-arthritis-flare-ups/",
+    "pilates": "https://www.cht.nhs.uk/services/clinical-services/physiotherapy-outpatients/the-low-back/pilates"
+  },
+  "gaps": [
+    "Only one aerobic movement; genuine same-purpose aerobic substitutions are unavailable.",
+    "Only calf raise and bridge are selectable strengthening candidates; no selectable upper-body strengthening or dedicated higher-load abdominal pattern.",
+    "Gentle activation and mobility supply most core variety. Repeating them does not make a balanced strengthening programme.",
+    "The proposed shoulder-constrained profile removes the overhead reach from suggestions. Existing joint/recovery caps may make longer or repeated sessions infeasible.",
+    "The two Pilates additions remain review records only, absent from the live catalogue and planner."
+  ],
+  "rows": [
+    {
+      "id": "march",
+      "name": "Easy march",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "aerobic",
+      "muscles": [
+        "hip-flexors"
+      ],
+      "joints": [
+        "ankles",
+        "knees",
+        "hips"
+      ],
+      "position": "standing",
+      "artStatus": "stylised",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Aerobic movement; no cardiovascular intensity claim from time alone.",
+      "individualReview": "Low-impact stepping still loads knees/hips/ankles; review comfortable pace and balance.",
+      "sourceUrl": null,
+      "movementOutline": "Stand tall. Step gently in place.",
+      "instructions": [
+        "Stand tall. Step gently in place."
+      ]
+    },
+    {
+      "id": "squat",
+      "name": "Shallow squat",
+      "currentSelectable": false,
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "muscles": [
+        "quads",
+        "glutes",
+        "trunk"
+      ],
+      "joints": [
+        "ankles",
+        "knees",
+        "hips",
+        "back"
+      ],
+      "position": "standing",
+      "artStatus": "provisional",
+      "proposedProfileAction": "locked",
+      "purposeReview": "Potential leg strengthening, not a core substitute.",
+      "individualReview": "Keep the current suitability/art lock. Comfortable reported squatting does not establish reviewed range or dose.",
+      "sourceUrl": null,
+      "movementOutline": "Feet apart. Sit back a little. Rise slowly.",
+      "instructions": [
+        "Feet apart. Sit back a little. Rise slowly."
+      ]
+    },
+    {
+      "id": "push",
+      "name": "Wall push",
+      "currentSelectable": false,
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "muscles": [
+        "chest",
+        "triceps"
+      ],
+      "joints": [
+        "wrists",
+        "elbows",
+        "shoulders"
+      ],
+      "position": "standing",
+      "artStatus": "provisional",
+      "proposedProfileAction": "locked",
+      "purposeReview": "Upper-body strengthening candidate.",
+      "individualReview": "Keep the current lock; loads shoulders, elbows and wrists. Do not substitute it for a light shoulder movement.",
+      "sourceUrl": null,
+      "movementOutline": "Hands on a wall. Bend elbows, then press away.",
+      "instructions": [
+        "Hands on a wall. Bend elbows, then press away."
+      ]
+    },
+    {
+      "id": "calf",
+      "name": "Calf raise",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "strength",
+      "muscles": [
+        "calves"
+      ],
+      "joints": [
+        "ankles",
+        "knees"
+      ],
+      "position": "standing",
+      "artStatus": "stylised",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Calf strengthening, not abdominal strengthening.",
+      "individualReview": "Review ankle/heel tolerance, knee loading and support needs. No automatic load progression.",
+      "sourceUrl": null,
+      "movementOutline": "Hold support if needed. Lift heels, lower slowly.",
+      "instructions": [
+        "Hold support if needed. Lift heels, lower slowly."
+      ]
+    },
+    {
+      "id": "reach",
+      "name": "Gentle reach",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "mobility",
+      "muscles": [
+        "shoulder-mobility"
+      ],
+      "joints": [
+        "shoulders",
+        "back"
+      ],
+      "position": "standing",
+      "artStatus": "stylised",
+      "proposedProfileAction": "profile-review",
+      "purposeReview": "Shoulder mobility only; neither cardio nor strengthening.",
+      "individualReview": "Exclude overhead reaching from the initial shoulder-constrained suggestion profile pending individual range review.",
+      "sourceUrl": null,
+      "movementOutline": "Reach up comfortably, then lower your arms.",
+      "instructions": [
+        "Reach up comfortably, then lower your arms."
+      ]
+    },
+    {
+      "id": "abdominal-bracing",
+      "name": "Supine abdominal bracing",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "activation",
+      "muscles": [
+        "trunk"
+      ],
+      "joints": [
+        "knees",
+        "hips",
+        "back"
+      ],
+      "position": "floor",
+      "artStatus": "illustrative",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Gentle abdominal activation and breathing control.",
+      "individualReview": "Review comfortable supine support and bent knees. Source context is pelvic health; do not transfer its treatment dose.",
+      "sourceUrl": "https://elht.nhs.uk/services/physiotherapy-pelvic-obstetric-and-gynaecological/physiotherapy-pelvic-obstetric-and-gynaecological-6",
+      "movementOutline": "Lie comfortably with knees bent. Gently draw in the lower tummy as you breathe out, then relax. Keep breathing.",
+      "instructions": [
+        "Rest on your back with bent knees; keep your spine and pelvis comfortable and supported.",
+        "During an easy out-breath, gently engage the lower abdominal area without moving your pelvis; relax fully.",
+        "Continue breathing. Do not strain or chase the countdown."
+      ]
+    },
+    {
+      "id": "pelvic-tilt",
+      "name": "Supine pelvic tilts",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "mobility",
+      "muscles": [
+        "trunk"
+      ],
+      "joints": [
+        "knees",
+        "hips",
+        "back"
+      ],
+      "position": "floor",
+      "artStatus": "illustrative",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Pelvic/lumbar mobility and movement control.",
+      "individualReview": "Review back/hip comfort and shoulder/head support; do not count timer minutes as strengthening.",
+      "sourceUrl": "https://www.royalberkshire.nhs.uk/media/qfljlxzd/physio-core-exercise-programme-matplusgynae.pdf",
+      "movementOutline": "With knees bent and feet resting, slowly tilt the pelvis to ease the lower back toward the floor, then release. Breathe normally.",
+      "instructions": [
+        "Lie on your back with both knees bent and feet about hip-width apart.",
+        "Slowly rock the pelvis between a relaxed position and a gentle lower-back flattening.",
+        "Return with control; use a comfortable range rather than forcing the back."
+      ]
+    },
+    {
+      "id": "heel-slide",
+      "name": "Supine heel slides",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "activation",
+      "muscles": [
+        "trunk"
+      ],
+      "joints": [
+        "knees",
+        "hips",
+        "back"
+      ],
+      "position": "floor",
+      "artStatus": "illustrative",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Low-load trunk control with supported leg movement; activation.",
+      "individualReview": "Review knee/hip travel, abdominal control and shoulder/head support. No long-lever progression by default.",
+      "sourceUrl": "https://msk-bexley.nhs.uk/conditions/back-pain/acute-low-back-pain",
+      "movementOutline": "Gently engage the tummy. Slide one heel away and back while keeping the back steady; alternate sides without holding your breath.",
+      "instructions": [
+        "Start on your back with knees bent and heels resting.",
+        "With gentle abdominal tension, slide one heel away and return it, keeping the trunk steady.",
+        "Alternate legs at your own pace. Stop the slide before losing comfortable control."
+      ]
+    },
+    {
+      "id": "modified-dead-bug",
+      "name": "Modified dead bug",
+      "currentSelectable": false,
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "muscles": [
+        "trunk"
+      ],
+      "joints": [
+        "knees",
+        "hips",
+        "back",
+        "shoulders"
+      ],
+      "position": "floor",
+      "artStatus": "missing",
+      "proposedProfileAction": "locked",
+      "purposeReview": "Higher-demand trunk-control/strengthening candidate.",
+      "individualReview": "Keep the physiotherapist-guided variation/art lock. Arms-down is not an automatically approved shoulder modification.",
+      "sourceUrl": "https://ruh.nhs.uk/patients/patient_information/PHY079_Functional_pelvic_floor_exercise_level_3.pdf",
+      "movementOutline": "Locked: ask a physiotherapist to select the leg/arm variation before using this candidate.",
+      "instructions": [
+        "The NHS level-3 progression starts with bent legs raised, then controlled leg lowering; its full dead bug adds opposite arm movement.",
+        "The leaflet separately describes a leg-only extension before the overhead-arm progression. Exact arm support and lever length need individual selection.",
+        "This app does not prescribe an unreviewed shoulder modification."
+      ]
+    },
+    {
+      "id": "glute-bridge",
+      "name": "Glute bridge",
+      "currentSelectable": true,
+      "clinicalStatus": "unreviewed",
+      "loadKind": "strength",
+      "muscles": [
+        "trunk",
+        "glutes"
+      ],
+      "joints": [
+        "knees",
+        "hips",
+        "back",
+        "shoulders"
+      ],
+      "position": "floor",
+      "artStatus": "illustrative",
+      "proposedProfileAction": "candidate",
+      "purposeReview": "Hip/glute strengthening with trunk stabilisation; not isolated abdominal strengthening.",
+      "individualReview": "Bent-knee loading and upper-back/shoulder contact both matter. Keep existing conservative caps; no single-leg variation.",
+      "sourceUrl": "https://www.royaldevon.nhs.uk/media/v0xigkbj/strengthening-exercises-1001-v1.pdf",
+      "movementOutline": "Lie on your back with knees bent and feet flat. Gently lift the hips with control, then lower slowly; do not force the height.",
+      "instructions": [
+        "Lie on your back with bent knees and feet resting roughly hip-width apart.",
+        "Gently engage the abdomen and buttocks, lift the pelvis in a controlled movement, then lower gradually.",
+        "Use only your individually reviewed range; do not push for repetitions or height to fill the timer."
+      ]
+    },
+    {
+      "id": "bent-knee-fall-out",
+      "name": "Bent-knee fall-out",
+      "currentSelectable": false,
+      "clinicalStatus": "research-only-unreviewed",
+      "loadKind": null,
+      "muscles": [
+        "trunk",
+        "hip-control"
+      ],
+      "joints": [
+        "hips",
+        "knees",
+        "back"
+      ],
+      "position": "floor",
+      "artStatus": "missing",
+      "proposedProfileAction": "research-only",
+      "purposeReview": "Trunk/pelvic control while one bent knee moves sideways. Do not assume substantial strengthening without reviewing effort and dose.",
+      "movementOutline": "Supine with feet resting; move one bent knee a small controlled distance outward and return while the pelvis and other knee stay still. Arms remain resting.",
+      "individualReview": "Hip rotation, bent-knee tolerance, back control and floor/shoulder support require individual review. No treatment dose or range is prescribed here.",
+      "sourceUrl": "https://www.wuth.nhs.uk/media/30877/physiotherapy-pilates-patient-information-leaflet-on-completion.pdf",
+      "sourceSection": "Printed exercise page: bent knee fall out (PDF page 4).",
+      "sourceContext": "Continuation leaflet for people who completed physiotherapy Pilates. It is not clearance for a new programme.",
+      "scheduling": null,
+      "pacing": "Unspecified pending individual review; no rep target or scheduling window."
+    },
+    {
+      "id": "single-knee-fold",
+      "name": "Single knee fold (one leg at a time)",
+      "currentSelectable": false,
+      "clinicalStatus": "research-only-unreviewed",
+      "loadKind": null,
+      "muscles": [
+        "trunk",
+        "hip-flexors"
+      ],
+      "joints": [
+        "hips",
+        "knees",
+        "back"
+      ],
+      "position": "floor",
+      "artStatus": "missing",
+      "proposedProfileAction": "research-only",
+      "purposeReview": "Abdominal/pelvic control with an unsupported leg; potentially more demanding than heel slides. Classification and dose remain unresolved.",
+      "movementOutline": "Source scissors level 1: lift one bent leg from a supported supine start, lower it fully, then alternate. Keep arms resting; do not use the two-legs-raised progression.",
+      "individualReview": "Review trunk control, hip/knee position, back symptoms and supported head/shoulder contact. No automatic progression from a tolerated heel slide.",
+      "sourceUrl": "https://plr.cht.nhs.uk/download/1314/Pilates%20Exercises%20A4",
+      "sourceSection": "Scissors level 1, printed page 10 of 31; not level 2.",
+      "sourceContext": "NHS physiotherapy exercise booklet with multiple levels; printed review date June 2026 has passed. Wirral leaflet also describes single-leg-at-a-time scissors. No personal suitability or dose is inferred.",
+      "scheduling": null,
+      "pacing": "Unspecified pending individual review; no rep target or scheduling window."
+    }
+  ]
+}

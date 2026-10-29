@@ -1,0 +1,25 @@
+{
+  "kind": "native-derivative-of-existing-approved-standing-parts",
+  "sources": {
+    "art\\prototypes\\comeback\\user-art\\character.aseprite": "c6f1606ee92d044c9ebde2f67b4fde8627d98e5e12ba1dc576125c0bed5d9af1",
+    "art\\prototypes\\comeback\\user-art\\heads.aseprite": "9614b744f855701c53958462d092fe163f8b5a209d8fbd2b64598c60bd25a0a7"
+  },
+  "appearances": [
+    "starting",
+    "developed"
+  ],
+  "workingFrame": {
+    "width": 96,
+    "height": 132
+  },
+  "logicalFrame": {
+    "width": 48,
+    "height": 66
+  },
+  "bodyUnchanged": true,
+  "headUnchanged": true,
+  "headRotationDegrees": 0,
+  "trainerCleanup": "calf-contact-refinement.json",
+  "clinicalStatus": "unreviewed-illustration",
+  "animation": false
+}

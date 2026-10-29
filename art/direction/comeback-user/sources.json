@@ -1,0 +1,49 @@
+{
+  "origin": "user-generated-upload",
+  "files": [
+    {
+      "upload": "Pixel Art Adventurer Sprite.png",
+      "file": "art/direction/comeback-user/starting-standing.png",
+      "sha256": "1da2f932810e18928ab31a6a2ddcb4059795b93f340ae77a3c505ad79b322a9d",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "upload": "Athletic Teal-Shirt Pixel Sprite.png",
+      "file": "art/direction/comeback-user/developed-standing.png",
+      "sha256": "ad93335491b24809121d062159893133b3e76a6c95988dbb9563a9e3c42871a1",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "upload": "Heel slide Character Sprite.png",
+      "file": "art/direction/comeback-user/starting-heel-slide.png",
+      "sha256": "b93c08c12e30371b7ff475d29d41e299ac4572a17cea56dc57fb177aafb80e2c",
+      "width": 1448,
+      "height": 1086
+    },
+    {
+      "upload": "Developed Pixel Hero Heel Slide.png",
+      "file": "art/direction/comeback-user/developed-heel-slide.png",
+      "sha256": "5ec02af6caea64214101879dde2315c8ec3a184a3e3a7aede8345f1a64e67118",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "upload": "little_strides_apartment_box_160x96.png",
+      "file": "art/direction/comeback-user/apartment.png",
+      "sha256": "7037ee9d596bd20ed0d3e240e8d7b1e84ef27cb4a44a42ed62a2d49758dcd320",
+      "width": 160,
+      "height": 96
+    },
+    {
+      "upload": "Sunlit Pixel-Art Home Workout Room.png",
+      "file": "art/direction/comeback-user/sunlit-apartment-original.png",
+      "sha256": "a2e68e0dc16caef82d88807c53e17d67b6fe7a33a9d5f4f47e06477ca6e165db",
+      "width": 1620,
+      "height": 971
+    }
+  ],
+  "originalsUnmodified": true,
+  "activeApartment": "art/direction/comeback-user/sunlit-apartment-original.png"
+}

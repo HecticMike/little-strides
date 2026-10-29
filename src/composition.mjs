@@ -42,6 +42,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add,var
         if(count>=m.maxBlocks)continue;
         const change=last&&last.e.position!==e.position;
         if(small&&change)continue;
+        if(settings.exerciseProfile&&change&&node.blocks.some(b=>b.change))continue;
         const gap=last?Math.max(meta.get(last.e.id).restSeconds,change?m.transitionSeconds:0):(!small&&e.position==='floor'?30:0);
         const maximum=node.blocks.length?m.maxSeconds:Math.min(60,m.maxSeconds);
         const options=[...new Set([m.minSeconds,m.preferredSeconds,maximum,45,60,90,120,180])].filter(s=>s>=m.minSeconds&&s<=maximum&&s%15===0);
@@ -55,6 +56,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add,var
           if(time===target-finish&&(node.active+seconds<minimumActive||focus==='cardio'&&(totals.aerobic<120||totals.aerobic/(node.active+seconds)<.4)))continue;
           let score=node.score+contribution(e,node.totals[e.loadKind],seconds)+COMPOSITION_WEIGHTS.blockCost+gap/15*COMPOSITION_WEIGHTS.restPer15;
           if(!count)score+=COMPOSITION_WEIGHTS.newMovement-(recent[e.id]||0);
+          if(settings.exerciseProfile?.coreEmphasis&&focus==='balanced'&&e.focus==='core'&&!count)score+=45;
           if(!last&&e.loadKind==='aerobic')score+=10;
           if(e.loadKind==='strength'&&!count&&focus!=='cardio')score+=e.muscles?.includes('trunk')?100:20;
           if(last?.e.id===e.id)score+=COMPOSITION_WEIGHTS.duplicate;

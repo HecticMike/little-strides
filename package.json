@@ -1,26 +1,27 @@
 {
-    "name":  "little-strides",
-    "version":  "0.1.0",
-    "private":  true,
-    "type":  "module",
-    "scripts":  {
-                    "dev":  "vite --host 127.0.0.1",
-                    "build":  "vite build \u0026\u0026 node scripts/cache-manifest.mjs",
-                    "preview":  "vite preview --host 127.0.0.1 --port 4197 --strictPort",
-                    "test":  "node --test tests/engine.test.mjs tests/art.test.mjs tests/gameplay.test.mjs tests/workout-quality.test.mjs tests/composition.test.mjs tests/chapter.test.mjs tests/suggestions.test.mjs",
-                    "test:mobile":  "playwright test",
-                    "art:seed":  "node scripts/seed-art.mjs \u0026\u0026 node scripts/export-art.mjs --seed",
-                    "art:export":  "node scripts/export-art.mjs",
-                    "art:motion":  "node scripts/export-art.mjs --motion",
-                    "art:compare": "node scripts/compare-character.mjs"
-                },
-    "dependencies":  {
-                         "react":  "^19.2.0",
-                         "react-dom":  "^19.2.0",
-                         "phaser":  "^3.90.0"
-                     },
-    "devDependencies":  {
-                            "vite":  "^7.1.12",
-                            "@playwright/test":  "^1.56.1"
-                        }
+  "name": "little-strides",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build && node scripts/cache-manifest.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4197 --strictPort",
+    "test": "node --test tests/engine.test.mjs tests/art.test.mjs tests/gameplay.test.mjs tests/workout-quality.test.mjs tests/composition.test.mjs tests/chapter.test.mjs tests/suggestions.test.mjs tests/comeback-proof.test.mjs tests/comeback-user-art.test.mjs tests/comeback-runtime.test.mjs tests/training.test.mjs tests/comeback-ledger.test.mjs tests/comeback-march.test.mjs tests/comeback-supine.test.mjs tests/comeback-bridge.test.mjs tests/comeback-calf.test.mjs",
+    "test:mobile": "playwright test",
+    "art:seed": "node scripts/seed-art.mjs && node scripts/export-art.mjs --seed",
+    "art:export": "node scripts/export-art.mjs",
+    "art:motion": "node scripts/export-art.mjs --motion",
+    "art:compare": "node scripts/compare-character.mjs",
+    "build:comeback": "node scripts/build-comeback.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.12",
+    "@playwright/test": "^1.56.1"
+  }
 }

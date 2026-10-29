@@ -1,0 +1,119 @@
+{
+  "id": "little-strides-comeback",
+  "body": "./art/comeback-character.png",
+  "motion": "./art/comeback-walk.png",
+  "room": "./art/comeback-room.png",
+  "standing": {
+    "width": 96,
+    "height": 128,
+    "feetY": 124
+  },
+  "floor": {
+    "width": 192,
+    "height": 128,
+    "sourceMatched": true
+  },
+  "motionFrames": [
+    "stand",
+    "walk-a",
+    "walk-b"
+  ],
+  "appearances": [
+    "starting",
+    "developed"
+  ],
+  "clinicalStatus": "unreviewed-illustration",
+  "headTransforms": false,
+  "exercisePoses": {
+    "calf": {
+      "asset": "./art/comeback-calf.png",
+      "appearances": [
+        "starting",
+        "developed"
+      ],
+      "frame": {
+        "width": 96,
+        "height": 132,
+        "feetY": 128
+      },
+      "artPurpose": "raised-position-only",
+      "motionCycleDepicted": false,
+      "phase": "heels-raised",
+      "animation": false,
+      "clinicalStatus": "unreviewed-illustration",
+      "headPolicy": "shared canonical upright head"
+    },
+    "glute-bridge": {
+      "asset": "./art/comeback-bridge.png",
+      "assets": {
+        "starting": "./art/comeback-bridge.png",
+        "developed": "./art/comeback-bridge-developed.png"
+      },
+      "appearances": [
+        "starting",
+        "developed"
+      ],
+      "artPurpose": "raised-position-only",
+      "motionCycleDepicted": false,
+      "phase": "raised",
+      "animation": false,
+      "clinicalStatus": "unreviewed-illustration",
+      "headPolicy": "source-matched junction"
+    },
+    "pelvic-tilt": {
+      "asset": "./art/comeback-bracing.png",
+      "assets": {
+        "starting": "./art/comeback-bracing.png",
+        "developed": "./art/comeback-bracing-developed.png"
+      },
+      "appearances": [
+        "starting",
+        "developed"
+      ],
+      "artPurpose": "starting-position-only",
+      "movementDepicted": false,
+      "clinicalStatus": "unreviewed-illustration",
+      "sourcePose": "supine-start"
+    },
+    "abdominal-bracing": {
+      "asset": "./art/comeback-bracing.png",
+      "assets": {
+        "starting": "./art/comeback-bracing.png",
+        "developed": "./art/comeback-bracing-developed.png"
+      },
+      "appearances": [
+        "starting",
+        "developed"
+      ],
+      "artPurpose": "starting-position-only",
+      "movementDepicted": false,
+      "clinicalStatus": "unreviewed-illustration",
+      "headPolicy": "source-matched junction"
+    },
+    "heel-slide": {
+      "asset": "./art/comeback-character.png",
+      "appearances": [
+        "starting",
+        "developed"
+      ]
+    },
+    "march": {
+      "asset": "./art/comeback-march.png",
+      "assets": {
+        "starting": "./art/comeback-march.png",
+        "developed": "./art/comeback-march-developed.png"
+      },
+      "appearances": [
+        "starting",
+        "developed"
+      ],
+      "clinicalStatus": "unreviewed-illustration",
+      "animation": false
+    }
+  },
+  "roomSource": {
+    "width": 1620,
+    "height": 971,
+    "flattened": true
+  }
+}

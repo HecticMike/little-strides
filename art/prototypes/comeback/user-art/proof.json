@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 1,
+  "integrated": false,
+  "nativeAuthored": false,
+  "origin": "user-generated-pixel-art-prepared-in-Aseprite",
+  "anatomyStatus": "provisional-unreviewed",
+  "measurements": {
+    "connectedComponentCounts": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "viewCropContainsSprites": true,
+    "partialAlphaPixels": 0,
+    "clearPixels": 83754,
+    "paletteSize": 27,
+    "standingHeadDifference": 0,
+    "floorSourcePoseDifference": 0,
+    "standingStageDifference": 1144,
+    "floorStageDifference": 3643,
+    "standingFootBaselines": [
+      123,
+      123
+    ],
+    "layerRecompositionDifference": 0,
+    "apartmentPixelDifference": 0,
+    "roomDimensions": [
+      1620,
+      971
+    ]
+  },
+  "mobileChecks": [
+    {
+      "engine": "iphone-webkit",
+      "stage": 0,
+      "view": "today",
+      "overflow": false,
+      "scrollHeight": 563,
+      "clientHeight": 563,
+      "primaryBottom": 534.6875,
+      "navigationTop": 607,
+      "targets": [
+        {
+          "width": 96.671875,
+          "height": 44
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 343,
+          "height": 50
+        },
+        {
+          "width": 343,
+          "height": 44
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "iphone-webkit",
+      "stage": 0,
+      "view": "workout",
+      "overflow": false,
+      "scrollHeight": 595,
+      "clientHeight": 595,
+      "primaryBottom": 564,
+      "navigationTop": 639,
+      "targets": [
+        {
+          "width": 126.53125,
+          "height": 50
+        },
+        {
+          "width": 101.234375,
+          "height": 50
+        },
+        {
+          "width": 101.21875,
+          "height": 50
+        },
+        {
+          "width": 79.328125,
+          "height": 44
+        },
+        {
+          "width": 94.6875,
+          "height": 44
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "iphone-webkit",
+      "stage": 1,
+      "view": "today",
+      "overflow": false,
+      "scrollHeight": 563,
+      "clientHeight": 563,
+      "primaryBottom": 534.6875,
+      "navigationTop": 607,
+      "targets": [
+        {
+          "width": 96.671875,
+          "height": 44
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 80.5,
+          "height": 48
+        },
+        {
+          "width": 343,
+          "height": 50
+        },
+        {
+          "width": 343,
+          "height": 44
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        },
+        {
+          "width": 86,
+          "height": 49
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "iphone-webkit",
+      "stage": 1,
+      "view": "workout",
+      "overflow": false,
+      "scrollHeight": 595,
+      "clientHeight": 595,
+      "primaryBottom": 564,
+      "navigationTop": 639,
+      "targets": [
+        {
+          "width": 126.53125,
+          "height": 50
+        },
+        {
+          "width": 101.234375,
+          "height": 50
+        },
+        {
+          "width": 101.21875,
+          "height": 50
+        },
+        {
+          "width": 79.328125,
+          "height": 44
+        },
+        {
+          "width": 94.6875,
+          "height": 44
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "android-chromium",
+      "stage": 0,
+      "view": "today",
+      "overflow": false,
+      "scrollHeight": 623,
+      "clientHeight": 623,
+      "primaryBottom": 538.6875,
+      "navigationTop": 667,
+      "targets": [
+        {
+          "width": 96.109375,
+          "height": 44
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 361,
+          "height": 50
+        },
+        {
+          "width": 361,
+          "height": 44
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "android-chromium",
+      "stage": 0,
+      "view": "workout",
+      "overflow": false,
+      "scrollHeight": 655,
+      "clientHeight": 655,
+      "primaryBottom": 621,
+      "navigationTop": 699,
+      "targets": [
+        {
+          "width": 133.453125,
+          "height": 50
+        },
+        {
+          "width": 106.765625,
+          "height": 50
+        },
+        {
+          "width": 106.78125,
+          "height": 50
+        },
+        {
+          "width": 77.921875,
+          "height": 44
+        },
+        {
+          "width": 88.734375,
+          "height": 44
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "android-chromium",
+      "stage": 1,
+      "view": "today",
+      "overflow": false,
+      "scrollHeight": 623,
+      "clientHeight": 623,
+      "primaryBottom": 538.6875,
+      "navigationTop": 667,
+      "targets": [
+        {
+          "width": 96.109375,
+          "height": 44
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 85,
+          "height": 48
+        },
+        {
+          "width": 361,
+          "height": 50
+        },
+        {
+          "width": 361,
+          "height": 44
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        },
+        {
+          "width": 90.5,
+          "height": 49
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    },
+    {
+      "engine": "android-chromium",
+      "stage": 1,
+      "view": "workout",
+      "overflow": false,
+      "scrollHeight": 655,
+      "clientHeight": 655,
+      "primaryBottom": 621,
+      "navigationTop": 699,
+      "targets": [
+        {
+          "width": 133.453125,
+          "height": 50
+        },
+        {
+          "width": 106.765625,
+          "height": 50
+        },
+        {
+          "width": 106.78125,
+          "height": 50
+        },
+        {
+          "width": 77.921875,
+          "height": 44
+        },
+        {
+          "width": 88.734375,
+          "height": 44
+        }
+      ],
+      "imageRendering": "pixelated",
+      "errors": []
+    }
+  ],
+  "masters": [
+    {
+      "file": "character.aseprite",
+      "sha256": "c6f1606ee92d044c9ebde2f67b4fde8627d98e5e12ba1dc576125c0bed5d9af1"
+    },
+    {
+      "file": "studio.aseprite",
+      "sha256": "a91f658e7a3e9403cae471f8b721bc12c84a6f34f3ac1ad94764a105dfd56d7c"
+    },
+    {
+      "file": "heads.aseprite",
+      "sha256": "9614b744f855701c53958462d092fe163f8b5a209d8fbd2b64598c60bd25a0a7"
+    }
+  ],
+  "sourceManifest": "../../../direction/comeback-user/sources.json",
+  "exportCommand": "npm run art:export -- --comeback-user-art"
+}

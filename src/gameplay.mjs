@@ -61,9 +61,9 @@ export function readDiscovery(state,id,now=Date.now()) {
   if(chapter.world.discovery.seen.includes(id))return state;
   return {...state,world:{...chapter.world,discovery:{...chapter.world.discovery,seen:[...chapter.world.discovery.seen,id]}},updatedAt:now};
 }
-export function validWorld(world,history) {
+export function validWorld(world,history,frozenRewardIds=[]) {
   if(!world||world.schemaVersion!==2||!world.workshop||!Array.isArray(world.projects)||world.projects.length>5||!world.discovery)return false;
-  const w=world.workshop,ids=new Set(rewardedWorkouts(history).map(h=>h.id)),used=[];
+  const w=world.workshop,ids=new Set([...rewardedWorkouts(history).map(h=>h.id),...frozenRewardIds]),used=[];
   const rewards=(values,n)=>Array.isArray(values)&&values.length===n&&values.every(id=>typeof id==='string'&&ids.has(id)&&(used.push(id),true));
   if(![0,1].includes(w.stage)||!rewards(w.spentRewardIds,w.stage)||(w.stage===0?w.restoredAt!==null:!Number.isFinite(w.restoredAt)||w.restoredAt<0))return false;
   if(!w.stage&&world.projects.length)return false;

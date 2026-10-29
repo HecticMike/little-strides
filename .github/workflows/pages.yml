@@ -35,10 +35,24 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-      - name: Build app and offline cache
-        run: npm run build
+      - name: Prepare previous-profile update fixture
+        run: |
+          npm run build
+          mkdir -p .alpha-check/legacy
+          cp -R dist/. .alpha-check/legacy/
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Build comeback alpha and offline cache
+        run: npm run build:comeback
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Install mobile test browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Verify alpha installation and same-origin update
+        run: npx playwright test comeback-alpha.spec.mjs
+        env:
+          LS_COMEBACK: '1'
+          LS_APP_PATH: ${{ steps.pages.outputs.base_path }}/
       - name: Upload built app only
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

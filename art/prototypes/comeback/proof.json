@@ -1,0 +1,623 @@
+{
+  "schemaVersion": 1,
+  "integrated": false,
+  "clinicalStatus": "unreviewed-art-proof",
+  "nativeAuthored": true,
+  "generatedConceptIsFlattened": true,
+  "frames": [
+    {
+      "id": "starting-stand",
+      "x": 0,
+      "y": 0,
+      "w": 48,
+      "h": 64
+    },
+    {
+      "id": "developed-stand",
+      "x": 48,
+      "y": 0,
+      "w": 48,
+      "h": 64
+    },
+    {
+      "id": "starting-heel-slide",
+      "x": 0,
+      "y": 64,
+      "w": 96,
+      "h": 64
+    },
+    {
+      "id": "developed-heel-slide",
+      "x": 96,
+      "y": 64,
+      "w": 96,
+      "h": 64
+    }
+  ],
+  "measurements": {
+    "wallPatchUnexpectedPixels": 0,
+    "workoutBackdropMatPixels": 0,
+    "paletteSize": 18,
+    "standingHeadChangedPixels": 0,
+    "floorHeadChangedPixels": 0,
+    "standingChangedPixels": 110,
+    "heelSlideChangedPixels": 20,
+    "standingFootBaselines": [
+      61,
+      61
+    ]
+  },
+  "mobileChecks": [
+    {
+      "view": "today",
+      "width": 375,
+      "height": 667,
+      "overflow": false,
+      "scrollHeight": 563,
+      "clientHeight": 563,
+      "primary": {
+        "top": 484.6875,
+        "bottom": 534.6875,
+        "width": 343,
+        "height": 50
+      },
+      "nav": {
+        "top": 607,
+        "bottom": 667,
+        "width": 375,
+        "height": 60
+      },
+      "controls": [
+        {
+          "text": "Adjust today",
+          "height": 44,
+          "width": 96.671875
+        },
+        {
+          "text": "7 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "10 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "15 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "20 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "Start 10-minute session",
+          "height": 50,
+          "width": 343
+        },
+        {
+          "text": "A smaller step · 3 minutes",
+          "height": 44,
+          "width": 343
+        },
+        {
+          "text": "▣Today",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "◇Journey",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "▤Journal",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "⚙Settings",
+          "height": 49,
+          "width": 86
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "iphone-webkit",
+      "stage": "starting",
+      "errors": []
+    },
+    {
+      "view": "workout",
+      "width": 375,
+      "height": 667,
+      "overflow": false,
+      "scrollHeight": 595,
+      "clientHeight": 595,
+      "primary": {
+        "top": 514,
+        "bottom": 564,
+        "width": 343,
+        "height": 50
+      },
+      "nav": {
+        "top": 639,
+        "bottom": 667,
+        "width": 375,
+        "height": 28
+      },
+      "controls": [
+        {
+          "text": "Pause",
+          "height": 50,
+          "width": 126.53125
+        },
+        {
+          "text": "Replace",
+          "height": 50,
+          "width": 101.234375
+        },
+        {
+          "text": "Skip",
+          "height": 50,
+          "width": 101.21875
+        },
+        {
+          "text": "Sound on",
+          "height": 44,
+          "width": 79.328125
+        },
+        {
+          "text": "End session",
+          "height": 44,
+          "width": 94.6875
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "iphone-webkit",
+      "stage": "starting",
+      "errors": []
+    },
+    {
+      "view": "today",
+      "width": 375,
+      "height": 667,
+      "overflow": false,
+      "scrollHeight": 563,
+      "clientHeight": 563,
+      "primary": {
+        "top": 484.6875,
+        "bottom": 534.6875,
+        "width": 343,
+        "height": 50
+      },
+      "nav": {
+        "top": 607,
+        "bottom": 667,
+        "width": 375,
+        "height": 60
+      },
+      "controls": [
+        {
+          "text": "Adjust today",
+          "height": 44,
+          "width": 96.671875
+        },
+        {
+          "text": "7 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "10 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "15 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "20 min",
+          "height": 48,
+          "width": 80.5
+        },
+        {
+          "text": "Start 10-minute session",
+          "height": 50,
+          "width": 343
+        },
+        {
+          "text": "A smaller step · 3 minutes",
+          "height": 44,
+          "width": 343
+        },
+        {
+          "text": "▣Today",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "◇Journey",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "▤Journal",
+          "height": 49,
+          "width": 86
+        },
+        {
+          "text": "⚙Settings",
+          "height": 49,
+          "width": 86
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "iphone-webkit",
+      "stage": "developed",
+      "errors": []
+    },
+    {
+      "view": "workout",
+      "width": 375,
+      "height": 667,
+      "overflow": false,
+      "scrollHeight": 595,
+      "clientHeight": 595,
+      "primary": {
+        "top": 514,
+        "bottom": 564,
+        "width": 343,
+        "height": 50
+      },
+      "nav": {
+        "top": 639,
+        "bottom": 667,
+        "width": 375,
+        "height": 28
+      },
+      "controls": [
+        {
+          "text": "Pause",
+          "height": 50,
+          "width": 126.53125
+        },
+        {
+          "text": "Replace",
+          "height": 50,
+          "width": 101.234375
+        },
+        {
+          "text": "Skip",
+          "height": 50,
+          "width": 101.21875
+        },
+        {
+          "text": "Sound on",
+          "height": 44,
+          "width": 79.328125
+        },
+        {
+          "text": "End session",
+          "height": 44,
+          "width": 94.6875
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "iphone-webkit",
+      "stage": "developed",
+      "errors": []
+    },
+    {
+      "view": "today",
+      "width": 393,
+      "height": 727,
+      "overflow": false,
+      "scrollHeight": 623,
+      "clientHeight": 623,
+      "primary": {
+        "top": 488.6875,
+        "bottom": 538.6875,
+        "width": 361,
+        "height": 50
+      },
+      "nav": {
+        "top": 667,
+        "bottom": 727,
+        "width": 393,
+        "height": 60
+      },
+      "controls": [
+        {
+          "text": "Adjust today",
+          "height": 44,
+          "width": 96.109375
+        },
+        {
+          "text": "7 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "10 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "15 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "20 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "Start 10-minute session",
+          "height": 50,
+          "width": 361
+        },
+        {
+          "text": "A smaller step · 3 minutes",
+          "height": 44,
+          "width": 361
+        },
+        {
+          "text": "▣Today",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "◇Journey",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "▤Journal",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "⚙Settings",
+          "height": 49,
+          "width": 90.5
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "android-chromium",
+      "stage": "starting",
+      "errors": []
+    },
+    {
+      "view": "workout",
+      "width": 393,
+      "height": 727,
+      "overflow": false,
+      "scrollHeight": 655,
+      "clientHeight": 655,
+      "primary": {
+        "top": 571,
+        "bottom": 621,
+        "width": 361,
+        "height": 50
+      },
+      "nav": {
+        "top": 699,
+        "bottom": 727,
+        "width": 393,
+        "height": 28
+      },
+      "controls": [
+        {
+          "text": "Pause",
+          "height": 50,
+          "width": 133.453125
+        },
+        {
+          "text": "Replace",
+          "height": 50,
+          "width": 106.765625
+        },
+        {
+          "text": "Skip",
+          "height": 50,
+          "width": 106.78125
+        },
+        {
+          "text": "Sound on",
+          "height": 44,
+          "width": 77.921875
+        },
+        {
+          "text": "End session",
+          "height": 44,
+          "width": 88.734375
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "android-chromium",
+      "stage": "starting",
+      "errors": []
+    },
+    {
+      "view": "today",
+      "width": 393,
+      "height": 727,
+      "overflow": false,
+      "scrollHeight": 623,
+      "clientHeight": 623,
+      "primary": {
+        "top": 488.6875,
+        "bottom": 538.6875,
+        "width": 361,
+        "height": 50
+      },
+      "nav": {
+        "top": 667,
+        "bottom": 727,
+        "width": 393,
+        "height": 60
+      },
+      "controls": [
+        {
+          "text": "Adjust today",
+          "height": 44,
+          "width": 96.109375
+        },
+        {
+          "text": "7 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "10 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "15 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "20 min",
+          "height": 48,
+          "width": 85
+        },
+        {
+          "text": "Start 10-minute session",
+          "height": 50,
+          "width": 361
+        },
+        {
+          "text": "A smaller step · 3 minutes",
+          "height": 44,
+          "width": 361
+        },
+        {
+          "text": "▣Today",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "◇Journey",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "▤Journal",
+          "height": 49,
+          "width": 90.5
+        },
+        {
+          "text": "⚙Settings",
+          "height": 49,
+          "width": 90.5
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "android-chromium",
+      "stage": "developed",
+      "errors": []
+    },
+    {
+      "view": "workout",
+      "width": 393,
+      "height": 727,
+      "overflow": false,
+      "scrollHeight": 655,
+      "clientHeight": 655,
+      "primary": {
+        "top": 571,
+        "bottom": 621,
+        "width": 361,
+        "height": 50
+      },
+      "nav": {
+        "top": 699,
+        "bottom": 727,
+        "width": 393,
+        "height": 28
+      },
+      "controls": [
+        {
+          "text": "Pause",
+          "height": 50,
+          "width": 133.453125
+        },
+        {
+          "text": "Replace",
+          "height": 50,
+          "width": 106.765625
+        },
+        {
+          "text": "Skip",
+          "height": 50,
+          "width": 106.78125
+        },
+        {
+          "text": "Sound on",
+          "height": 44,
+          "width": 77.921875
+        },
+        {
+          "text": "End session",
+          "height": 44,
+          "width": 88.734375
+        }
+      ],
+      "imageRendering": "pixelated",
+      "engine": "android-chromium",
+      "stage": "developed",
+      "errors": []
+    }
+  ],
+  "reviewChecks": [
+    {
+      "engine": "iphone-webkit",
+      "overflow": false,
+      "summaryHeight": 44,
+      "sourceTargets": [
+        44,
+        44,
+        44,
+        44,
+        44,
+        44,
+        44,
+        44
+      ]
+    },
+    {
+      "engine": "android-chromium",
+      "overflow": false,
+      "summaryHeight": 44,
+      "sourceTargets": [
+        44,
+        44,
+        44,
+        44,
+        44,
+        44,
+        44,
+        44
+      ]
+    }
+  ],
+  "masters": [
+    {
+      "file": "character.aseprite",
+      "sha256": "4bf30ccdd3971d69b2cab8450745a6a90209800c642bb0b42b334d152755b374"
+    },
+    {
+      "file": "studio.aseprite",
+      "sha256": "8f4f5e50a191055da986f099bc095223b65c0017264874d358fb72cfc1b4a917"
+    }
+  ],
+  "sourceExport": "npm run art:export -- --comeback-proof"
+}

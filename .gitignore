@@ -10,3 +10,6 @@ art/seed/
 
 # Local reference uploads; approved art sources are retained in art/direction.
 _uploads/
+
+# Compiled fixture for same-origin alpha update checks.
+.alpha-check/

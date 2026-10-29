@@ -1,0 +1,17 @@
+{
+  "mastersUnchanged": true,
+  "exportsByteIdentical": true,
+  "files": {
+    "art/prototypes/comeback/user-art/character.aseprite": "c6f1606ee92d044c9ebde2f67b4fde8627d98e5e12ba1dc576125c0bed5d9af1",
+    "art/prototypes/comeback/user-art/heads.aseprite": "9614b744f855701c53958462d092fe163f8b5a209d8fbd2b64598c60bd25a0a7",
+    "art/prototypes/comeback/user-art/studio.aseprite": "a91f658e7a3e9403cae471f8b721bc12c84a6f34f3ac1ad94764a105dfd56d7c",
+    "art/prototypes/comeback/user-art/motion.aseprite": "dc67f922a7404d9cb051c53f21bb49975c33d0611255c571491986f5fc80b2d4",
+    "art/prototypes/comeback/user-art/march.aseprite": "e7734b2d6cd31770832f10423e74c71c6b0fd9625c23582f05db6e4e10a48288",
+    "art/prototypes/comeback/user-art/supine-start.aseprite": "1ad2ae2116f62a271038b45f58b01214cfcc797e54ea4cf39e366e74b7d51cf9",
+    "public/art/comeback-character.png": "28293456cffd110b0991e48460d116e5d18a489e17e5848610d12914e50e8929",
+    "public/art/comeback-room.png": "9888c930558cae3a83d6390554d85787b2c39f3d48bbb68f3ba98aaa49c61604",
+    "public/art/comeback-march.png": "a696e2915abf070260ae284d4921ce79c96585f5fd22b94eebb4ed17f65f7d33",
+    "public/art/comeback-bracing.png": "567862756b4d689e2390f9d20e73a75ef688c12622e5e77254bb08b25f1af558",
+    "public/art/comeback-avatar.json": "3678257369791d550c4a606d485973c55e2b04f189f16707f44f2a2c06a91bfe"
+  }
+}

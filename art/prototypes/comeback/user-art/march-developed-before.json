@@ -1,0 +1,20 @@
+{
+  "art\\prototypes\\comeback\\user-art\\bridge.aseprite": "2806ed503255dd78662d014f3b88177981b693512470ab43420125596273319e",
+  "art\\prototypes\\comeback\\user-art\\calf.aseprite": "ab5ec44630430a1726c49f1bfc4f6f5d889bf23e559d5da8112a80e4d7e33aca",
+  "art\\prototypes\\comeback\\user-art\\character.aseprite": "c6f1606ee92d044c9ebde2f67b4fde8627d98e5e12ba1dc576125c0bed5d9af1",
+  "art\\prototypes\\comeback\\user-art\\heads.aseprite": "9614b744f855701c53958462d092fe163f8b5a209d8fbd2b64598c60bd25a0a7",
+  "art\\prototypes\\comeback\\user-art\\march.aseprite": "e7734b2d6cd31770832f10423e74c71c6b0fd9625c23582f05db6e4e10a48288",
+  "art\\prototypes\\comeback\\user-art\\motion.aseprite": "dc67f922a7404d9cb051c53f21bb49975c33d0611255c571491986f5fc80b2d4",
+  "art\\prototypes\\comeback\\user-art\\studio.aseprite": "a91f658e7a3e9403cae471f8b721bc12c84a6f34f3ac1ad94764a105dfd56d7c",
+  "art\\prototypes\\comeback\\user-art\\supine-developed.aseprite": "e651047392280a5cf7071a61869d82bbc13967ce553ce70ec46596c5df6a037f",
+  "art\\prototypes\\comeback\\user-art\\supine-start.aseprite": "1ad2ae2116f62a271038b45f58b01214cfcc797e54ea4cf39e366e74b7d51cf9",
+  "public\\art\\comeback-avatar.json": "67436f29f8c5e68e8a87ea537b50c94308eedbef214bf973827c8e84a1871548",
+  "public\\art\\comeback-bracing-developed.png": "bea3b64232e7a7a30d9b3270d570c8bed160e7d9bbd9e84a07093c278d8be83a",
+  "public\\art\\comeback-bracing.png": "567862756b4d689e2390f9d20e73a75ef688c12622e5e77254bb08b25f1af558",
+  "public\\art\\comeback-bridge.png": "cb8b8ad4296622a38c5cce0342683bdb96f2f8c7f5c98ff377ff4a90f6b62c88",
+  "public\\art\\comeback-calf.png": "0faededad69569978f10f611b2513cefd7bfd70f16f35759c6617cddeb0c062a",
+  "public\\art\\comeback-character.png": "28293456cffd110b0991e48460d116e5d18a489e17e5848610d12914e50e8929",
+  "public\\art\\comeback-march.png": "a696e2915abf070260ae284d4921ce79c96585f5fd22b94eebb4ed17f65f7d33",
+  "public\\art\\comeback-room.png": "9888c930558cae3a83d6390554d85787b2c39f3d48bbb68f3ba98aaa49c61604",
+  "public\\art\\comeback-walk.png": "7ad2aaceb78250e18ccee406e21b577e07f787ad400997a23648d2a90f4a4c97"
+}

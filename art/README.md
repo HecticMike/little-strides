@@ -1,5 +1,7 @@
 # Hearthwood artwork
 
+The approved comeback family is separate from the legacy assets below. Edit `art/prototypes/comeback/user-art` masters; normal `npm run art:export` includes its canonical atlas and full Sunlit room. The earlier walking experiment is retained in the art sources but no longer used by the comeback app. See [runtime integration and editing notes](../docs/comeback-integration.md).
+
 The approved village artwork is preserved. The focused character pass reused existing sprites and generated one provisional core-study seed.
 Runtime PNGs are exported from editable masters with `npm run art:export`.
 The export also refreshes [source-inventory.json](source-inventory.json), listing

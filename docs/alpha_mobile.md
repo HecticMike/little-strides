@@ -1,91 +1,79 @@
-# Little Strides alpha 0.1 — real-phone testing
+# Little Strides - comeback alpha on your phone
 
-App: https://hecticmike.github.io/little-strides/
+App address: https://hecticmike.github.io/little-strides/
+Source: https://github.com/HecticMike/little-strides
 
-Source: https://github.com/HecticMike/little-strides (public, as requested).
+This guide describes the prepared comeback alpha. These local changes have not
+been pushed or published yet. After deployment, Settings must show **Comeback
+alpha** and a **Build** identifier. The address stays the same; no sign-in is needed.
 
-This alpha installs from the browser as a standalone Home Screen web app. Use the
-GitHub Pages address above; no GitHub or ChatGPT sign-in is required. No store publication is needed.
-The exercise candidates, recovery rules and local records are the existing app;
-this release upgrades icons and small interface artwork.
+## Update an existing installation
 
-## Install on iPhone
+1. Export JSON in the installation containing your history. Keep the downloaded file.
+2. Open Little Strides online. If Update ready appears, finish or pause the workout,
+   close all Little Strides windows (including Safari tabs), then reopen it.
+3. Check Settings for Comeback alpha, the build identifier and Offline ready.
+4. Check Journal history, movement exclusions, sound preferences and any paused session.
+   Earlier workshop/timber progress is available read-only in Journal.
+5. If you need to transfer history, use Settings > Import JSON and verify the records.
+   Import replaces local data; it does not merge histories. Keep the original until checked.
 
-1. Copy the app URL into Safari while online.
-2. Open Share (inside the page menu on some Safari layouts), then Add to Home Screen.
-3. Leave Open as Web App switched on if it is offered, and tap Add.
-4. Open Little Strides from its new Home Screen icon.
-5. Keep the app online until the header says Offline ready.
+Do not clear browser data or uninstall to force an update. Same-origin update tests
+preserve data, but phone storage/OS behaviour still needs the checks below.
 
-These menu steps follow [Apple's current iPhone guide](https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios).
+## Install on iPhone 15
 
-## Install on Android
+Open the app address in Safari. Use Share > Add to Home Screen; keep Open as Web App
+on if offered. Open the new icon while online and wait for Offline ready. If the
+Home Screen app does not contain your Safari history, import your exported JSON.
+Do not assume a desktop or another installation synchronises automatically.
 
-1. Copy the app URL into Chrome while online.
-2. Open the three-dot menu, choose Install and create shortcut → Install.
-   Some Chrome versions offer Install app or Add to Home screen instead.
-3. Follow the confirmation, then open Little Strides from the installed icon.
-4. Keep it online until Offline ready appears.
+Android: open in Chrome and choose Install app or Add to Home screen, then open the
+installed icon online until Offline ready appears.
 
-See [Google Chrome's installation guide](https://support.google.com/chrome/answer/9658361?hl=en&co=GENIE.Platform%3DAndroid).
+## What this alpha contains
 
-## First alpha check
+- A static Sunlit apartment/Journey and Starting/Developed character artwork.
+  The visual physique change is at 96 comeback steps. Milestones at 8/24/48 are
+  recorded, but intermediate physiques and illustrated scenes are unfinished.
+- Core-led recommendations using existing candidates and your recorded constraints.
+  Suggestions and artwork are unreviewed, not professional approval. Review or
+  disable unsuitable movements; existing locks and discomfort holds remain.
+- Ten minutes is the fresh default. The initial profile/pool currently supports
+  3/7/10 minutes; 15/20 can be unavailable under the unchanged exposure limits.
+  A later ten-minute request may be unavailable while a three-minute step still fits.
+  This limited catalogue is not a comprehensive full-body strengthening programme.
+- A full real session earns one permanent comeback step at every length. Partial
+  sessions earn their actual movement fraction. Rest, preparation, preview and
+  suspended time earn none. Stopping never removes existing progress.
+- All six currently profile-eligible movements have matching artwork at both
+  existing stages. Setup/raised-position stills are labelled; no full movement
+  cycle, clinically validated demonstration or measured repetitions are implied.
+- Optional effort, later symptoms and manually entered Fitbit readings remain local
+  and are included in JSON backups. Device data never overrides symptom restrictions.
 
-- Settings → Test sound: check the phone's volume, mute and chosen audio output.
-- Preview workflow: try Pause, Resume, Skip and Replace before exercising.
-  Preview records no exercise and earns no timber.
-- Suggestions are ready on first use. Review or disable movements is optional;
-  exclude unsuitable candidates and retain any existing exclusions. Suggestions
-  and illustrations are not professional approval. Settings → Use suggested
-  selection restores the available pool without clearing discomfort holds.
-- When appropriate, run an available full 3-minute small step or a 7- or 10-minute session. Keep it in the
-  foreground; let the final countdown finish automatically. One complete session
-  earns 1 timber. Village → Workshop → Restore spends it once.
-- Confirm the Journal record, close/reopen the app and check it is still present.
-- After Offline ready, try an airplane-mode reload and confirm artwork/history load.
-- Check a short app switch or incoming call: the workout should pause, exclude time
-  away and ask you to resume. Confirm the screen stays awake during foreground use.
+## Physical-phone checks - all still pending
 
-Physical phone checks remain necessary: real installation, device masks and
-launch appearance, audio/silent/Bluetooth routes, wake lock, calls and background
-interruptions. Browser emulation does not certify these behaviours on your phone.
-For an issue, note the device, OS/browser version, Alpha 0.1 and the steps that led to it.
+| Check | Expected result |
+| --- | --- |
+| Install and reopen | Correct app name; safe areas clear; Settings says Comeback alpha and shows a build ID. |
+| Settings > Test sound | With Sound on and nonzero volume, an audible tone. Check speaker, media volume, Silent Mode and Bluetooth separately. Tone sent does not prove audibility. |
+| Muted sound | No cue; preference survives closing/reopening. Pacing mute leaves transition cues available. |
+| One appropriate available session | Readable figure/timer/cues from floor/table distance; accessible Pause/Skip/Replace/End; automatic transitions and saved completion. |
+| Brief app switch, call, lock and forced termination | Interrupted activity stays paused, time away is not counted, explicit resume is required. Check audio resumes from a tap. |
+| Wake lock | Screen stays awake while foreground exercise is running, or clear fallback guidance appears. |
+| Airplane-mode relaunch | After Offline ready, close/reopen; artwork, sounds, history and paused session remain available. |
+| Export/import | Use the phone's file/share flow; restore a fictional/test backup and check history, preferences and comeback progress without duplicates. |
+| Rotation and safe areas | Controls remain usable with Safari bars, Home Screen mode, Dynamic Island and bottom inset. |
+| Cached update | Close all old app windows; reopen the new build with saved activity and no repeated award. |
 
-## Move from the old preview
+Repeat install, sound, interruption and offline checks on Android when available.
+Browser emulation does not certify real sound routes, iOS lifecycle/storage or wake lock.
+For an issue, record the device, OS/browser version, Settings build ID and steps.
 
-1. Open the old preview on the device/browser containing your history:
-   https://little-strides-mobile.ssi-strategy-7759.chatgpt.site/
-2. Settings → Export JSON. Keep the downloaded file before removing anything.
-3. Install/open the GitHub Pages app, then Settings → Import JSON; select that file.
-4. Check your Journal, village restoration and exercise/recovery settings.
-   Import restores the backup; it does not merge two separate histories.
+## Data transfer and backups
 
-The new domain has separate browser storage. Nothing transfers automatically.
-The old preview is retained for export, but future releases use GitHub Pages.
-Source and built assets are public. Your local exercise records and exported
-backups are not uploaded to the repository by the app.
-
-## Keep your alpha data
-
-History is local to the device/browser installation; it does not synchronise
-from desktop or another phone. Export JSON in Settings on the old installation,
-move the file to the phone, then Import JSON inside the installed app if you want
-that history. Check imported records and recovery restrictions before starting.
-
-Export JSON after important testing and before uninstalling/reinstalling or clearing
-browser data. Do not clear storage to fix an icon. Phone launchers can retain an old
-icon; keep the installed app or re-add it only after making a backup. If the app
-reports Update ready, finish/pause your workout, close all its windows and reopen.
-No app data or eligibility is reset by this source update.
-
-## Chapter I on your phone
-
-Today now offers a separate three-minute activation/mobility step; enable only
-individually suitable movements first. If it cannot fit your recovery limits,
-rest or review the choices. A full small step earns the same one timber as a
-longer session. Partial activity is saved without taking village progress away.
-
-Use the current project card on Today or in Village. Preview the actual change,
-choose your banner/planting style when offered, and spend existing earned timber.
-Letters wait in Village/Journal, and the noticeboard opens a pond/watchtower
-discovery. Nothing expires. See chapter_one.md for content and remaining checks.
+Data stays on this device/browser installation, not in GitHub or a cloud account.
+Export after important testing and before changing installations. If using the old
+private preview, export there and import at the app address above; the domains have
+separate storage. The app does not upload your exercise records or JSON backup.

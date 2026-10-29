@@ -1,0 +1,790 @@
+{
+  "schemaVersion": 1,
+  "scenario": "Fictional isolated data using the current initial profile; not a personal prescription.",
+  "artStatus": "All demonstrations remain provisional/unreviewed; availability is not clinical approval.",
+  "summary": [
+    {
+      "appearance": "starting",
+      "eligibleMovements": 6,
+      "illustrated": 6,
+      "missing": []
+    },
+    {
+      "appearance": "developed",
+      "eligibleMovements": 6,
+      "illustrated": 6,
+      "missing": []
+    }
+  ],
+  "rows": [
+    {
+      "id": "march",
+      "name": "Easy march",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "aerobic",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-march.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 96,
+            "h": 128
+          },
+          "purpose": "unreviewed-exercise-still"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-march-developed.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 96,
+            "h": 128
+          },
+          "purpose": "unreviewed-exercise-still"
+        }
+      ]
+    },
+    {
+      "id": "squat",
+      "name": "Shallow squat",
+      "status": "locked",
+      "reason": "Locked pending suitability and artwork review",
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        },
+        {
+          "appearance": "developed",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        }
+      ]
+    },
+    {
+      "id": "push",
+      "name": "Wall push",
+      "status": "locked",
+      "reason": "Locked pending suitability and artwork review",
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        },
+        {
+          "appearance": "developed",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        }
+      ]
+    },
+    {
+      "id": "calf",
+      "name": "Calf raise",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "strength",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-calf.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 96,
+            "h": 132
+          },
+          "purpose": "raised-position-only"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-calf.png",
+          "frame": {
+            "x": 96,
+            "y": 0,
+            "w": 96,
+            "h": 132
+          },
+          "purpose": "raised-position-only"
+        }
+      ]
+    },
+    {
+      "id": "reach",
+      "name": "Gentle reach",
+      "status": "profile",
+      "reason": "Overhead reaching is excluded by your profile; separate personal review is needed.",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "mobility",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        },
+        {
+          "appearance": "developed",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        }
+      ]
+    },
+    {
+      "id": "abdominal-bracing",
+      "name": "Supine abdominal bracing",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "activation",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-bracing.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "starting-position-only"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-bracing-developed.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "starting-position-only"
+        }
+      ]
+    },
+    {
+      "id": "pelvic-tilt",
+      "name": "Supine pelvic tilts",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "mobility",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-bracing.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "starting-position-only"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-bracing-developed.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "starting-position-only"
+        }
+      ]
+    },
+    {
+      "id": "heel-slide",
+      "name": "Supine heel slides",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "activation",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-character.png",
+          "frame": {
+            "x": 0,
+            "y": 128,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "unreviewed-exercise-still"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-character.png",
+          "frame": {
+            "x": 192,
+            "y": 128,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "unreviewed-exercise-still"
+        }
+      ]
+    },
+    {
+      "id": "modified-dead-bug",
+      "name": "Modified dead bug",
+      "status": "locked",
+      "reason": "Locked pending suitability and artwork review",
+      "clinicalStatus": "pending-review",
+      "loadKind": "strength",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        },
+        {
+          "appearance": "developed",
+          "available": false,
+          "asset": null,
+          "frame": null,
+          "purpose": "neutral-text-fallback"
+        }
+      ]
+    },
+    {
+      "id": "glute-bridge",
+      "name": "Glute bridge",
+      "status": "eligible",
+      "reason": "Eligible under your current choices",
+      "clinicalStatus": "unreviewed",
+      "loadKind": "strength",
+      "art": [
+        {
+          "appearance": "starting",
+          "available": true,
+          "asset": "./art/comeback-bridge.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "raised-position-only"
+        },
+        {
+          "appearance": "developed",
+          "available": true,
+          "asset": "./art/comeback-bridge-developed.png",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 192,
+            "h": 128
+          },
+          "purpose": "raised-position-only"
+        }
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "label": "Fresh 3 minutes",
+      "at": "2026-10-29T10:00:00.000Z",
+      "requestedMinutes": 3,
+      "available": true,
+      "availableMinutes": [
+        3
+      ],
+      "reason": "",
+      "actualMinutes": 3,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "abdominal-bracing",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 60
+        },
+        {
+          "kind": "cooldown",
+          "exerciseId": null,
+          "seconds": 30
+        }
+      ],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 105,
+          "totalMovementSeconds": 105
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 105,
+          "totalMovementSeconds": 105
+        }
+      ]
+    },
+    {
+      "label": "Fresh 7 minutes",
+      "at": "2026-10-29T10:00:00.000Z",
+      "requestedMinutes": 7,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "reason": "",
+      "actualMinutes": 7,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "exerciseId": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "exerciseId": "abdominal-bracing",
+          "seconds": 30
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "glute-bridge",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "heel-slide",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "glute-bridge",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 75
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 30
+        },
+        {
+          "kind": "cooldown",
+          "exerciseId": null,
+          "seconds": 15
+        }
+      ],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 270,
+          "totalMovementSeconds": 270
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 270,
+          "totalMovementSeconds": 270
+        }
+      ]
+    },
+    {
+      "label": "Fresh 10 minutes",
+      "at": "2026-10-29T10:00:00.000Z",
+      "requestedMinutes": 10,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "reason": "",
+      "actualMinutes": 10,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "exerciseId": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "exerciseId": "abdominal-bracing",
+          "seconds": 30
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "heel-slide",
+          "seconds": 30
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "glute-bridge",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 30
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "glute-bridge",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "exerciseId": "calf",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "march",
+          "seconds": 135
+        },
+        {
+          "kind": "work",
+          "exerciseId": "march",
+          "seconds": 30
+        },
+        {
+          "kind": "cooldown",
+          "exerciseId": null,
+          "seconds": 15
+        }
+      ],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 390,
+          "totalMovementSeconds": 390
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 390,
+          "totalMovementSeconds": 390
+        }
+      ]
+    },
+    {
+      "label": "Fresh 15 minutes",
+      "at": "2026-10-29T10:00:00.000Z",
+      "requestedMinutes": 15,
+      "available": false,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "reason": "Not enough eligible movement time for this length. Choose a shorter available session or rest. Your profile or current symptom adjustment excludes additional movements; review the restriction or rest.",
+      "actualMinutes": 0,
+      "sequence": [],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        }
+      ]
+    },
+    {
+      "label": "Fresh 20 minutes",
+      "at": "2026-10-29T10:00:00.000Z",
+      "requestedMinutes": 20,
+      "available": false,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "reason": "Not enough eligible movement time for this length. Choose a shorter available session or rest. Your profile or current symptom adjustment excludes additional movements; review the restriction or rest.",
+      "actualMinutes": 0,
+      "sequence": [],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        }
+      ]
+    },
+    {
+      "label": "Later the same day",
+      "at": "2026-10-29T15:00:00.000Z",
+      "requestedMinutes": 10,
+      "available": false,
+      "availableMinutes": [],
+      "reason": "Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest. Your profile or current symptom adjustment excludes additional movements; review the restriction or rest.",
+      "actualMinutes": 0,
+      "sequence": [],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 0,
+          "totalMovementSeconds": 0
+        }
+      ]
+    },
+    {
+      "label": "Later the same day - smaller step",
+      "at": "2026-10-29T15:00:00.000Z",
+      "requestedMinutes": 3,
+      "available": true,
+      "availableMinutes": [
+        3
+      ],
+      "reason": "",
+      "actualMinutes": 3,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "exerciseId": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "exerciseId": "abdominal-bracing",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 60
+        },
+        {
+          "kind": "cooldown",
+          "exerciseId": null,
+          "seconds": 30
+        }
+      ],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 105,
+          "totalMovementSeconds": 105
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 105,
+          "totalMovementSeconds": 105
+        }
+      ]
+    },
+    {
+      "label": "Following day",
+      "at": "2026-10-30T11:00:00.000Z",
+      "requestedMinutes": 10,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "reason": "",
+      "actualMinutes": 10,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "exerciseId": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "exerciseId": "abdominal-bracing",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 60
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "heel-slide",
+          "seconds": 45
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "exerciseId": "pelvic-tilt",
+          "seconds": 120
+        },
+        {
+          "kind": "rest",
+          "exerciseId": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "exerciseId": "march",
+          "seconds": 150
+        },
+        {
+          "kind": "work",
+          "exerciseId": "march",
+          "seconds": 30
+        },
+        {
+          "kind": "cooldown",
+          "exerciseId": null,
+          "seconds": 15
+        }
+      ],
+      "art": [
+        {
+          "appearance": "starting",
+          "missingIds": [],
+          "illustratedMovementSeconds": 450,
+          "totalMovementSeconds": 450
+        },
+        {
+          "appearance": "developed",
+          "missingIds": [],
+          "illustratedMovementSeconds": 450,
+          "totalMovementSeconds": 450
+        }
+      ]
+    }
+  ],
+  "nextAsset": null
+}
