@@ -3,9 +3,10 @@
 App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
 
-This guide describes the prepared comeback alpha. These local changes have not
-been pushed or published yet. After deployment, Settings must show **Comeback
-alpha** and a **Build** identifier. The address stays the same; no sign-in is needed.
+The comeback alpha is published. Settings must show **Comeback alpha** and
+**Build 35c3a24590eb** for this release (later releases may have a new identifier).
+The address stays the same; no sign-in is needed. Deployment and fresh WebKit/Chromium
+offline checks passed. Physical-phone checks below are still pending.
 
 ## Update an existing installation
 

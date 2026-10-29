@@ -1,3 +1,12 @@
+## 2026-10-29 - Comeback alpha published and verified
+
+- Published the completed comeback work as6eff73c to the existing public Little Strides repository using the project's established Codex commit identity; no global Git identity changed. Existing12 character-pass screenshot edits were excluded and remain untouched. No real exercise records/backups, _uploads, node_modules, dist or compiled test fixture were staged.
+- GitHub Pages deployment40903942299 SUCCESS: unit/art checks, legacy/current builds, mobile browser installation and all actual-prefix/update gates passed on the Linux runner before deployment. Public URL remains https://hecticmike.github.io/little-strides/.
+- Live verification: fresh WebKit375x667 and Chromium393x727 sessions both report Comeback alpha, Build35c3a24590eb. Verified default10-minute Start, loaded canonical artwork, corrected manifest/theme, no horizontal overflow and offline Journey reload. Screenshots saved under screenshots/comeback-alpha; no exercise records created. Final local checks were135 unit/art and28 mobile scenarios PASS.
+- Updated README, integration status and phone guide from prepared/local wording to the verified published release. No artwork changed;11 masters and10 active runtime art files retain prior hashes. Documentation-only follow-up does not change the deployed build/cache ID.
+- Remaining: intermediate physiques/story moments, limited exercise-pool coverage and unreviewed stills remain explicitly disclosed. Physical iPhone15 sound/silent/Bluetooth routes, calls/forced termination, safe areas, wake lock, floor-distance legibility, cached updates and JSON file sharing require the owner/device; no physical-phone certification claimed.
+- Next: on iPhone, export existing JSON, load the app online, allow Update ready, close all old Little Strides windows and reopen. Verify Comeback alpha/Build35c3a24590eb, then follow docs/alpha_mobile.md physical checks and record any failures. No new source image is requested.
+
 ## 2026-10-29 - Comeback alpha release readiness
 
 - Goal/completed: prepared the approved comeback build for the existing public GitHub Pages address. Found that Pages still built the legacy village, install/splash copy described that village, and build IDs omitted launch/build configuration and deployment path. Pages now builds comeback after unit/mobile update checks; the legacy build remains available for compatibility. Comeback output gets matching manifest/theme/splash metadata without changing legacy source assets.

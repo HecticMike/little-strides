@@ -1,6 +1,6 @@
-# Comeback alpha - release preparation
+# Comeback alpha - published personal test
 
-`npm run build:comeback` runs the approved character and full Sunlit apartment with the real React workout engine. `npm run build` retains the existing published release. This redesign has not been published. Data remains local in IndexedDB; JSON backups include the new records. Both profiles have distinct offline cache IDs. Cache IDs also cover build/launch configuration and the deployment path. The Pages workflow now builds this comeback profile and gates publication on mobile installation/update checks; these local changes are not published until committed/pushed and deployed.
+`npm run build:comeback` runs the approved character and full Sunlit apartment with the real React workout engine. `npm run build` retains the legacy compatibility profile. The comeback alpha is published at https://hecticmike.github.io/little-strides/. Data remains local in IndexedDB; JSON backups include the new records. Both profiles have distinct offline cache IDs. Cache IDs also cover build/launch configuration and the deployment path. The Pages workflow now builds this comeback profile and gates publication on mobile installation/update checks; release 6eff73c passed those gates and is deployed.
 
 ## Run and check
 
@@ -105,3 +105,17 @@ npx playwright test comeback-alpha.spec.mjs
 
 The alpha guide contains the remaining physical-iPhone checklist. A successful
 browser check does not certify real audio, calls, installation storage or wake lock.
+
+
+## Verified publication - 2026-10-29
+
+Release commit `6eff73c` deployed successfully through
+https://github.com/HecticMike/little-strides/actions/runs/40903942299.
+The live app reports `Build 35c3a24590eb`. Fresh WebKit375x667 and Chromium393x727
+sessions at the public URL verified Comeback alpha, corrected install identity,
+Start visibility, no horizontal overflow, loaded character art and offline Journey
+reload. Screenshots are in `screenshots/comeback-alpha`.
+
+Local verification:135 unit/art tests and28 mobile scenarios passed. CI repeated
+its unit/build/prefix/update gates successfully. Live browser checks created no
+exercise records. Real-phone sound/calls/storage/wake-lock checks remain pending.
