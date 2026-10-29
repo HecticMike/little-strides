@@ -1,3 +1,12 @@
+## 2026-10-29 - iPhone audio update published; physical retest pending
+
+- Published the compatibility fix and volume-property refinement through460eb79/8d59966; current release/reporting commitc22896d passed GitHub deployment40960743661. Public app reports Builded7ce29124ca at the existing Pages URL.
+- Live check: fresh Chromium/iPhone-UA context with Web Audio disabled played a native WAV with nonzero samples and exact saved0.45 PCM gain, then reloaded offline and replayed successfully. No exercise/history/rewards created; screenshot saved under screenshots/comeback-alpha/live-iphone-media-sound.png. This is not a physical speaker or Home Screen OS verification.
+- Local unit suite144 PASS;9 targeted native tests additionally pass with a media-volume setter that throws. Existing12 real workout/identity/interrupt/preview mobile scenarios pass. Final prefix/release/sound checks11 PASS,1 intentional actual-WebKit-decoding skip; native Chrome flow also passed twice. CI repeated unit/build/mobile gates successfully on the published version.
+- One earlier hosted gate failed without public assertion details. Automatic approval review rejected extracting stored GitHub credentials to read logs; that command was not run. Used public API/standard GitHub test annotations instead, without credential extraction. The subsequent complete gate passed; no specific cause is invented for the earlier failure. GitHub reporter remains enabled for future diagnostic access.
+- Guide updated to the live build and exact Home Screen close/reopen/Test sound steps. Artwork/audio source files, exercise/recovery/reward rules and user schema unchanged. Original12 character-pass screenshot edits remain untouched. Automatic review also blocked resetting2 test-generated Settings captures; no reset was performed and those files are left uncommitted.
+- Next: owner confirms Test sound and workout cues are audible on iPhone15 Home Screen, with Sound on, nonzero app/media volume and the intended speaker/Bluetooth route. If not, collect exact message/build/output route. Then continue the remaining character progression work. No further source-image request in this audio fix.
+
 ## 2026-10-29 - iPhone Home Screen sound compatibility fix
 
 - Report: iPhone15 installed Home Screen app has no audible Test sound or workout cues. Existing code relied solely on Web Audio; a running context/test scheduling did not establish audible iOS output. Primary WebKit/Apple playback guidance reviewed; real hardware cause remains unconfirmed.

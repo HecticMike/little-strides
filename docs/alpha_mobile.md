@@ -4,7 +4,7 @@ App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
 
 The comeback alpha is published. Settings must show **Comeback alpha** and
-**Build 35c3a24590eb** for this release (later releases may have a new identifier).
+**Build ed7ce29124ca** for this release (later releases may have a new identifier).
 The address stays the same; no sign-in is needed. Deployment and fresh WebKit/Chromium
 offline checks passed. Physical-phone checks below are still pending.
 
@@ -31,6 +31,19 @@ Do not assume a desktop or another installation synchronises automatically.
 
 Android: open in Chrome and choose Install app or Add to Home screen, then open the
 installed icon online until Offline ready appears.
+
+## Retest the iPhone sound update
+
+Wait for Update ready while online, then fully close Little Strides from the App
+Switcher and close any Little Strides Safari tabs. Reopen the Home Screen icon and
+check Settings says Build ed7ce29124ca. Do not uninstall or clear stored data.
+
+Turn Sound on, set app Volume above zero, raise the phone's media volume and tap
+Test sound. The confirmation should mention **iPhone media playback**. If it is
+still inaudible, report the exact confirmation/error, build ID and whether the phone
+is using its speaker or Bluetooth. A sent-tone message cannot verify the speaker.
+The cue route now uses native media files on iPhone, retaining app volume/mute and
+offline use. No recording permission or background silent loop is involved.
 
 ## What this alpha contains
 

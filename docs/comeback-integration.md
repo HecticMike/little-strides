@@ -142,3 +142,14 @@ offline reload and interrupted startup are tested independently of Web Audio in
 Chromium. Windows WebKit's unsupported WAV renderer has an explicit failure assertion;
 one actual-decoding case is intentionally skipped there. None of this establishes
 physical speaker audibility: the owner must retry the Home Screen app after deployment.
+
+
+Sound update publication: commits460eb79/8d59966 and reporting follow-upc22896d;
+https://github.com/HecticMike/little-strides/actions/runs/40960743661 SUCCESS.
+The live app is now Build ed7ce29124ca. A fresh Chromium session with iPhone UA
+and Web Audio disabled verified actual native WAV play, nonzero samples scaled to
+saved0.45 gain and offline reinitialisation/replay. No exercise was recorded.
+One earlier hosted gate failed without public assertion details; adding GitHub
+reporter made future failures publicly diagnosable, and the subsequent complete
+gate passed. No unverified cause is claimed for that earlier CI failure. The
+owner still needs to confirm audible output in the real iPhone Home Screen app.
