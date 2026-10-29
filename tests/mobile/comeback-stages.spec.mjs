@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {freshState,createSession,finish,freeze,duration} from '../../src/engine.mjs';import {withTrainingProfile} from '../../src/training.mjs';import {COMEBACK_STAGES} from '../../src/comeback-stages.mjs';import {comebackProgress} from '../../src/comeback.mjs';import {expectStageArt} from './stage-art-helper.mjs';
+import {freshState,createSession,finish,freeze,duration,elapsed} from '../../src/engine.mjs';import {withTrainingProfile} from '../../src/training.mjs';import {COMEBACK_STAGES} from '../../src/comeback-stages.mjs';import {comebackProgress} from '../../src/comeback.mjs';import {expectStageArt} from './stage-art-helper.mjs';
 test.skip(process.env.LS_COMEBACK!=='1','Run against the comeback build.');
 const path=process.env.LS_APP_PATH||'/';
 async function read(page){return page.evaluate(async()=>{const db=await new Promise(r=>{const q=indexedDB.open('little-strides',1);q.onsuccess=()=>r(q.result)});const s=await new Promise(r=>{const q=db.transaction('state').objectStore('state').get('current');q.onsuccess=()=>r(q.result)});db.close();return s});}
@@ -19,5 +19,33 @@ for(const stage of COMEBACK_STAGES)test(stage.id+' is shared across Today, Journ
  const saved=await read(page);expect(saved.history).toEqual(history);expect(comebackProgress(saved).units).toBe(stage.at);await context.setOffline(true);await page.reload();await expectStageArt(page.locator('canvas[data-exercise-id="glute-bridge"]'),stage.id,'glute-bridge');const restored=await read(page);expect(restored.active.id).toBe(saved.active.id);expect(restored.history).toEqual(history);expect(restored.comeback.entries).toEqual(saved.comeback.entries);expect(restored.settings.muted).toBe(true);await context.setOffline(false);
 });
 test('a genuine completed session crosses eight units once and updates the shared character after offline reload',async({page,context})=>{
- await page.clock.install();await page.goto(path);await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();await put(page,fixture(7,await page.evaluate(()=>Date.now())));await expectStageArt(page.locator('.comeback-scene canvas'),'starting','stand');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:/A smaller step/}).tap();await page.clock.runFor(181000);await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();const saved=await read(page);expect(saved.history).toHaveLength(8);expect(comebackProgress(saved).units).toBe(8);expect(comebackProgress(saved).appearance).toBe('rhythm');await page.getByRole('button',{name:'Done',exact:true}).tap();await expectStageArt(page.locator('.comeback-scene canvas'),'rhythm','stand');await page.clock.resume();await context.setOffline(true);await page.reload();await expectStageArt(page.locator('.comeback-scene canvas'),'rhythm','stand');const restored=await read(page);expect(restored.history).toEqual(saved.history);expect(restored.comeback).toEqual(saved.comeback);await context.setOffline(false);
+ await page.clock.install();
+ await page.goto(path);
+ await expect(page.getByText('Offline ready',{exact:true})).toBeVisible();
+ await put(page,fixture(7,await page.evaluate(()=>Date.now())));
+ await expectStageArt(page.locator('.comeback-scene canvas'),'starting','stand');
+ await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.getByRole('button',{name:/A smaller step/}).tap();
+ // Start awaits audio readiness and IndexedDB. Do not advance exercise time until committed.
+ await expect(page.locator('.workout')).toBeVisible();
+ await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeEnabled();
+ const active=(await read(page)).active;
+ expect(active.status).toBe('running');
+ const remaining=duration(active)-elapsed(active,await page.evaluate(()=>Date.now()));
+ await page.clock.runFor(remaining+1000);
+ await expect(page.getByRole('region',{name:'Session completion'})).toBeVisible();
+ const saved=await read(page);
+ expect(saved.history).toHaveLength(8);
+ expect(comebackProgress(saved).units).toBe(8);
+ expect(comebackProgress(saved).appearance).toBe('rhythm');
+ await page.getByRole('button',{name:'Done',exact:true}).tap();
+ await expectStageArt(page.locator('.comeback-scene canvas'),'rhythm','stand');
+ await page.clock.resume();
+ await context.setOffline(true);
+ await page.reload();
+ await expectStageArt(page.locator('.comeback-scene canvas'),'rhythm','stand');
+ const restored=await read(page);
+ expect(restored.history).toEqual(saved.history);
+ expect(restored.comeback).toEqual(saved.comeback);
+ await context.setOffline(false);
 });

@@ -1,3 +1,9 @@
+## 2026-10-29 - Hosted milestone-test startup race corrected
+
+- First hosted release run40973743384 passed unit/build/install gates but stopped before publication:22 mobile cases passed,1 expected codec skip,1 Chromium milestone test failed waiting for completion. Public check annotations identified the exact assertion; no private logs or credentials accessed. Existing live release stayed unchanged.
+- New test advanced its virtual clock immediately after tapping Start, before confirming asynchronous audio/IndexedDB startup had committed. It now waits for workout/Pause readiness, checks running status and calculates remaining time from the saved active session. Completion, exact8-unit credit and offline equality assertions remain intact. No application timer, interruption or earning code changed.
+- Focused actual-prefix regression:10 consecutive genuine7->8 completion runs PASS, five each on WebKit/Chromium. Previous148 unit/art,63 mobile+1 expected skip and16 prefix/update gates remain applicable to unchanged application assets. Publication retry follows with the complete hosted gate enabled.
+
 ## 2026-10-29 - Five shared character stages integrated; publication ready
 
 - Completed8/48 native Aseprite milestone builds across standing, marching, calf, heel slide, neutral supine and bridge. Twelve editable masters use explicit pose-specific pixel clusters, preserving the face, height, hands, knees and contact anchors. No image generation, walking, body morphing, new exercise, reward/difficulty change or history migration.
