@@ -49,10 +49,12 @@ jobs:
       - name: Install mobile test browsers
         run: npx playwright install --with-deps chromium webkit
       - name: Verify alpha installation and same-origin update
-        run: npx playwright test comeback-alpha.spec.mjs
+        run: npx playwright test comeback-alpha.spec.mjs settings-sound.spec.mjs iphone-audio.spec.mjs
         env:
           LS_COMEBACK: '1'
           LS_APP_PATH: ${{ steps.pages.outputs.base_path }}/
+          PAGES_TEST_PATH: ${{ steps.pages.outputs.base_path }}/
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
       - name: Upload built app only
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

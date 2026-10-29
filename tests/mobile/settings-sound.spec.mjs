@@ -30,9 +30,10 @@ test('sound test has its own touch row and explains mute and zero volume', async
   }
 });
 
-test('touch sound test requests iPhone media routing and schedules an actual decoded cue', async ({ page }) => {
+test('touch sound test requests iPhone media routing and schedules an actual decoded cue', async ({ page,browserName }) => {
   await page.addInitScript(() => {
-    window.__soundStarts = 0; window.__soundCategory = '';
+    window.__soundStarts = 0; window.__soundCategory = '';window.__mediaCues=0;
+    const play=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(...args){if(this.src.startsWith('blob:'))window.__mediaCues++;const result=play.apply(this,args);return result?.catch(error=>{window.__mediaError={name:error.name,message:error.message,code:this.error?.code};throw error;});};
     const session = {};
     Object.defineProperty(session, 'type', { set(value) { window.__soundCategory = value; } });
     Object.defineProperty(navigator, 'audioSession', { configurable: true, value: session });
@@ -44,10 +45,14 @@ test('touch sound test requests iPhone media routing and schedules an actual dec
   await page.goto(base);
   await page.getByRole('button', { name: 'Settings', exact: true }).tap();
   await page.getByRole('button', { name: 'Test sound', exact: true }).tap();
-  if (await page.evaluate(() => !!(window.AudioContext || window.webkitAudioContext))) {
-    await expect(page.getByRole('status').filter({ hasText: 'Test tone sent.' })).toBeVisible();
+  const native=await page.evaluate(()=>/iPhone|iPad|iPod/.test(navigator.userAgent));
+  const available=await page.evaluate(native=>native?!!new Audio().canPlayType('audio/wav'):!!(window.AudioContext||window.webkitAudioContext),native);
+  const noWindowsCodec=browserName==='webkit'&&await page.evaluate(()=>!window.AudioContext&&!window.webkitAudioContext);
+  if(noWindowsCodec){await expect(page.getByRole('status').filter({hasText:/Test tone sent|Sound unavailable/})).toBeVisible();const failure=await page.evaluate(()=>window.__mediaError);if(failure){expect(failure.name).toBe('NotSupportedError');await expect(page.getByRole('status').filter({hasText:'Sound unavailable'})).toBeVisible();test.info().annotations.push({type:'host-limitation',description:'Windows WebKit cannot decode/play the WAV despite advertising support.'});return;}}
+  if (available) {
+    await expect(page.getByRole('status').filter({ hasText: 'Test tone sent' })).toBeVisible();
     expect(await page.evaluate(() => window.__soundCategory)).toBe('playback');
-    expect(await page.evaluate(() => window.__soundStarts)).toBe(1);
+    expect(await page.evaluate(native=>native?window.__mediaCues:window.__soundStarts,native)).toBe(1);
   } else {
     await expect(page.getByRole('status').filter({ hasText: 'Sound unavailable' })).toBeVisible();
   }

@@ -93,6 +93,7 @@ function App() {
   const [pendingReview, setPendingReview] = useState(null),[plannedSwaps,setPlannedSwaps]=useState([]),[replacement,setReplacement]=useState(null);
   const [pendingLength,setPendingLength]=useState(null),[smallMessage,setSmallMessage]=useState('');
   const [completionId,setCompletionId] = useState(null), [sessionWarning,setSessionWarning] = useState('');
+  const interruptionCount=useRef(0);
   const finishing = useRef(false),tabRef=useRef(tab);tabRef.current=tab;
   const [busy, setBusy] = useState(false), busyRef = useRef(false), [otherTab, setOtherTab] = useState(false);
   const [saving, setSaving] = useState(false), writes = useRef(0);
@@ -119,6 +120,7 @@ function App() {
     finally { writes.current--; if (!writes.current) setSaving(false); }
   }
   function interrupt(at = Math.min(Date.now(),lastTick.current)) {
+    interruptionCount.current++;cues.stop();
     if(finishing.current)return;
     const s = current.current;
     if (s?.active?.status === 'running') {
@@ -214,7 +216,8 @@ function App() {
     const proposal=planSession(requested,current.current.history,Date.now(),trainingSettingsFor(current.current));
     if (!proposal.segments) {if(requested===3)setSmallMessage(proposal.reason);else setNotice(proposal.reason);return;}
     setCompletionId(null);setSessionWarning('');
-    await cues.enable();
+    const attempt=interruptionCount.current;await cues.enable();
+    if(document.hidden||attempt!==interruptionCount.current){cues.stop();return;}
     cues.settings = current.current.settings;
     const t = Date.now(); lastTick.current = t; lastCue.current = '';
     let active;try{active=createSession(requested,current.current.history,t,{settings:trainingSettingsFor(current.current),plannedSwaps:requested===minutes?plannedSwaps:[]});}catch(e){setNotice(e.message);return;}
@@ -223,26 +226,28 @@ function App() {
   }
   async function beginPreview(){
     if(current.current.active)return;
-    setCompletionId(null);setSessionWarning('');setNotice('');await cues.enable();
+    setCompletionId(null);setSessionWarning('');setNotice('');const attempt=interruptionCount.current;await cues.enable();if(document.hidden||attempt!==interruptionCount.current){cues.stop();return;}
     const at=Date.now();lastTick.current=at;lastCue.current='';
     if(await commit({...current.current,active:createPreviewSession(minutes,at),updatedAt:at})){cues.play('transition');void wake.acquire();}
   }
   async function toggle() {
     const s = current.current, t = Date.now();
     if (s.active.status === 'running') {
-      wake.release(); await commit({ ...s, active: freeze(s.active, t), updatedAt: t });
+      cues.stop();wake.release(); await commit({ ...s, active: freeze(s.active, t), updatedAt: t });
     } else {
       const remaining=s.active.segments.slice(position(s.active).index).filter(b=>b.kind==='work');
       if (s.active.mode!=='preview'&&remaining.some(b=>!enabledExercise(b.exerciseId,s.settings))) {setSessionWarning('This saved plan contains disabled or pending-review movements. Skip or replace those blocks, or end it and start an eligible routine.');setPendingReview('resume');return;}
       if(!canResumeSession(s.active,s.history,t,trainingSettingsFor(s,t))){setSessionWarning('A remaining movement is recovering, flagged or at its rolling limit. Replace or skip it, or end and generate a suitable routine.');return;}
       setSessionWarning('');
-      await cues.enable();
+      const attempt=interruptionCount.current;await cues.enable();
+      if(document.hidden||attempt!==interruptionCount.current){cues.stop();return;}
       lastTick.current = Date.now(); lastCue.current = '';
-      if (await commit({ ...current.current, active: resume(current.current.active), updatedAt: Date.now() })) void wake.acquire();
+      if (await commit({ ...current.current, active: resume(current.current.active), updatedAt: Date.now() })) {cues.play('transition');void wake.acquire();}
     }
   }
   async function acceptReview() {
-    await cues.enable();
+    const attempt=interruptionCount.current;await cues.enable();
+    if(document.hidden||attempt!==interruptionCount.current){cues.stop();return;}
     const purpose = pendingReview;
     const next = { ...current.current, settings: { ...current.current.settings, exerciseReviewVersion: EXERCISE_REVIEW_VERSION }, updatedAt: Date.now() };
     if (await commit(next)) { setPendingReview(null); if (purpose === 'resume') {const remaining=next.active.segments.slice(position(next.active).index).filter(b=>b.kind==='work');if(remaining.every(b=>enabledExercise(b.exerciseId,next.settings)))await toggle();} else if(purpose!=='settings') {await begin(pendingLength??minutes);setPendingLength(null);} }
@@ -253,7 +258,7 @@ function App() {
     // Freeze synchronously so neither the checkpoint timer nor visibility events
     // can enqueue an old active snapshot after the final history write.
     const stopped={...snapshot,active:freeze(snapshot.active,at),updatedAt:at};
-    set(stopped);wake.release();
+    cues.stop();set(stopped);wake.release();
     if(await commit(finish(stopped,false,at),false)){if(snapshot.active.mode!=='preview')setTab('Today');setCompletionId(snapshot.active.mode==='preview'?null:id);if(snapshot.active.mode==='preview')setNotice('Workflow preview finished. No exercise recorded or rewards granted.');}
   }
   async function replaceMovement() {
@@ -317,7 +322,7 @@ function App() {
   const comeback=comebackProgress(data);
   const completedRecord=data.history.find(h=>h.id===completionId);
   const audioControls = <div className="audio-controls">
-    <button disabled={saving} aria-label={data.settings.muted ? 'Unmute sound' : 'Mute sound'} aria-pressed={data.settings.muted} onClick={() => settings({ muted: !data.settings.muted })}>{data.settings.muted ? 'Sound off' : 'Sound on'}</button>
+    <button disabled={saving} aria-label={data.settings.muted ? 'Unmute sound' : 'Mute sound'} aria-pressed={data.settings.muted} onClick={() => {const muted=!data.settings.muted;settings({muted});if(!muted)void cues.enable();}}>{data.settings.muted ? 'Sound off' : 'Sound on'}</button>
     <label>Volume<input aria-label="Cue volume" type="range" min="0" max="1" step="0.05" value={data.settings.volume} onChange={event => settings({ volume: Number(event.target.value) })} /></label>
   </div>;
   return <div className={`app ${comebackMode?'comeback-mode':''} ${s ? 'in-session' : ''}`}>

@@ -100,7 +100,7 @@ Copy-Item dist/* .alpha-check/legacy -Recurse -Force
 npm run build:comeback
 $env:LS_COMEBACK='1'
 $env:LS_APP_PATH='/little-strides/'
-npx playwright test comeback-alpha.spec.mjs
+npx playwright test comeback-alpha.spec.mjs settings-sound.spec.mjs iphone-audio.spec.mjs
 ```
 
 The alpha guide contains the remaining physical-iPhone checklist. A successful
@@ -119,3 +119,26 @@ reload. Screenshots are in `screenshots/comeback-alpha`.
 Local verification:135 unit/art tests and28 mobile scenarios passed. CI repeated
 its unit/build/prefix/update gates successfully. Live browser checks created no
 exercise records. Real-phone sound/calls/storage/wake-lock checks remain pending.
+
+
+## iPhone Home Screen sound compatibility update
+
+The owner reported silent Test sound and workout cues on iPhone15 in the installed
+Home Screen app. Web Audio can report a running context without audible iOS output;
+see the primary WebKit report https://bugs.webkit.org/show_bug.cgi?id=252746.
+The iPhone/iPad route now reuses a native audio element, primed synchronously inside
+Start/Resume/Test/Unmute taps before asynchronous work. It plays the same offline WAVs;
+16-bit PCM sample gain preserves saved app volume because iOS media-element volume
+is system-controlled. No background silent loop, microphone access or dependency added.
+
+Media preparation/play promises time out; pause, mute, end, visibility/audio interruption
+stop output. Superseded starts/cues cannot abort replacements or report a sent test.
+A pending interrupted audio unlock cannot later start/resume an exercise session.
+Non-iOS keeps Web Audio, with bounded setup and active-node stopping.
+
+The release gate now runs sound controls/native-media tests as well as prefix/update
+checks, with a CI-managed preview server. Real WAV playback, PCM gain, automatic cues,
+offline reload and interrupted startup are tested independently of Web Audio in
+Chromium. Windows WebKit's unsupported WAV renderer has an explicit failure assertion;
+one actual-decoding case is intentionally skipped there. None of this establishes
+physical speaker audibility: the owner must retry the Home Screen app after deployment.
