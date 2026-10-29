@@ -101,3 +101,38 @@ metadata. Then author a layered native-pixel icon, check its small iPhone/Androi
 silhouette and export existing PWA sizes. Preserve the deployed URL, installed
 app's data and existing backup/history compatibility during any rename. No name
 or icon has been changed in this art pass.
+
+
+## Marching pose studies
+
+`march-comparison.png` / self-contained HTML show the0/24/96 marching range
+enlarged, at144px figure width, at48x64 and in silhouette. `march-mobile.png`
+compares each standing/marching pair at144px within a375px layout. These are
+artwork reviews, not app screenshots or new exercise prescriptions.
+
+Open `form-march.aseprite` or `developed-march.aseprite`, frame1,96x128 working /
+48x64 logical pixels. Eight source body-region layers remain editable, plus three
+native study layers for pose-specific shoulder/sleeve silhouette, arm form and
+shirt planes. Preserve the2x2 grid, shared palette and authoritative upright head
+from `user-art/heads.aseprite`. Preparation uses the existing marching body, not
+pasted standing shoulders or an automatically distorted body.
+
+The three marching shoulder spans at logical row23 are18/20/22px. Both new
+studies keep the canonical head exactly unchanged. All source pixels from row68
+(logical34) down are unchanged, preserving hands, pelvis, the lifted knee and
+planted foot. New arm contours follow the supplied bent-arm position. Grid,
+alpha, palette, connected silhouette and protected-pixel checks do not establish
+anatomical or clinical validation. This is one still per stage; no walking or
+complete march cycle is added, and no body-development claim concerns the user.
+
+Export with `npm run art:export -- --comeback-stage-study`; existing export now
+covers standing, heel-slide and marching proofs read-only. The guarded native
+preparation script is history; edit the masters directly. See march-report.json,
+form-march-export.json, developed-march-export.json and verification.json.
+
+Manual artist review: both files, frame1, sleeve-to-upper-arm joins (logical
+x11-18/y23-28 and x28-34/y24-29), bent far-arm shading x29-32/y28-31, and
+shirt planes x20-26/y24-32. Keep the original elbow/wrist positions and the same
+head/neck registration. Differences remain restrained at native size. Remaining
+neutral supine/bridge/calf pose development and8/48 stages still need work before
+live integration. The later naming and native Aseprite icon task remains queued.

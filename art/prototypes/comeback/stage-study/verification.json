@@ -29,18 +29,20 @@
     "art/prototypes/comeback/stage-study/developed-silhouette.aseprite": "8edbc9928888a2ea75911726805f06752a9415bc5b9b4602f4fbad5381e42062",
     "art/prototypes/comeback/stage-study/form-standing.aseprite": "da8ff7a1432514b594bd307c3ed0993a50d8c7171a88c33140edc1f08fa12127",
     "art/prototypes/comeback/stage-study/form-heel-slide.aseprite": "5e72f8fbaea9a2f5772c6efe8b613cc6a7859f9da8a8c2e4c0439e9b76e8afbc",
-    "art/prototypes/comeback/stage-study/developed-heel-slide.aseprite": "2674d5d57d3aeecf9cba00984ea62c68d7cfeb20680c5efa0858d56a32e62c78"
+    "art/prototypes/comeback/stage-study/developed-heel-slide.aseprite": "2674d5d57d3aeecf9cba00984ea62c68d7cfeb20680c5efa0858d56a32e62c78",
+    "art/prototypes/comeback/stage-study/form-march.aseprite": "ba8bc4649ccbe595b3a420ade69a787d281073da8a2f28480d430f831fd7dcea",
+    "art/prototypes/comeback/stage-study/developed-march.aseprite": "a32bb071693753269bb98f792537af0ac4f3d7bf004ce6355e0b0fc64bc28d0c"
   },
   "exportHashes": {
     "starting.png": "6a3f4c144ed253f8cafa9f150bad6a152a55f14254be3403c03ca9d900089410",
     "developed-silhouette.png": "39318d4dd5da9f4eea468c397b049e629ccfed810779e2966c23fd1bf83367fa",
     "form-standing.png": "3719903b9a925be7d2b5524f554af7c77df7777d8a393cb9e1e04aef4310b3cf",
     "developed.png": "f0349c7463e76bffd20dbd3a4b01e9cc575c7690171d862aed9be3144e3ad8dd",
-    "report.json": "1001804edf2721229c13077bec6fc1d84e610f9be00e04a1b7f2b4291eb265bf",
-    "form-export.json": "78ab1b1b11bdf874adac1bd69079e0d38d7bc46a2cf442de45c69320f54248f4",
+    "report.json": "741bb0d10dc9428f63002859902ab3b15ddb8ab933bd59bbbefc20a1dbbfdb12",
+    "form-export.json": "7771a580244578b45da9f786f9409bcb362070c18375afab1528745f0bcd9d6e",
     "range-report.json": "970c157329ed9241db46e771c190cbf5b54a47c5186541622e1ace85c46252e4",
-    "comparison.html": "131f8f1a135a50856d40c28e3a939f91016ee6029d83b5fc641fe3105c4979d1",
-    "comparison.png": "96c3839758df20a41d648ef9aed31d25b5282e06bc13608cee6cdbc68a820dbd",
+    "comparison.html": "465fb527d484bf5538bb04d851b1396879091c2495d3c6df2162d1aa05fa86db",
+    "comparison.png": "e91bd824458dbc5d7af5760572279bb9a244996423f7476a2a029a5c7dd72b07",
     "starting-heel-slide.png": "b6df64567560aad421674b3e43a1b899932730cfb89b9aaa0c01fa52a9911948",
     "form-heel-slide.png": "e784822a766fc543bcf71f2d6836229e14e40ddba1e46567d5388b46822b1955",
     "developed-heel-slide.png": "13acf94a263f1ad59372a26f59c1307155f7bbc255c1539df8b4a20b5528c4ed",
@@ -48,7 +50,17 @@
     "heel-comparison.html": "ee836686cf8dd9a8ae4f7532f65ced9d76e27fcb699d75fbe7338dee8e2764f9",
     "heel-comparison.png": "efef95c2614b2458ff02d12f1dd88cc02db34919e2928f717a5b6ad9d84b4f4a",
     "heel-mobile.png": "18774731239df2912c9cda9ecd5377f578569038a8eee7b3f2f698a3e0c03753",
-    "heel-review.json": "c485fe1ced98e75d118e789608b280fadfe03d7def642818656f08855f4a97a4"
+    "heel-review.json": "c485fe1ced98e75d118e789608b280fadfe03d7def642818656f08855f4a97a4",
+    "starting-march.png": "784c6fe67f3bb4e4b8f3c5b8fdd3b134270e56e483d9dbfb6cd73efbdf1e6ab6",
+    "form-march.png": "2ee56368e3850304fd3119153ed095600e18b36ee70a90189348e2367d92d239",
+    "developed-march.png": "b775d1dca80935c84ffd7b4a558ba259a06a05858a91cd55e4565904a84ce037",
+    "form-march-export.json": "bd797e84a87d341a260c45007cc77757e749a10deadc65063b3541d639e24101",
+    "developed-march-export.json": "7c831d7ad1c1ac4bb924207bd3df5ff339d6d209b6174f7ff65f09082fedb2cc",
+    "march-report.json": "13f3854726976e0c97b121d541286feebd2e96c52ed9525be4f4ea7541142732",
+    "march-comparison.html": "2cd61bdd42714e856217ef1c70080428d6c37a09691dddefe84c85d3e1130eb3",
+    "march-comparison.png": "17e9adae7b52ed1dd974291794c5eae0b8b06394a923240e5efc1e00115e262b",
+    "march-mobile.html": "0c669b039a3dccbc21ea9a5bbe76e130dc5024e3c909386a2583308f05020eca",
+    "march-mobile.png": "3ec3a60d1aad961fec4904e9ed4d2b9fa711d74fe1626d0d5215175786448854"
   },
   "checks": {
     "headDifference": 0,
@@ -93,6 +105,28 @@
         ],
         "nearestNeighbour": true
       }
+    },
+    "marchStudy": {
+      "shoulderWidths": [
+        18,
+        20,
+        22
+      ],
+      "mobile": {
+        "viewport": 375,
+        "scrollWidth": 375,
+        "imageWidths": [
+          144,
+          144,
+          144,
+          144,
+          144,
+          144
+        ],
+        "nearestNeighbour": true
+      },
+      "headDifference": 0,
+      "protectedLowerBodyDifference": 0
     }
   }
 }
