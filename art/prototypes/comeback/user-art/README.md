@@ -124,3 +124,11 @@ Run `npm run art:export -- --comeback-runtime` or normal `npm run art:export`. T
 App usage is Developed glute bridge only, explicitly **raised position only**, with the existing lift/lower cue and self-paced/no-rep-target indicator. It is not a complete motion cycle, timed-hold prescription or clinically validated demonstration. Starting keeps its original PNG. No exercise eligibility, difficulty, recovery, activity record or reward rule changed.
 
 Both current physique endpoints now have artwork for all six movements eligible under the initial profile. This does not add drawings for excluded/locked candidates, create intermediate physiques or establish individual clinical suitability. No further source image is requested for the current pool. Next is the personal-alpha readiness review and physical iPhone checks, with current coverage/recovery limitations kept visible.
+
+
+## Isolated progression silhouette study
+
+Current endpoint masters remain unchanged. See [the standing silhouette study](../stage-study/README.md)
+for a broader-build proposal, native/mobile-size comparison and exact Aseprite review
+points. Export separately with `npm run art:export -- --comeback-stage-study`. It is
+not a live stage or exercise demonstration, and is not included in runtime exports.
