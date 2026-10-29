@@ -53,3 +53,51 @@ Standing legs retain Starting anatomy. Matching exercise-stage development needs
 pose-specific authoring and anatomy review; do not copy upright shoulder/arm
 patches into lying poses. Next is to establish matching exercise artwork before
 replacing any live stage. No new source image or walking artwork is requested.
+
+
+## Heel-slide pose studies
+
+`heel-comparison.png` / self-contained `heel-comparison.html` pair the three
+standing references with the matching heel-slide studies. `heel-mobile.png` is
+the375px-wide artwork review, not a live-app screenshot. The343px workout crop
+uses the current renderer's source/destination geometry, on a neutral background.
+No artwork or interface has been replaced in the live app.
+
+Editable files: `form-heel-slide.aseprite` and `developed-heel-slide.aseprite`,
+frame1,192x128 working pixels. Four source body/limb-region layers are retained,
+with separate native upper-arm and shirt-light/fold study layers. The intact
+floor head/neck/shoulder preview comes from the Starting source junction in
+`user-art/heads.aseprite`; the exporter reads that authoritative junction. Keep
+this source-matched pose junction together, without rotating or transplanting an
+upright head. Source floor art uses its existing1px working detail; it must not
+be forced onto the standing sprite's2x2 grid.
+
+Export both standing and heel-slide studies using the existing isolated command:
+
+    npm run art:export -- --comeback-stage-study
+
+The two heel studies change24/59 working pixels, respectively. Entire head/neck/
+shoulder pixels, legs, hands, support/contact rows and overall bounds match the
+Starting source exactly. Both retain binary alpha, the shared palette and one
+connected silhouette. The visible arm section is9/10/12 skin pixels at x116;
+this is an art diagnostic, not a measurement or fitness claim. The outer floor
+silhouette remains unchanged: these are small visible-arm/shirt studies, not
+finished whole-body physique stages. The protected shoulder region and Starting
+legs limit how fully they match the broader standing build.
+
+Manual artist review: both files, frame1, biceps-to-sleeve boundary x112-120/
+y105-112 and tee folds x113-125/y97-105. Compare the complete arm/torso drawing,
+not individual skin pixels. Do not turn the arm contour into an unsupported
+lump or describe it as validated exercise anatomy. Preserve x<102 limb/hand
+pixels, y>=118 floor contacts and the complete source head/neck/shoulder mask.
+No new generated source is requested. The normal runtime/export/catalogue remains
+unchanged; other pose-specific stages and the8/48 standing builds are unfinished.
+
+## Later identity work
+
+Owner requested a new app name and an Aseprite app icon after the character
+work. Choose the name with the owner before changing product text or install
+metadata. Then author a layered native-pixel icon, check its small iPhone/Android
+silhouette and export existing PWA sizes. Preserve the deployed URL, installed
+app's data and existing backup/history compatibility during any rename. No name
+or icon has been changed in this art pass.

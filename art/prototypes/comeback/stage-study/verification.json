@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "integrated": false,
-  "source": "Starting standing body with separately editable native-pixel study overlays; authoritative shared upright head",
+  "source": "Starting standing and heel-slide bodies with separately editable native-pixel study overlays; authoritative upright head and intact source floor junction",
   "preservedApprovedMasters": 11,
   "preservedRuntimeFiles": 10,
   "unchangedHashes": {
@@ -27,7 +27,9 @@
     "public/art/comeback-march.png": "a696e2915abf070260ae284d4921ce79c96585f5fd22b94eebb4ed17f65f7d33",
     "public/art/comeback-room.png": "9888c930558cae3a83d6390554d85787b2c39f3d48bbb68f3ba98aaa49c61604",
     "art/prototypes/comeback/stage-study/developed-silhouette.aseprite": "8edbc9928888a2ea75911726805f06752a9415bc5b9b4602f4fbad5381e42062",
-    "art/prototypes/comeback/stage-study/form-standing.aseprite": "da8ff7a1432514b594bd307c3ed0993a50d8c7171a88c33140edc1f08fa12127"
+    "art/prototypes/comeback/stage-study/form-standing.aseprite": "da8ff7a1432514b594bd307c3ed0993a50d8c7171a88c33140edc1f08fa12127",
+    "art/prototypes/comeback/stage-study/form-heel-slide.aseprite": "5e72f8fbaea9a2f5772c6efe8b613cc6a7859f9da8a8c2e4c0439e9b76e8afbc",
+    "art/prototypes/comeback/stage-study/developed-heel-slide.aseprite": "2674d5d57d3aeecf9cba00984ea62c68d7cfeb20680c5efa0858d56a32e62c78"
   },
   "exportHashes": {
     "starting.png": "6a3f4c144ed253f8cafa9f150bad6a152a55f14254be3403c03ca9d900089410",
@@ -38,7 +40,15 @@
     "form-export.json": "78ab1b1b11bdf874adac1bd69079e0d38d7bc46a2cf442de45c69320f54248f4",
     "range-report.json": "970c157329ed9241db46e771c190cbf5b54a47c5186541622e1ace85c46252e4",
     "comparison.html": "131f8f1a135a50856d40c28e3a939f91016ee6029d83b5fc641fe3105c4979d1",
-    "comparison.png": "96c3839758df20a41d648ef9aed31d25b5282e06bc13608cee6cdbc68a820dbd"
+    "comparison.png": "96c3839758df20a41d648ef9aed31d25b5282e06bc13608cee6cdbc68a820dbd",
+    "starting-heel-slide.png": "b6df64567560aad421674b3e43a1b899932730cfb89b9aaa0c01fa52a9911948",
+    "form-heel-slide.png": "e784822a766fc543bcf71f2d6836229e14e40ddba1e46567d5388b46822b1955",
+    "developed-heel-slide.png": "13acf94a263f1ad59372a26f59c1307155f7bbc255c1539df8b4a20b5528c4ed",
+    "heel-report.json": "cb6e65159275589e367f96836229d6ecbcd95b4966fec95463d7326f3a3333db",
+    "heel-comparison.html": "ee836686cf8dd9a8ae4f7532f65ced9d76e27fcb699d75fbe7338dee8e2764f9",
+    "heel-comparison.png": "efef95c2614b2458ff02d12f1dd88cc02db34919e2928f717a5b6ad9d84b4f4a",
+    "heel-mobile.png": "18774731239df2912c9cda9ecd5377f578569038a8eee7b3f2f698a3e0c03753",
+    "heel-review.json": "c485fe1ced98e75d118e789608b280fadfe03d7def642818656f08855f4a97a4"
   },
   "checks": {
     "headDifference": 0,
@@ -57,6 +67,32 @@
       19,
       21
     ],
-    "allStudiesValidated": true
+    "allStudiesValidated": true,
+    "heelStudy": {
+      "integrated": false,
+      "anatomyStatus": "provisional-unreviewed",
+      "armSectionSkinPixels": [
+        9,
+        10,
+        12
+      ],
+      "changedPixels": [
+        0,
+        24,
+        59
+      ],
+      "protectedJunctionDifference": 0,
+      "limbAnchorDifference": 0,
+      "mobile": {
+        "viewport": 375,
+        "scrollWidth": 375,
+        "workoutWidths": [
+          343,
+          343,
+          343
+        ],
+        "nearestNeighbour": true
+      }
+    }
   }
 }
