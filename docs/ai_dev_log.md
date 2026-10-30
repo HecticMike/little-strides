@@ -1,3 +1,12 @@
+## 2026-10-30 - Five-stage release deployed and live/offline verified
+
+- Hosted retry40974668380 succeeded and published commit c017a24 to the existing GitHub Pages URL. Live Build f3dd6450f753 is confirmed in fresh isolated iPhone-sized WebKit and Android-sized Chromium contexts.
+- Both live checks reached Offline ready, matched the deployed atlas SHA256 to the native export, confirmed all0/8/24/48/96 thresholds and Settings disclosure, then restored Journey artwork on offline reload. Start remains above navigation, no horizontal overflow or Phaser download; no exercise records created. Actual live Journey captures and sanitized verification are in screenshots/five-stage.
+- Verification retained:148 unit/art tests;63 mobile passes with1 expected WebKit codec skip;16 actual-prefix install/update/stage passes;10 repeated milestone completion passes after startup-race correction. Hosted release gate passed. Native exports remain reproducible. Current live screenshots visually reviewed for artwork registration and navigation clipping.
+- Files in this closeout: this log, two live mobile Journey screenshots and live-verification.json. Other generated/pre-existing screenshot edits remain uncommitted and were not reset. No additional runtime, data, exercise, artwork, audio or eligibility changes.
+- Complete: five shared character stages across Today, Journey and available workout art, deployment and live offline verification. Artwork remains provisional; floor physique changes are restrained and source stills do not depict full movement cycles or establish clinical suitability. Short illustrated milestone scenes remain unfinished.
+- Next: agree a replacement app name and create the layered native Aseprite PWA icon. Preserve hosted URL, local storage/history, preferences, checkpoints and backup identity. Physical iPhone15 checks still needed for this cached update, interruptions, sound routing, wake-lock and phone-at-a-distance legibility. No further generated source image requested.
+
 ## 2026-10-29 - Hosted milestone-test startup race corrected
 
 - First hosted release run40973743384 passed unit/build/install gates but stopped before publication:22 mobile cases passed,1 expected codec skip,1 Chromium milestone test failed waiting for completion. Public check annotations identified the exact assertion; no private logs or credentials accessed. Existing live release stayed unchanged.

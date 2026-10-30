@@ -1,0 +1,32 @@
+[
+  {
+    "browser": "iphone-webkit",
+    "build": "Build f3dd6450f753",
+    "atlasSha256": "5cf68bef1fd854170e9d7e3190e8b0c52a7de2f7a7a676872562907866b9b0ac",
+    "thresholds": [
+      0,
+      8,
+      24,
+      48,
+      96
+    ],
+    "offlineReload": true,
+    "noHorizontalOverflow": true,
+    "noExerciseRecordsCreated": true
+  },
+  {
+    "browser": "android-chromium",
+    "build": "Build f3dd6450f753",
+    "atlasSha256": "5cf68bef1fd854170e9d7e3190e8b0c52a7de2f7a7a676872562907866b9b0ac",
+    "thresholds": [
+      0,
+      8,
+      24,
+      48,
+      96
+    ],
+    "offlineReload": true,
+    "noHorizontalOverflow": true,
+    "noExerciseRecordsCreated": true
+  }
+]
