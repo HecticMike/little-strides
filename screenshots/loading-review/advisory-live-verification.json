@@ -1,0 +1,24 @@
+[
+  {
+    "browser": "iphone-webkit",
+    "build": "Build 29912b00086a",
+    "strictByDefault": true,
+    "explicitAdvisoryTwentyAvailable": true,
+    "numericalGuideUnchanged": true,
+    "historyProfileAndRewardsUnchanged": true,
+    "offlineRestored": true,
+    "reversibleToStrict": true,
+    "noHorizontalOverflow": true
+  },
+  {
+    "browser": "android-chromium",
+    "build": "Build 29912b00086a",
+    "strictByDefault": true,
+    "explicitAdvisoryTwentyAvailable": true,
+    "numericalGuideUnchanged": true,
+    "historyProfileAndRewardsUnchanged": true,
+    "offlineRestored": true,
+    "reversibleToStrict": true,
+    "noHorizontalOverflow": true
+  }
+]

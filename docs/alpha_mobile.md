@@ -3,6 +3,8 @@
 App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
 
+Current verified build: **29912b00086a** (advisory preference release).
+
 The comeback alpha is published. Settings must show **Comeback alpha**, a
 twelve-character Build identifier, and five character builds under **What to expect
 in this alpha**. Later releases may have a different build identifier.

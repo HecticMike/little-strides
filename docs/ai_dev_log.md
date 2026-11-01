@@ -1,3 +1,10 @@
+## 2026-11-01 - Advisory preference deployed and live-verified
+
+- Runtime commit c8a84a315a76df4ef444443caae550bb900bc2ec deployed via successful Pages run41344915065. Hosted166 unit/art PASS and45 mobile PASS,1 expected WebKit codec skip. Gate includes installed-update/old-backup compatibility, sounds, allfive character stages, session quality, moments and loading review.
+- Live Build29912b00086a verified in fresh isolated WebKit375x667 and Chromium393x727 contexts: strict default; explicit advisory opt-in enables a fresh20-minute plan; numerical guide/profile/choices/history/rewards unchanged; preference restores offline; switching back to strict blocks20 again; no horizontal overflow. Live screenshots and sanitized results are in screenshots/loading-review. Live iPhone settings screenshot visually reviewed. No real personal data used.
+- Complete: optional policy, strict remaining guards, backup validation, explanatory UI/notes, fictional audit, regression coverage, publication and live offline verification. No source art, clinical locks, existing numeric limits, history schema or reward rules changed. Docs/screenshots-only closeout skips redundant CI. Unrelated screenshot edits remain untouched.
+- Next: owner final iPhone15 acceptance (sound routes/cues, calls/background pause and resume, cached update/offline history, safe areas and floor-distance legibility). Research-only candidates remain unavailable; limited catalogue is not comprehensive full-body strength. No further artwork needed. Recommend GPT-6.1 Sol / Medium for any scoped acceptance fixes; loading-policy or clinical eligibility changes require separate review.
+
 ## 2026-11-01 - Approved explicit joint-time advisory preference
 
 - Owner approved the explicit opt-in policy and deferred physical-phone testing to the end. Strict remains the default, old backups without a policy remain strict, saved numerical limits are unchanged. Only the unweighted joint-duration scheduling gate becomes advisory after a deliberate saved choice; no clinical approval or new dose is inferred.
