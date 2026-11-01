@@ -3,7 +3,7 @@
 App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
 
-Current verified build: **29912b00086a** (advisory preference release).
+Current verified build: **13f89f75f6c2** (pre-week mobile polish).
 
 The comeback alpha is published. Settings must show **Comeback alpha**, a
 twelve-character Build identifier, and five character builds under **What to expect

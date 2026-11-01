@@ -1,0 +1,24 @@
+[
+  {
+    "browser": "iphone-webkit",
+    "build": "Build 13f89f75f6c2",
+    "formFont16": true,
+    "statusInViewport": true,
+    "headerPreservesApp": true,
+    "noHistoryOrRewardChanges": true,
+    "offlineStatePreserved": true,
+    "noOverflow": true,
+    "noPageErrors": true
+  },
+  {
+    "browser": "android-chromium",
+    "build": "Build 13f89f75f6c2",
+    "formFont16": true,
+    "statusInViewport": true,
+    "headerPreservesApp": true,
+    "noHistoryOrRewardChanges": true,
+    "offlineStatePreserved": true,
+    "noOverflow": true,
+    "noPageErrors": true
+  }
+]
