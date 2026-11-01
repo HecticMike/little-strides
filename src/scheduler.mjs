@@ -1,3 +1,4 @@
+import {jointTimeMode} from './loading-policy.mjs';
 import {profileRestriction,currentAdjustment,affectedByAreas} from './training.mjs';
 import {varietyCosts,openingCosts} from './suggestions.mjs';
 import { compose } from './composition.mjs';
@@ -39,14 +40,20 @@ export function recovery(history,now=Date.now(),settings={}) {
   }
   return {until,used,strength,jointsUntil,flagged,musclesUntil,jointUsed,discomfort,resting:Object.keys(until).filter(g=>until[g]>now)};
 }
-const fits=(e,ms,load,c)=>(e.loadKind==='strength'?(load.strength[e.group]||0)+ms<=c.maxStrengthSeconds*1000:(load.used[e.id]||0)+ms<=c.maxRepeatableSeconds*1000)&&e.joints.every(j=>(load.jointUsed[j]||0)+ms<=c.maxJointSeconds*1000);
+const fits=(e,ms,load,c,advisory=false)=>(e.loadKind==='strength'?(load.strength[e.group]||0)+ms<=c.maxStrengthSeconds*1000:(load.used[e.id]||0)+ms<=c.maxRepeatableSeconds*1000)&&(advisory||e.joints.every(j=>(load.jointUsed[j]||0)+ms<=c.maxJointSeconds*1000));
+const fitFor=settings=>{const advisory=jointTimeMode(settings)==='advisory';return (e,ms,load,c)=>fits(e,ms,load,c,advisory);};
+function exposureSummary(load,segments,config,mode){
+ const planned={};for(const block of segments||[])if(block.kind==='work')for(const joint of exercise(block.exerciseId).joints)planned[joint]=(planned[joint]||0)+block.durationMs;
+ const guideMs=config.maxJointSeconds*1000,rows=[...new Set([...Object.keys(load.jointUsed),...Object.keys(planned)])].sort().map(joint=>{const completedMs=load.jointUsed[joint]||0,plannedMs=planned[joint]||0;return {joint,completedMs,plannedMs,totalMs:completedMs+plannedMs,exceedsGuide:completedMs+plannedMs>guideMs};});
+ return {version:1,mode,windowHours:config.windowHours,guideMs,rows};
+}
 const add=(e,ms,load)=>{load.used[e.id]=(load.used[e.id]||0)+ms;if(e.loadKind==='strength')load.strength[e.group]=(load.strength[e.group]||0)+ms;for(const j of e.joints)load.jointUsed[j]=(load.jointUsed[j]||0)+ms;};
 export function capacityFits(movements,history,now,settings){
-  const load=recovery(history,now,settings),c=recoveryConfig(settings);
-  for(const m of movements){const e=exercise(m.exerciseId);if(!e||!fits(e,m.actualMs,load,c))return false;add(e,m.actualMs,load);}return true;
+  const load=recovery(history,now,settings),c=recoveryConfig(settings),check=fitFor(settings);
+  for(const m of movements){const e=exercise(m.exerciseId);if(!e||!check(e,m.actualMs,load,c))return false;add(e,m.actualMs,load);}return true;
 }
 export function exerciseEligibility(history=[],now=Date.now(),settings={}){
-  const r=recovery(history,now,settings),c=recoveryConfig(settings);
+  const r=recovery(history,now,settings),c=recoveryConfig(settings),check=fitFor(settings);
   return EXERCISES.map(e=>{
     const strengthUntil=e.loadKind==='strength'?Math.max(r.until[e.group]||0,...(e.muscles||[]).map(m=>r.musclesUntil[m]||0)):0;
     const jointUntil=Math.max(0,...[...e.joints,...(e.contactAreas||[])].map(j=>r.jointsUntil[j]||0));
@@ -56,7 +63,7 @@ export function exerciseEligibility(history=[],now=Date.now(),settings={}){
     else if(r.discomfort[e.id]){status='discomfort';reason='Discomfort hold: reassess this movement before enabling it';}
     else if(strengthUntil>now){status='recovering';reason='Strength recovery';availableAt=strengthUntil;}
     else if(jointUntil>now){status='recovering';reason='Minimum hold after reported joint discomfort';availableAt=jointUntil;}
-    else if(!fits(e,planningMetadata(e,settings).minSeconds*1000,r,c)){status='limit';reason='Not enough rolling movement or joint-exposure allowance for a block';}
+    else if(!check(e,planningMetadata(e,settings).minSeconds*1000,r,c)){status='limit';reason=jointTimeMode(settings)==='advisory'?'Not enough rolling per-exercise allowance for a block':'Not enough rolling movement or joint-exposure allowance for a block';}
     else if(!enabledExercise(e.id,settings)){status='disabled';reason='Not enabled';}
     return {...e,status,reason,availableAt,hold:r.discomfort[e.id]||null};
   });
@@ -69,7 +76,7 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   const choices=exerciseEligibility(history,now,settings),eligible=choices.filter(e=>e.status==='eligible');
   const pool=eligible.filter(e=>focus==='core'?e.focus==='core':focus==='recovery'?['activation','mobility'].includes(e.loadKind):true);
   const enabled=EXERCISES.filter(e=>enabledExercise(e.id,settings)&&(focus!=='core'||e.focus==='core'));
-  const compositionContext={fits,add,variety:varietyCosts(history,now),openers:openingCosts(history,now)};
+  const compositionContext={fits:fitFor(settings),add,variety:varietyCosts(history,now),openers:openingCosts(history,now)};
   const build=m=>focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?null:compose(m,pool,load,config,settings,focus,compositionContext);
   const selected=build(minutes),plans=new Map([[minutes,selected]]);
   for(const m of lengths)if(m!==minutes)plans.set(m,build(m));
@@ -82,7 +89,13 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(fallback?.minutes===3)reason+=' A three-minute activation/mobility alternative still fits. It is not a strengthening or aerobic session.';
   const summary={strength:0,activation:0,mobility:0,aerobic:0};
   for(const b of selected?.segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
+  const jointExposure=exposureSummary(load,selected?.segments,config,jointTimeMode(settings));
   const notes=[];
+  if(jointExposure.mode==='advisory'){
+    notes.push('Joint-time advisory mode: tagged duration is tracked as a guide. Strength recovery, discomfort exclusions and per-exercise limits remain strict. This does not assess medical suitability.');
+    const exceeded=jointExposure.rows.filter(row=>row.exceedsGuide);
+    if(exceeded.length)notes.push('Recorded activity plus this plan exceeds your '+(jointExposure.guideMs/60000)+'-minute joint-time guide for '+exceeded.map(row=>row.joint+' ('+Number((row.totalMs/60000).toFixed(1))+' min)').join(', ')+'. Tagged duration is not measured joint force; you can choose a shorter session or rest.');
+  }
   if(settings.exerciseProfile?.coreEmphasis){notes.push('Core-led preference: activation and mobility remain distinct from strengthening. Bridge primarily trains hips/glutes with trunk involvement; full-body strength coverage is limited.');}
   if(settings.exerciseProfile?.avoidOverhead)notes.push('Overhead reach excluded by your profile; light knee/shoulder loading still requires individual tolerance.');
   const adjustment=currentAdjustment(settings,now);
@@ -92,7 +105,7 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(Object.keys(compositionContext.variety).length)notes.push('Recent performed movements influence variety; recovery limits still take priority.');
   if(choices.some(e=>e.focus==='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Core strengthening is recovering from your previous session.');
   if(choices.some(e=>e.focus!=='core'&&e.loadKind==='strength'&&enabledExercise(e.id,settings)&&e.status==='recovering'))notes.push('Other strengthening is recovering from your previous session.');
-  if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='limit'))notes.push('Rolling movement or joint-exposure allowances limit the available options.');
+  if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='limit'))notes.push(jointExposure.mode==='advisory'?'Rolling per-exercise allowances limit the available options.':'Rolling movement or joint-exposure allowances limit the available options.');
   if(choices.some(e=>enabledExercise(e.id,settings)&&e.status==='discomfort'))notes.push('Movements associated with discomfort are excluded until reassessed.');
   let label=small?'A smaller step':SESSION_FOCUSES[focus];
   if(small)notes.push('Activation and mobility only; not a promise of symptom prevention. The same recovery limits apply.');
@@ -101,5 +114,5 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(selected&&focus==='core'&&!summary.strength){label='Core activation & mobility';notes.push('No core strengthening is included. Gentle activation is not a strength-equivalent substitute.');}
   if(selected&&!selected.segments.some(b=>b.phase==='warmup'))notes.push('No suitable active preparation is available; setup is a passive countdown, not a warm-up.');
   if(selected&&focus==='balanced'&&settings.exerciseProfile?.coreEmphasis&&selected.segments.some(b=>exercise(b.exerciseId)?.focus==='core'))label='Core-led: '+label.toLowerCase();
-  return {segments:selected?.segments||null,availableMinutes,fallback,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
+  return {segments:selected?.segments||null,availableMinutes,fallback,reason,summary,focus,label,notes,jointExposure,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
 }

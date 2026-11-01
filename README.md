@@ -120,3 +120,5 @@ as a longer session. The four standard duration buttons and ten-minute default
 remain. Six ordered projects spend twelve timber, with persistent banner/garden
 choices, two residents and optional illustrated discoveries. Existing progress
 migrates intact. See [chapter details and art editing](docs/chapter_one.md).
+
+Optional joint-time advisory handling is documented in [mobile alpha instructions](docs/alpha_mobile.md). Strict remains the default; clinical/discomfort and strength-recovery guards remain enforced in both modes.

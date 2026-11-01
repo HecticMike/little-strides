@@ -53,3 +53,9 @@ The existing source-linked research and decisions are in [comeback-exercise-revi
 This is a session-quality correction within the current limited programme. The normal ten-minute journey works;15/20 and unrestricted repeated ten-minute sessions remain conditional on an adequate individually suitable pool and recovery allowance. Physical iPhone sound routes, real calls/background suspension, wake lock and comfort/legibility still require owner verification. Future illustrated milestone moments remain separate work using existing art.
 
 The follow-up [source review](loading-source-review.md) records the loading-model conclusion and minimal research shortlist. No live eligibility or limits changed.
+
+## Explicit advisory preference (follow-up)
+
+The figures and impossibility bound above describe the unchanged strict default. An owner-approved, opt-in joint-time advisory preference now allows exact 15/20-minute fresh plans with the current pool, without raising numerical limits. Actual plus planned tagged exposure remains visible in recommendation notes when above the saved guide. Strength recovery, discomfort/profile restrictions and per-exercise caps still apply, including on the same afternoon and following day. This does not create additional exercise variety or comprehensive strengthening coverage.
+
+`node scripts/audit-session-coverage.mjs --write` includes separate fictional advisory scenarios for all durations and subsequent requests after an actual completed twenty-minute session. No real user settings are touched.

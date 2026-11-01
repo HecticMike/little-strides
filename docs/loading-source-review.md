@@ -1,6 +1,6 @@
 # Loading and minimal catalogue source review
 
-Reviewed1 November2026. Review records only; no app settings, numerical limits, clinical locks, history or artwork changed. No professional numerical limits have been supplied. That leaves individual dose unknown rather than establishing unrestricted activity.
+Source review:1 November2026. The research records themselves change no app settings, numerical limits, clinical locks, history or artwork; the approved opt-in follow-up is documented below. No professional numerical limits have been supplied. That leaves individual dose unknown rather than establishing unrestricted activity.
 
 ## Findings and decisions
 
@@ -24,8 +24,14 @@ The two Pilates descriptions were checked against the actual heading/image layou
 
 The three candidates remain research-only in comeback-exercise-review.json, outside EXERCISES and the live planner. Squat, wall push and modified dead bug remain locked. No clinical approval or automatic difficulty progression is created. Missing demonstrations must retain the existing neutral/text fallback if a candidate is later appropriately enabled.
 
-The current limited3/7/10-minute programme can continue while its remaining software features are finished. Broader catalogue/loading-policy implementation requires the unresolved variation/dose/model decisions above; deleting a guard merely to make15/20 appear available would not resolve them. Optional milestone moments and physical-iPhone acceptance can proceed independently using existing assets.
+Strict-default scheduling remains limited to the available3/7/10-minute combinations. The explicit advisory preference below changes the role of the tagged-duration heuristic without resolving personal suitability, dose or catalogue coverage. It must not be described as clinical review of longer sessions. Broader catalogue additions retain the unresolved review decisions above.
 
 ## In-app research review
 
-The existing movement-review dialog now includes a collapsed Research candidates section. Its three read-only cards include purpose, unresolved suitability questions, exact source section and online NHS link. They work offline after caching, contain no enabling controls or demonstration artwork, and remain outside the live catalogue. Numerical limits and current recommendations are unchanged. A separate opt-in advisory-policy product decision is pending; no mode or default has been changed.
+The existing movement-review dialog now includes a collapsed Research candidates section. Its three read-only cards include purpose, unresolved suitability questions, exact source section and online NHS link. They work offline after caching, contain no enabling controls or demonstration artwork, and remain outside the live catalogue. Numerical limits and current recommendations are unchanged. The owner subsequently approved explicit opt-in advisory handling. Strict remains the default; no existing saved limit is raised or automatically converted.
+
+## Approved opt-in handling
+
+Settings > Review joint-time handling offers a versioned, explicitly selected advisory mode. It tracks the same unweighted joint-tagged duration and warns when actual rolling activity plus the proposed plan exceeds the existing guide. Only this scheduling gate becomes advisory. Strength/muscle recovery, persistent discomfort and symptom exclusions, clinical/profile locks, per-movement cumulative limits, block/rest constraints and actual-time accounting remain strict. Switching back rechecks remaining plans and does not rewrite activity or rewards.
+
+The numerical guide remains unchanged; missing or invalid policy records use strict mode. Backup validation rejects malformed explicit policies. Existing backups without a policy remain strict. Longer plans can become available in advisory mode when all remaining constraints fit; this is a product preference, not personal medical clearance, a new treatment dose or evidence of full-body coverage. Research candidates above remain unavailable.

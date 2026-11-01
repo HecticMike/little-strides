@@ -108,3 +108,9 @@ separate storage. The app does not upload your exercise records or JSON backup.
 Journey and Journal let you open saved moments at0/8/24/48/96 comeback steps. An opening moment is available when your journey begins. Closed moments allocate no illustration canvases. Tap Read moment, then Close moment; no keyboard or sound is required. Historical character stages are labelled as fiction, and do not change the current avatar or exercise eligibility.
 
 On your iPhone, check that a moment opens/closes comfortably, remains readable above the bottom navigation, and can be reopened offline. You can finish a workout and close the app without reading any moment; activity and progress are already saved. JSON backups retain the original milestone dates and therefore restore access to the same moments. There is no new read/claim state or additional reward.
+
+## Optional joint-time handling
+
+Strict remains the default. To explicitly opt in, open Settings > Review joint-time handling and select Advisory joint-time guide. Changes save immediately, including if you choose Go back. Your existing numerical guide is retained; it becomes advisory rather than a scheduling maximum. The recommendation explains when recorded plus planned tagged duration exceeds it. You may choose a shorter session or rest.
+
+Strength recovery, symptom/discomfort holds, clinical locks and per-exercise limits stay strict. Advisory does not establish medical suitability or guarantee a longer routine. Switch back in the same control at any time. JSON backups include the preference; old backups without it use strict. Check this control, sound, interruptions and offline history on your physical iPhone during final acceptance; do not uninstall or clear data to update.

@@ -1,0 +1,18 @@
+[
+  {
+    "browser": "iphone-webkit",
+    "build": "Build 325dcda8c604",
+    "researchCards": 3,
+    "notEnableable": true,
+    "offlineReadable": true,
+    "dataUnchanged": true
+  },
+  {
+    "browser": "android-chromium",
+    "build": "Build 325dcda8c604",
+    "researchCards": 3,
+    "notEnableable": true,
+    "offlineReadable": true,
+    "dataUnchanged": true
+  }
+]

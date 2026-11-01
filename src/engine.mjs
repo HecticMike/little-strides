@@ -1,3 +1,4 @@
+import {validLoadingPolicy} from './loading-policy.mjs';
 import {awardComeback,validComeback,frozenFullActivity,frozenSmallPlan} from './comeback.mjs';
 import {validateTraining} from './training.mjs';
 import { emptyWorld, migrateWorld, validWorld, rewardedWorkouts, fullEligibleActivity } from './gameplay.mjs';
@@ -160,6 +161,7 @@ export function validateBackup(input) {
   if(s.settings.ambience!==undefined&&typeof s.settings.ambience!=='boolean')fail();
   if(s.settings.paceMuted!==undefined&&typeof s.settings.paceMuted!=='boolean')fail();
   if(s.settings.enabledExercises!==undefined&&(!Array.isArray(s.settings.enabledExercises)||!s.settings.enabledExercises.every(id=>exercise(id))))fail();
+  if(s.settings.loadingPolicy!==undefined&&!validLoadingPolicy(s.settings.loadingPolicy))fail();
   if(s.settings.recovery!==undefined){const c=recoveryConfig(s.settings);if(![24,48,72,96].includes(c.strengthHours)||![24,48,72,96].includes(c.discomfortHours)||c.windowHours!==24||!Number.isFinite(c.maxStrengthSeconds)||c.maxStrengthSeconds<45||c.maxStrengthSeconds>180||!Number.isFinite(c.maxRepeatableSeconds)||c.maxRepeatableSeconds<90||c.maxRepeatableSeconds>1200||!Number.isFinite(c.maxJointSeconds)||c.maxJointSeconds<90||c.maxJointSeconds>2400)fail();}
   for(const h of [...s.history,...(s.active?[s.active]:[])]){
     if(h.qualityVersion!==undefined&&h.qualityVersion!==3)fail();
