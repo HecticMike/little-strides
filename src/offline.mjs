@@ -5,7 +5,7 @@ export function watchOffline(onChange, buildId) {
   const fail = () => emit('error', 'Offline setup failed or timed out. Reconnect, check free storage, then retry. Workouts already saved on this device are retained.');
   const check = async () => {
     try {
-      if (registration?.waiting) { clearTimeout(timeout); emit('update', 'Update cached. Close all Little Strides windows and reopen after your workout.'); return; }
+      if (registration?.waiting) { clearTimeout(timeout); emit('update', 'Update cached. Close all In Good Time windows and reopen after your workout.'); return; }
       const name = 'little-strides-' + buildId;
       if (!await caches.has(name)) return;
       const cache = await caches.open(name), marker = await cache.match(new URL('./__offline-ready__', location.href).href);

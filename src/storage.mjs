@@ -7,7 +7,7 @@ async function db() {
     request.onupgradeneeded = () => request.result.createObjectStore('state');
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
-    request.onblocked = () => reject(new Error('Close other Little Strides tabs, then retry.'));
+    request.onblocked = () => reject(new Error('Close other In Good Time tabs, then retry.'));
   });
   return database;
 }

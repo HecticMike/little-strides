@@ -1,4 +1,8 @@
-# Little Strides
+# In Good Time
+
+Movement for everyday life. Formerly Little Strides; the existing app address and local data identity are retained.
+
+See [the sunlit-window icon comparison](art/review/in-good-time-icon.png) and [Aseprite branding guide](art/branding.md).
 
 ## Comeback alpha
 

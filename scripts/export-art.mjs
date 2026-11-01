@@ -2,6 +2,10 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { CHARACTER, WORLD, PALETTE, CORE_ILLUSTRATIONS } from '../src/art-spec.mjs';
 import {EXERCISES} from '../src/catalog.mjs';
+if (process.argv.includes('--branding')) {
+  await import('./export-branding.mjs');
+  process.exit(0);
+}
 if (process.argv.includes('--comeback-stages')) {
   await import('./export-comeback-stages.mjs');
   process.exit(0);
@@ -50,7 +54,7 @@ writeFileSync('public/art/avatar.json', JSON.stringify({ ...CHARACTER, coreIllus
 mkdirSync('art/review', {recursive:true});
 run(['-b', '--script', 'scripts/export-character-study.lua']);
 run(['-b', '--script', 'scripts/export-core-illustrations.lua']);
-run(['-b', '--script', 'scripts/export-interface-art.lua']);
+await import('./export-branding.mjs');
 run(['-b', '--script', 'scripts/audit-art.lua']);
 if (existsSync('art/prototypes/comeback/user-art/motion.aseprite')) await import('./export-comeback-runtime.mjs');
 console.log('Aseprite masters exported with stable frame metadata.');

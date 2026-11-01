@@ -120,7 +120,7 @@ test('JSON export and import restore history; corrupt input preserves data', asy
   await page.locator('input[type=file]').setInputFiles(path);
   await expect(page.getByText('Backup restored on this device.')).toBeVisible();
   await page.locator('input[type=file]').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"format":"bad"}') });
-  await expect(page.getByText(/not a valid Little Strides backup/)).toBeVisible();
+  await expect(page.getByText(/not a valid In Good Time backup/)).toBeVisible();
   await expect(page.getByRole('heading',{name:'Stored on this device',exact:true})).toBeVisible();
 });
 test('wake lock refusal retains usable workout and reduced-motion village loads', async ({ page }) => {

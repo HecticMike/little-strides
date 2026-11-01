@@ -1,4 +1,4 @@
-# Little Strides - comeback alpha on your phone
+# In Good Time - comeback alpha on your phone
 
 App address: https://hecticmike.github.io/little-strides/
 Source: https://github.com/HecticMike/little-strides
@@ -9,18 +9,24 @@ in this alpha**. Later releases may have a different build identifier.
 The address stays the same; no sign-in is needed. Deployment and fresh WebKit/Chromium
 offline checks passed. Physical-phone checks below are still pending.
 
+The app was renamed from Little Strides. Its address, manifest installation identity,
+local database and JSON backup format remain unchanged. Older backup filenames still
+begin with `little-strides-` intentionally.
+
 ## Update an existing installation
 
 1. Export JSON in the installation containing your history. Keep the downloaded file.
-2. Open Little Strides online. If Update ready appears, finish or pause the workout,
-   close all Little Strides windows (including Safari tabs), then reopen it.
+2. Open In Good Time online. If Update ready appears, finish or pause the workout,
+   close all In Good Time windows (including Safari tabs), then reopen it.
 3. Check Settings for Comeback alpha, the build identifier and Offline ready.
 4. Check Journal history, movement exclusions, sound preferences and any paused session.
    Earlier workshop/timber progress is available read-only in Journal.
 5. If you need to transfer history, use Settings > Import JSON and verify the records.
    Import replaces local data; it does not merge histories. Keep the original until checked.
 
-Do not clear browser data or uninstall to force an update. Same-origin update tests
+An existing iPhone Home Screen shortcut may keep its old label or icon even after
+the app itself updates. Confirm **In Good Time** inside the app and in Safari first.
+Do not clear browser data or uninstall to force an icon or name refresh. Same-origin update tests
 preserve data, but phone storage/OS behaviour still needs the checks below.
 
 ## Install on iPhone 15
@@ -38,8 +44,8 @@ installed icon online until Offline ready appears.
 The owner previously confirmed audible Test sound and workout cues on the
 iPhone15 Home Screen. Check again after updates or output-route changes.
 
-Wait for Update ready while online, then fully close Little Strides from the App
-Switcher and close any Little Strides Safari tabs. Reopen the Home Screen icon and
+Wait for Update ready while online, then fully close In Good Time from the App
+Switcher and close any In Good Time Safari tabs. Reopen the Home Screen icon and
 check Settings describes all five character builds. Note the Build identifier if
 reporting a problem. Do not uninstall or clear stored data.
 

@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Little Strides",
-  "short_name": "Strides",
-  "description": "Short workouts and a village that grows with you.",
+  "name": "In Good Time",
+  "short_name": "In Good Time",
+  "description": "Movement for everyday life. Short, guided home workouts at your own pace.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#112d26",
-  "theme_color": "#112d26",
+  "background_color": "#f5eddd",
+  "theme_color": "#f5eddd",
   "icons": [
     {
       "src": "icons/strides-192.png",

@@ -132,7 +132,7 @@ export function canResumeSession(s,history,now,settings){
   return capacityFits(performedMovements({...s,status:'paused',elapsedMs:duration(s)},now),history,now,settings);
 }
 export function validateBackup(input) {
-  const fail = () => { throw new Error('This is not a valid Little Strides backup. Your current data is unchanged.'); };
+  const fail = () => { throw new Error('This is not a valid In Good Time backup. Your current data is unchanged.'); };
   const num = n => Number.isFinite(n) && n >= 0;
   const legacySegmentsOk = (segments, minutes) => Array.isArray(segments) && segments.length === minutes * 2 && segments.every((b, i) => b && exercise(b.exerciseId) && b.kind === (i % 2 ? 'rest' : 'work') && b.durationMs === (i % 2 ? 15_000 : 45_000));
   const segmentsOk=(segments,minutes,version,composition)=>composition===1?Array.isArray(segments)&&segments.length>=3&&segments.length<=100&&segments[0]?.kind==='prepare'&&segments.at(-1)?.kind==='cooldown'&&segments.reduce((n,b)=>n+b.durationMs,0)===minutes*60000&&segments.every((b,i)=>b&&num(b.durationMs)&&b.durationMs>=15000&&b.durationMs<=600000&&(['prepare','cooldown','rest'].includes(b.kind)?b.exerciseId===null:b.kind==='work'&&exercise(b.exerciseId))&&(i>0&&i<segments.length-1?['work','rest'].includes(b.kind):true)):version!==2?legacySegmentsOk(segments,minutes):Array.isArray(segments)&&segments.length===minutes*2&&segments.reduce((n,b)=>n+b.durationMs,0)===minutes*60_000&&segments.every((b,i)=>b&&((i===0&&b.kind==='prepare'||i===segments.length-1&&b.kind==='cooldown')?b.exerciseId===null&&b.durationMs===30_000:exercise(b.exerciseId)&&b.kind===(i%2?'work':'rest')&&b.durationMs===(i%2?45_000:15_000)));

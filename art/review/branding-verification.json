@@ -1,0 +1,17 @@
+{
+  "mastersUnchangedByExport": {
+    "art/source/app-icon.aseprite": "1d9d72729c610eda6242244e62ce6cf7c8968c103e69346de74946ede55f357a",
+    "art/source/app-favicon.aseprite": "1cd6098af0aaa7335f404111649ec02bdc30634a2174f3e3e834c95815f62462"
+  },
+  "essentialWindowRadius": 24.300205760446,
+  "safeRadius": 25.6,
+  "opaque": true,
+  "exports": {
+    "public/icons/strides-192.png": "23544dfb25d4ec467b6f05e72ef42d2d9cdaa1b6183c346d17fa4bf4c381a3b2",
+    "public/icons/strides-512.png": "5dd552c3d82678cbb098a43fefb1b3077303109d0a5cff358059f8a0fd2bf9bd",
+    "public/icons/strides-maskable-512.png": "5dd552c3d82678cbb098a43fefb1b3077303109d0a5cff358059f8a0fd2bf9bd",
+    "public/icons/strides-apple-touch.png": "85464c4857cf82497615e25619aecfe86d26e7826b496632897f45624ede0867",
+    "public/icons/strides-favicon-32.png": "5ce27ada595e745ceb20c2db0f6c23337edd755aeef34f2fa20ec2c545d790ed",
+    "art/review/in-good-time-icon.png": "67fa8268426dbf65ca52df54dc42e387a5d5b49e00a973019b55f92fd084a909"
+  }
+}
