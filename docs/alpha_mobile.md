@@ -102,3 +102,9 @@ Data stays on this device/browser installation, not in GitHub or a cloud account
 Export after important testing and before changing installations. If using the old
 private preview, export there and import at the app address above; the domains have
 separate storage. The app does not upload your exercise records or JSON backup.
+
+## Optional milestone moments
+
+Journey and Journal let you open saved moments at0/8/24/48/96 comeback steps. An opening moment is available when your journey begins. Closed moments allocate no illustration canvases. Tap Read moment, then Close moment; no keyboard or sound is required. Historical character stages are labelled as fiction, and do not change the current avatar or exercise eligibility.
+
+On your iPhone, check that a moment opens/closes comfortably, remains readable above the bottom navigation, and can be reopened offline. You can finish a workout and close the app without reading any moment; activity and progress are already saved. JSON backups retain the original milestone dates and therefore restore access to the same moments. There is no new read/claim state or additional reward.

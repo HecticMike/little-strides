@@ -6,6 +6,8 @@ See [the sunlit-window icon comparison](art/review/in-good-time-icon.png) and [A
 
 ## Comeback alpha
 
+Journey and Journal include optional illustrated moments at0/8/24/48/96 saved comeback steps. They reuse the existing artwork, retain original milestone dates, work offline and require no reward-claim interaction.
+
 Current [session coverage and remaining review decisions](docs/session-coverage.md) can be reproduced with `npm run audit:sessions`.
 
 The modern Sunlit apartment, canonical character, core-led recommendations, feedback and permanent comeback progress run with `npm run build:comeback`. The comeback alpha is published at https://hecticmike.github.io/little-strides/ after unit and mobile update checks; `npm run build` retains the legacy compatibility profile.

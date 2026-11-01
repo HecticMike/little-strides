@@ -4,13 +4,14 @@ import {exerciseEligibility} from './scheduler.mjs';
 import {activitySummary,minutesOf} from './activity.mjs';
 import {rewardOutcome} from './gameplay.mjs';
 import {MovementRecord} from './WorkoutQuality.jsx';
-export function Journal({history,settings,now,rewardLabel,extraRecord}){
+export function Journal({history,settings,now,rewardLabel,extraRecord,milestones}){
   const summary=activitySummary(history,now),restrictions=exerciseEligibility(history,now,settings).filter(e=>!['eligible','disabled','locked'].includes(e.status));
   return <><p className="eyebrow">EVERY LITTLE STRIDE COUNTS</p><h1>Your journal</h1>
     <section className="card" aria-label="Activity totals"><h2>Timed activity</h2>
       <div className="activity-periods">{[['Today',summary.today],['This week',summary.week]].map(([name,s])=><div key={name}><h3>{name}</h3><p>{s.sessions} completed {s.sessions===1?'session':'sessions'} · {minutesOf(s.activeMs)} min movement</p><p className="small">Aerobic movement: {minutesOf(s.aerobicMs)} min<br/>Strengthening: {minutesOf(s.strengthMs)} min<br/>Gentle activation: {minutesOf(s.activationMs)} min<br/>Mobility: {minutesOf(s.mobilityMs)} min</p>{s.unclassifiedMs>0&&<p className="small">Legacy / unclassified: {minutesOf(s.unclassifiedMs)} min</p>}</div>)}</div>
       <p className="small muted">All time: {minutesOf(summary.all.activeMs)} min movement. Passive setup and rest are excluded; eligible active preparation/wind-down are included. Week begins Monday.</p><p className="small muted">Aerobic movement time records marching, not measured effort or cardiovascular improvement. Strengthening time is separate; physical repetitions are not measured.</p>
     </section>
+    {milestones}
     <article className="card"><h2>Suggested recovery</h2>{restrictions.length?restrictions.map(e=><p key={e.id}><strong>{e.name}</strong> · {e.reason}{e.availableAt?' until '+new Date(e.availableAt).toLocaleString():''}</p>):<p>No current recovery or discomfort restrictions. Only your enabled movements can be selected.</p>}<p className="small muted">Discomfort holds need explicit reassessment in exercise choices. Rolling exposure limits are configurable heuristics, not a guarantee of safety.</p></article>
     <section className="card"><h2>Recent movements</h2>{summary.recent.length?summary.recent.map(m=><p key={m.exerciseId}>{exercise(m.exerciseId)?.name} · {Math.round(m.actualMs/1000)} s last logged block · {new Date(m.endedAt).toLocaleString()}</p>):<p>No movement-level records yet.</p>}</section>
     {summary.discomfortReports>0&&<section className="card"><h2>Reported discomfort</h2><p>{summary.discomfortReports} session reports{Object.entries(summary.joints).length?' · '+Object.entries(summary.joints).map(([j,n])=>j+': '+n).join(', '):' · no joints specified'}</p><p className="small muted">These are your reports, not a diagnosis or a measure of improvement.</p></section>}

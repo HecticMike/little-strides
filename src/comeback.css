@@ -12,3 +12,13 @@
 .comeback-mode .training-dialog .joint-options,.comeback-mode .training-feedback .joint-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.comeback-mode .training-dialog .joint-options button,.comeback-mode .training-feedback .joint-options button{min-height:44px;width:100%;margin:0;padding:6px;font-size:13px}.comeback-mode .training-dialog .review-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0}.comeback-mode .training-dialog .review-actions button{margin:0;min-height:44px;padding:7px;font-size:14px}.comeback-mode .training-dialog>details>summary{padding:9px 0;min-height:44px;font-size:13px}
 
 .comeback-milestones time{font-size:11px;color:#536a61}
+
+/* Optional ledger-backed moments. Closed panels allocate no illustration canvases. */
+.comeback-mode .milestone-moment{margin-top:5px;border:1px solid #c5cfb9;border-radius:10px;background:#f5eddd;padding:0 10px}
+.comeback-mode .milestone-moment>summary{min-height:44px;padding:12px 0;font-size:14px;font-weight:700;cursor:pointer;line-height:1.4}
+.comeback-mode .milestone-moment>summary:focus-visible{outline:2px solid #345c51;outline-offset:3px;border-radius:4px}
+.comeback-mode .moment-content{padding:0 0 10px;min-width:0}
+.comeback-mode .moment-content figure{margin:0}
+.comeback-mode .moment-content figcaption{font-size:12px;line-height:1.4;color:#536a61;margin:7px 0 12px}
+.comeback-mode .moment-content p{font-size:14px;line-height:1.5;margin:10px 0}
+.comeback-mode .moment-content button{min-height:44px;width:100%;margin-top:5px}
