@@ -32,7 +32,7 @@
 .comeback-mode .plan .row.between .focus-picker select{font-size:16px;width:140px;max-width:140px}
 .comeback-mode .plan .row.between h2{flex:1;min-width:0}
 .comeback-mode :is(button,a,input,select,textarea,summary):focus-visible{outline:2px solid #345c51;outline-offset:3px}
-.comeback-mode .notice{position:sticky;top:0;z-index:6;box-shadow:0 3px 10px #243c421a;font-size:14px}
+.comeback-mode .notice{position:sticky;top:0;left:auto;transform:none;width:100%;max-width:none;z-index:6;box-shadow:0 3px 10px #243c421a;font-size:14px}
 .comeback-mode .notice>span{min-width:0}
 .comeback-mode .exercise-review{overscroll-behavior:contain;scroll-padding-block:18px 150px}
 .comeback-mode .history-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}

@@ -1,3 +1,8 @@
+## 2026-11-01 - Live visual review catches inherited notice transform
+
+- Hosted gate41354323265 passed57 mobile cases and166 unit/art, but final live screenshot review exposed a notice shifted partly off the left edge. The legacy chapter toast retained left50%/translateX(-50%) after the sticky-position override. The prior partial-visibility assertion missed this clipping; the release is not considered closed until corrected.
+- Explicitly reset left/transform/width/max-width in the scoped comeback notice rule. Added full left/right viewport-bound checks to both mobile regression and live verifier. No behavioural/data/eligibility/artwork changes. Focused6 mobile cases PASS; corrected full-width iPhone notice screenshot visually reviewed. Comeback build PASS,53 cached files. Republishing follows.
+
 ## 2026-11-01 - Polish deployed; ready for the planned week
 
 - Runtime source f439dbd plus test-sync fix fd19e4749d9458a2be0246c89a4e59ac3d8c3c98 deployed through successful Pages run41354323265. Final166 unit/art PASS;57 hosted mobile PASS,1 expected WebKit codec skip. All gates retained, including installed update/old backup, actual workout/rewards, interruptions, feedback, audio, all character stages, symptom holds, advisory policy and polish.
