@@ -1,0 +1,22 @@
+[
+  {
+    "browser": "iphone-webkit",
+    "build": "Build 7b1a8493c005",
+    "optionalMoment": true,
+    "lazyIllustration": true,
+    "sharedStartingArtwork": true,
+    "offlineJournal": true,
+    "readingLeavesDataUnchanged": true,
+    "noExerciseRecordsCreated": true
+  },
+  {
+    "browser": "android-chromium",
+    "build": "Build 7b1a8493c005",
+    "optionalMoment": true,
+    "lazyIllustration": true,
+    "sharedStartingArtwork": true,
+    "offlineJournal": true,
+    "readingLeavesDataUnchanged": true,
+    "noExerciseRecordsCreated": true
+  }
+]

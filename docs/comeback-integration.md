@@ -1,6 +1,6 @@
 # Comeback alpha - published personal test
 
-`npm run build:comeback` runs the approved character and full Sunlit apartment with the real React workout engine. `npm run build` retains the legacy compatibility profile. The comeback alpha is published at https://hecticmike.github.io/little-strides/. Data remains local in IndexedDB; JSON backups include the new records. Both profiles have distinct offline cache IDs. Cache IDs also cover build/launch configuration and the deployment path. The Pages workflow now builds this comeback profile and gates publication on mobile installation/update checks; release 6eff73c passed those gates and is deployed.
+`npm run build:comeback` runs the approved character and full Sunlit apartment with the real React workout engine. `npm run build` retains the legacy compatibility profile. The comeback alpha is published at https://hecticmike.github.io/little-strides/. Data remains local in IndexedDB; JSON backups include the new records. Both profiles have distinct offline cache IDs. Cache IDs also cover build/launch configuration and the deployment path. The Pages workflow now builds this comeback profile and gates publication on mobile installation/update checks; the current deployment and live checks are recorded in docs/ai_dev_log.md, and Settings identifies the installed build.
 
 ## Run and check
 
