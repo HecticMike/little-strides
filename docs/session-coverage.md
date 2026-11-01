@@ -29,10 +29,17 @@ All generated durations are exact, position changes remain at most one, and acti
 
 A wider bounded-search comparison found no missed plans in80 targeted default/rest-override scenarios. A further220 fictional selection/rest variants retained exact durations across7/10/15/20 requests. These are diagnostic samples, not proof of global search completeness or clinical suitability. Longer plans are not enabled by increasing caps or adding repeated filler.
 
+## Shared loading-model bottleneck
+
+All six current profile-eligible movements include a knee-exposure tag. With the unchanged600s rolling tagged-joint allowance, any current-pool plan is limited to600s of movement before previous activity is counted. A20-minute ordinary plan requires at least720s of movement under the existing60% composition rule. It is therefore impossible under these defaults, regardless of search width or the number of similar knee-tagged exercises added. Fifteen-minute requests also remain constrained by block/rest limits and catalogue coverage; the720s proof specifically concerns20 minutes.
+
+These unweighted duration caps and the60% activity floor are software heuristics, not measured joint forces or a medical exercise maximum. Review the loading assumptions and individual limits separately from candidate variety. This iteration neither raises the allowance nor changes knee tags to make a plan fit. The audit JSON records the exact shared-tag bound.
+
 ## Remaining coverage decisions
 
 | Area | Current limitation | Decision needed before expanding live coverage |
 | --- | --- | --- |
+| Loading model | Shared knee tag plus600s exposure allowance prevents20-minute plans. | Individual review of the unweighted tagging/allowance assumptions; do not automatically increase limits or remove tags. |
 | Aerobic variety | Marching is the only eligible aerobic pattern. | Individually review an additional appropriate low-impact pattern and its timing/loading metadata; mobility cannot substitute as cardio. |
 | Core | Bracing/heel slides are activation; pelvic tilt is mobility; bridge principally trains hips/glutes with trunk stabilisation. | Review whether another core pattern is personally suitable, its purpose and dose; do not relabel activation as strengthening. |
 | Existing Pilates research | Bent-knee fall-out and single knee fold remain research records, outside the live catalogue. | Individual suitability, exact variation, classification and conservative timing remain unresolved. Neither is automatically enabled by this work. |

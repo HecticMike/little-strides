@@ -9,6 +9,16 @@
     "maxRepeatableSeconds": 600,
     "maxJointSeconds": 600
   },
+  "softwareCoverageBound": {
+    "sharedJointTags": [
+      "knees"
+    ],
+    "sharedJointAllowanceSeconds": 600,
+    "ordinaryMinimumActiveFraction": 0.6,
+    "twentyMinuteMinimumActiveSeconds": 720,
+    "twentyMinutesFitsSharedAllowance": false,
+    "basis": "Existing unweighted tagged-duration and minimum-active-time software heuristics; not a medical maximum."
+  },
   "eligibleIds": [
     "march",
     "calf",
