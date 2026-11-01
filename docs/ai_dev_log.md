@@ -1,3 +1,10 @@
+## 2026-11-01 - Final polish correction deployed and verified
+
+- Final source153771e6097f2902d32dfd1a20b96298a579875d deployed via successful run41355095078:166 unit/art PASS,57 hosted mobile PASS,1 expected WebKit codec skip. Every original and expanded release check retained.
+- Live Builde82e115cb0cb verified in isolated iPhone-sized WebKit and Android Chromium: entire notice bounds fit the viewport, text/dismiss control fully readable;16px forms, header navigation without reload, full state restored offline, no history/reward changes, no overflow/page errors. Corrected live iPhone screenshot visually inspected after verification. Live screenshots/results updated in screenshots/polish.
+- Polish pass complete. The earlier notice claim/build13f89f75f6c2 is superseded by this correction; the inherited transform and weak partial-visibility check are fixed. No training policy, eligibility, artwork, data/reward schema or dependency changes. Closeout is documentation/screenshots only and skips redundant CI.
+- Next: owner's planned week of use. No further implementation or artwork required before the trial. Use Settings build e82e115cb0cb; update online, close/reopen all app windows if Update ready appears, without deleting app data. Bring back concrete friction/variety/comfort or visual feedback.
+
 ## 2026-11-01 - Live visual review catches inherited notice transform
 
 - Hosted gate41354323265 passed57 mobile cases and166 unit/art, but final live screenshot review exposed a notice shifted partly off the left edge. The legacy chapter toast retained left50%/translateX(-50%) after the sticky-position override. The prior partial-visibility assertion missed this clipping; the release is not considered closed until corrected.

@@ -1,7 +1,7 @@
 [
   {
     "browser": "iphone-webkit",
-    "build": "Build 13f89f75f6c2",
+    "build": "Build e82e115cb0cb",
     "formFont16": true,
     "statusInViewport": true,
     "headerPreservesApp": true,
@@ -12,7 +12,7 @@
   },
   {
     "browser": "android-chromium",
-    "build": "Build 13f89f75f6c2",
+    "build": "Build e82e115cb0cb",
     "formFont16": true,
     "statusInViewport": true,
     "headerPreservesApp": true,
