@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { EXERCISES, JOINTS, recoveryConfig, SESSION_FOCUSES, normaliseFocus, planningMetadata } from './catalog.mjs';
 import {exerciseEligibility,planSession} from './scheduler.mjs';
+import {REVIEW_CANDIDATES} from './review-candidates.mjs';
 import {Icon} from './Icon.jsx';
 import {rewardOutcome,TIMBER_RULE} from './gameplay.mjs';
 import {activityTotals,minutesOf} from './activity.mjs';
@@ -16,6 +17,7 @@ export function ExerciseReview({ settings, history=[], now=Date.now(), onToggle,
       {!['eligible','disabled','locked'].includes(e.status)&&<p className="small" role="status">{e.reason}{e.availableAt?' until '+new Date(e.availableAt).toLocaleString():''}.</p>}
       {e.selectable&&(e.hold?<button disabled={busy} aria-label={'Reassess '+e.name} onClick={()=>{if(confirm('Reassess '+e.name+'? This clears the review hold but does not approve or enable the exercise. Recovery and recent joint-discomfort limits still apply.'))onFlag(e.id,false);}}>Reassess movement</button>:<button disabled={busy} aria-label={'Flag '+e.name+' as uncomfortable'} onClick={()=>onFlag(e.id,true)}>Flag as uncomfortable</button>)}
     </article>)}</section>)}</div>
+    <details className="research-review"><summary>Research candidates (not scheduled)</summary><p>These are research records, not exercise suggestions. Suitability, variation and timing remain unresolved. They cannot be enabled here.</p>{REVIEW_CANDIDATES.map(candidate=><article key={candidate.id} data-research-id={candidate.id}><h3>{candidate.name}</h3><span className="pill">Research only - not scheduled</span><p>{candidate.purpose}</p><details><summary>Source and outstanding review</summary><p>{candidate.reviewNeeded}</p><p className="small">Source section: {candidate.sourceSection}</p><p className="small muted">{candidate.sourceContext}</p><a href={candidate.sourceUrl} target="_blank" rel="noreferrer">NHS source (online)</a><p className="small muted">Source publication is not personal clinical approval. No dose or illustration is prescribed.</p></details></article>)}</details>
     <details><summary>Conservative recovery settings</summary><p className="small">These configurable limits do not guarantee safety or assess readiness.</p>
       <label>Strength recovery<select aria-label="Strength recovery hours" disabled={busy} value={config.strengthHours} onChange={e=>onRecovery({...config,strengthHours:Number(e.target.value)})}>{[48,72,96].map(n=><option key={n} value={n}>{n} hours</option>)}</select></label>
       <label>Rolling repeatable limit<select aria-label="Repeatable limit minutes" disabled={busy} value={config.maxRepeatableSeconds/60} onChange={e=>onRecovery({...config,maxRepeatableSeconds:Number(e.target.value)*60})}>{[5,10,15,20].map(n=><option key={n} value={n}>{n} min per movement / 24h</option>)}</select></label>

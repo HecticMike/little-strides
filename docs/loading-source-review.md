@@ -25,3 +25,7 @@ The two Pilates descriptions were checked against the actual heading/image layou
 The three candidates remain research-only in comeback-exercise-review.json, outside EXERCISES and the live planner. Squat, wall push and modified dead bug remain locked. No clinical approval or automatic difficulty progression is created. Missing demonstrations must retain the existing neutral/text fallback if a candidate is later appropriately enabled.
 
 The current limited3/7/10-minute programme can continue while its remaining software features are finished. Broader catalogue/loading-policy implementation requires the unresolved variation/dose/model decisions above; deleting a guard merely to make15/20 appear available would not resolve them. Optional milestone moments and physical-iPhone acceptance can proceed independently using existing assets.
+
+## In-app research review
+
+The existing movement-review dialog now includes a collapsed Research candidates section. Its three read-only cards include purpose, unresolved suitability questions, exact source section and online NHS link. They work offline after caching, contain no enabling controls or demonstration artwork, and remain outside the live catalogue. Numerical limits and current recommendations are unchanged. A separate opt-in advisory-policy product decision is pending; no mode or default has been changed.
