@@ -1,5 +1,5 @@
 import {profileRestriction,currentAdjustment,affectedByAreas} from './training.mjs';
-import {varietyCosts} from './suggestions.mjs';
+import {varietyCosts,openingCosts} from './suggestions.mjs';
 import { compose } from './composition.mjs';
 import { EXERCISES, MINUTES, SESSION_MINUTES, exercise, enabledExercise, recoveryConfig, planningMetadata, normaliseFocus, SESSION_FOCUSES } from './catalog.mjs';
 export function recovery(history,now=Date.now(),settings={}) {
@@ -69,13 +69,17 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   const choices=exerciseEligibility(history,now,settings),eligible=choices.filter(e=>e.status==='eligible');
   const pool=eligible.filter(e=>focus==='core'?e.focus==='core':focus==='recovery'?['activation','mobility'].includes(e.loadKind):true);
   const enabled=EXERCISES.filter(e=>enabledExercise(e.id,settings)&&(focus!=='core'||e.focus==='core'));
-  const compositionContext={fits,add,variety:varietyCosts(history,now)};
+  const compositionContext={fits,add,variety:varietyCosts(history,now),openers:openingCosts(history,now)};
   const build=m=>focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?null:compose(m,pool,load,config,settings,focus,compositionContext);
   const selected=build(minutes),plans=new Map([[minutes,selected]]);
   for(const m of lengths)if(m!==minutes)plans.set(m,build(m));
   const availableMinutes=lengths.filter(m=>plans.get(m));
+  const shorter=availableMinutes.filter(m=>m<minutes);
+  let fallback=!selected&&shorter.length?{minutes:shorter.at(-1),focus}:null;
+  if(!selected&&!small&&!fallback&&compose(3,eligible.filter(e=>['activation','mobility'].includes(e.loadKind)),load,config,settings,'recovery',compositionContext))fallback={minutes:3,focus:'recovery'};
   let reason=selected?'':small?'A three-minute step needs enough individually enabled activation or mobility in one position, within your recovery limits. Review movements or rest.':focus==='recovery'&&!pool.length?'No eligible activation or mobility movements remain for recovery focus. Choose another focus or rest.':!enabled.length?(focus==='core'?'No core movements enabled. Review appropriate core candidates individually or choose balanced focus.':'No movements enabled. Review and explicitly enable suitable candidates.'):focus==='cardio'&&!pool.some(e=>e.loadKind==='aerobic')?'No eligible aerobic movement remains for cardio focus. Choose another focus or rest.':availableMinutes.length?'Not enough eligible movement time for this length. Choose a shorter available session or rest.':pool.length?'Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest.':'Enabled movements are recovering, flagged, or at their rolling activity limit. Not enough suitable time remains for seven minutes. Rest or review your choices.';
-  if(!selected&&choices.some(e=>e.status==='profile'))reason+=' Your profile or current symptom adjustment excludes additional movements; review the restriction or rest.';
+  if(!selected&&choices.some(e=>e.status==='profile'))reason+=' Your profile and symptom exclusions remain in place.';
+  if(fallback?.minutes===3)reason+=' A three-minute activation/mobility alternative still fits. It is not a strengthening or aerobic session.';
   const summary={strength:0,activation:0,mobility:0,aerobic:0};
   for(const b of selected?.segments||[])if(b.kind==='work')summary[exercise(b.exerciseId).loadKind]+=b.durationMs;
   const notes=[];
@@ -97,5 +101,5 @@ export function planSession(minutes,history=[],now=Date.now(),settings={}) {
   if(selected&&focus==='core'&&!summary.strength){label='Core activation & mobility';notes.push('No core strengthening is included. Gentle activation is not a strength-equivalent substitute.');}
   if(selected&&!selected.segments.some(b=>b.phase==='warmup'))notes.push('No suitable active preparation is available; setup is a passive countdown, not a warm-up.');
   if(selected&&focus==='balanced'&&settings.exerciseProfile?.coreEmphasis&&selected.segments.some(b=>exercise(b.exerciseId)?.focus==='core'))label='Core-led: '+label.toLowerCase();
-  return {segments:selected?.segments||null,availableMinutes,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
+  return {segments:selected?.segments||null,availableMinutes,fallback,reason,summary,focus,label,notes,score:selected?.score??null,alternativeFocus:!small&&!selected&&focus!=='balanced'&&compose(minutes,eligible,load,config,settings,'balanced',compositionContext)?'balanced':null};
 }

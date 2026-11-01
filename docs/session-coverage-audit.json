@@ -1,0 +1,1083 @@
+{
+  "scenario": "Fictional fresh default profile; no real user settings or records modified.",
+  "classification": "Catalogue purpose only; not measured intensity, clinical approval or a treatment prescription.",
+  "defaults": {
+    "strengthHours": 48,
+    "discomfortHours": 48,
+    "windowHours": 24,
+    "maxStrengthSeconds": 90,
+    "maxRepeatableSeconds": 600,
+    "maxJointSeconds": 600
+  },
+  "eligibleIds": [
+    "march",
+    "calf",
+    "abdominal-bracing",
+    "pelvic-tilt",
+    "heel-slide",
+    "glute-bridge"
+  ],
+  "clinicallyReviewed": 0,
+  "sessions": [
+    {
+      "label": "Fresh 3",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 3,
+      "scheduledSeconds": 180,
+      "available": true,
+      "availableMinutes": [
+        3
+      ],
+      "fallback": null,
+      "composition": "A smaller step",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 45,
+        "mobility": 60,
+        "aerobic": 0
+      },
+      "passiveSeconds": 75,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 45,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 60,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 30
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "Fresh 7",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 7,
+      "scheduledSeconds": 420,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: strength & mobility",
+      "purposeSeconds": {
+        "strength": 90,
+        "activation": 75,
+        "mobility": 105,
+        "aerobic": 0
+      },
+      "passiveSeconds": 150,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 30,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "heel-slide",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 75,
+          "phase": "activity"
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "Fresh 10",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 600,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: balanced",
+      "purposeSeconds": {
+        "strength": 135,
+        "activation": 60,
+        "mobility": 30,
+        "aerobic": 165
+      },
+      "passiveSeconds": 210,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 30,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "heel-slide",
+          "seconds": 30,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 30,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 45,
+          "positionChange": true
+        },
+        {
+          "kind": "work",
+          "id": "calf",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 135,
+          "phase": "activity"
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "Fresh 15",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 15,
+      "scheduledSeconds": 0,
+      "available": false,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": {
+        "minutes": 10,
+        "focus": "balanced"
+      },
+      "composition": "Balanced",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 0,
+        "mobility": 0,
+        "aerobic": 0
+      },
+      "passiveSeconds": 0,
+      "sequence": [],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": "Not enough eligible movement time for this length. Choose a shorter available session or rest. Your profile and symptom exclusions remain in place."
+    },
+    {
+      "label": "Fresh 20",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 20,
+      "scheduledSeconds": 0,
+      "available": false,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": {
+        "minutes": 10,
+        "focus": "balanced"
+      },
+      "composition": "Balanced",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 0,
+        "mobility": 0,
+        "aerobic": 0
+      },
+      "passiveSeconds": 0,
+      "sequence": [],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": "Not enough eligible movement time for this length. Choose a shorter available session or rest. Your profile and symptom exclusions remain in place."
+    },
+    {
+      "label": "Second request / same afternoon",
+      "at": "2026-11-01T15:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 0,
+      "available": false,
+      "availableMinutes": [],
+      "fallback": {
+        "minutes": 3,
+        "focus": "recovery"
+      },
+      "composition": "Balanced",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 0,
+        "mobility": 0,
+        "aerobic": 0
+      },
+      "passiveSeconds": 0,
+      "sequence": [],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "calf",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "glute-bridge",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        }
+      ],
+      "reason": "Not enough suitable movement time remains for seven minutes under the current block/rest and exposure limits. Review your choices or rest. Your profile and symptom exclusions remain in place. A three-minute activation/mobility alternative still fits. It is not a strengthening or aerobic session."
+    },
+    {
+      "label": "Gentle alternative / same afternoon",
+      "at": "2026-11-01T15:00:00.000Z",
+      "requestedMinutes": 3,
+      "scheduledSeconds": 180,
+      "available": true,
+      "availableMinutes": [
+        3
+      ],
+      "fallback": null,
+      "composition": "A smaller step",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 45,
+        "mobility": 60,
+        "aerobic": 0
+      },
+      "passiveSeconds": 75,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "heel-slide",
+          "seconds": 45,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 60,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 30
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "calf",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "glute-bridge",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "Following day / after both sessions",
+      "at": "2026-11-02T11:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 600,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: movement & mobility",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 120,
+        "mobility": 150,
+        "aerobic": 180
+      },
+      "passiveSeconds": 150,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 60,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 90,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 45,
+          "positionChange": true
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 150,
+          "phase": "activity"
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "calf",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "glute-bridge",
+          "status": "recovering",
+          "reason": "Strength recovery"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "After strength window / same actual history",
+      "at": "2026-11-03T12:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 600,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: balanced",
+      "purposeSeconds": {
+        "strength": 135,
+        "activation": 60,
+        "mobility": 0,
+        "aerobic": 210
+      },
+      "passiveSeconds": 195,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 30,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "calf",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 180,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 45,
+          "positionChange": true
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 30,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "Heel-slide discomfort hold",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 600,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: balanced",
+      "purposeSeconds": {
+        "strength": 135,
+        "activation": 30,
+        "mobility": 60,
+        "aerobic": 180
+      },
+      "passiveSeconds": 195,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 30,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "glute-bridge",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 45,
+          "positionChange": true
+        },
+        {
+          "kind": "work",
+          "id": "calf",
+          "seconds": 45,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 30
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 150,
+          "phase": "activity"
+        },
+        {
+          "kind": "work",
+          "id": "march",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "heel-slide",
+          "status": "discomfort",
+          "reason": "Discomfort hold: reassess this movement before enabling it"
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        }
+      ],
+      "reason": ""
+    },
+    {
+      "label": "High fatigue",
+      "at": "2026-11-01T10:00:00.000Z",
+      "requestedMinutes": 10,
+      "scheduledSeconds": 600,
+      "available": true,
+      "availableMinutes": [
+        7,
+        10
+      ],
+      "fallback": null,
+      "composition": "Core-led: activation & mobility",
+      "purposeSeconds": {
+        "strength": 0,
+        "activation": 165,
+        "mobility": 300,
+        "aerobic": 0
+      },
+      "passiveSeconds": 135,
+      "sequence": [
+        {
+          "kind": "prepare",
+          "id": null,
+          "seconds": 45
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 45,
+          "phase": "warmup"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "heel-slide",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 120,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "abdominal-bracing",
+          "seconds": 60,
+          "phase": "activity"
+        },
+        {
+          "kind": "rest",
+          "id": null,
+          "seconds": 15
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 90,
+          "phase": "activity"
+        },
+        {
+          "kind": "work",
+          "id": "pelvic-tilt",
+          "seconds": 30,
+          "phase": "winddown"
+        },
+        {
+          "kind": "cooldown",
+          "id": null,
+          "seconds": 15
+        }
+      ],
+      "restrictions": [
+        {
+          "id": "march",
+          "status": "profile",
+          "reason": "Only activation and mobility are being considered after reported fatigue or high effort."
+        },
+        {
+          "id": "squat",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "push",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "calf",
+          "status": "profile",
+          "reason": "Only activation and mobility are being considered after reported fatigue or high effort."
+        },
+        {
+          "id": "reach",
+          "status": "profile",
+          "reason": "Overhead reaching is excluded by your profile; separate personal review is needed."
+        },
+        {
+          "id": "modified-dead-bug",
+          "status": "locked",
+          "reason": "Locked pending suitability and artwork review"
+        },
+        {
+          "id": "glute-bridge",
+          "status": "profile",
+          "reason": "Only activation and mobility are being considered after reported fatigue or high effort."
+        }
+      ],
+      "reason": ""
+    }
+  ]
+}

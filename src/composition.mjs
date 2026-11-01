@@ -3,7 +3,7 @@ import {planningMetadata} from './catalog.mjs';
 // Scores express product preferences, never medical effectiveness or force estimates.
 export const COMPOSITION_WEIGHTS = Object.freeze({duplicate:-150,positionChange:-60,newMovement:8,blockCost:-5,restPer15:-2});
 const BEAM=4;
-export function compose(minutes,pool,initial,config,settings,focus,{fits,add,variety={}}) {
+export function compose(minutes,pool,initial,config,settings,focus,{fits,add,variety={},openers={}}) {
   if(!pool.length)return null;
   const recent=variety;
   const small=minutes===3, setup=small?30:15, finish=small?30:15;
@@ -55,6 +55,7 @@ export function compose(minutes,pool,initial,config,settings,focus,{fits,add,var
           const totals={...node.totals,[e.loadKind]:node.totals[e.loadKind]+seconds};
           if(time===target-finish&&(node.active+seconds<minimumActive||focus==='cardio'&&(totals.aerobic<120||totals.aerobic/(node.active+seconds)<.4)))continue;
           let score=node.score+contribution(e,node.totals[e.loadKind],seconds)+COMPOSITION_WEIGHTS.blockCost+gap/15*COMPOSITION_WEIGHTS.restPer15;
+          if(!last)score-=openers[e.id]||0;
           if(!count)score+=COMPOSITION_WEIGHTS.newMovement-(recent[e.id]||0);
           if(settings.exerciseProfile?.coreEmphasis&&focus==='balanced'&&e.focus==='core'&&!count)score+=45;
           if(!last&&e.loadKind==='aerobic')score+=10;

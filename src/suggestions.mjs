@@ -8,8 +8,13 @@ export function withSuggestions(settings={}){
  return {...settings,enabledExercises:personal?[...(settings.enabledExercises||[])]:suggestedIds(),suggestionVersion:SUGGESTION_VERSION,selectionMode:personal?'personal':'suggested'};
 }
 export function useSuggestedSelection(settings){return {...settings,enabledExercises:suggestedIds().filter(id=>!settings.exerciseHolds?.[id]),suggestionVersion:SUGGESTION_VERSION,selectionMode:'suggested'};}
+// Only actual, distinct recent sessions influence preferences; no stored template or dose-limit change.
+function recentActivity(history,now){
+ const seen=new Set();return [...history].filter(h=>h.mode!=='preview'&&h.endedAt<=now&&h.endedAt>now-7*86400000&&h.movements?.some(m=>m.actualMs>0)).sort((a,b)=>b.endedAt-a.endedAt).filter(h=>!seen.has(h.id)&&seen.add(h.id)).slice(0,3);
+}
 export function varietyCosts(history,now){
- const seen=new Set(),recent=[...history].filter(h=>h.mode!=='preview'&&h.endedAt<=now&&h.endedAt>now-7*86400000&&h.movements?.some(m=>m.actualMs>0)).sort((a,b)=>b.endedAt-a.endedAt).filter(h=>!seen.has(h.id)&&seen.add(h.id)).slice(0,3),costs={};
- recent.forEach((h,index)=>{for(const id of new Set(h.movements.filter(m=>m.actualMs>0).map(m=>m.exerciseId)))costs[id]=(costs[id]||0)+[45,24,12][index];});
- return costs;
+ const costs={};recentActivity(history,now).forEach((h,index)=>{for(const id of new Set(h.movements.filter(m=>m.actualMs>0).map(m=>m.exerciseId)))costs[id]=(costs[id]||0)+[45,24,12][index];});return costs;
+}
+export function openingCosts(history,now){
+ const costs={};recentActivity(history,now).forEach((h,index)=>{const id=h.movements.find(m=>m.actualMs>0).exerciseId;costs[id]=(costs[id]||0)+[30,16,8][index];});return costs;
 }
