@@ -51,3 +51,5 @@ The existing source-linked research and decisions are in [comeback-exercise-revi
 ## Release boundary
 
 This is a session-quality correction within the current limited programme. The normal ten-minute journey works;15/20 and unrestricted repeated ten-minute sessions remain conditional on an adequate individually suitable pool and recovery allowance. Physical iPhone sound routes, real calls/background suspension, wake lock and comfort/legibility still require owner verification. Future illustrated milestone moments remain separate work using existing art.
+
+The follow-up [source review](loading-source-review.md) records the loading-model conclusion and minimal research shortlist. No live eligibility or limits changed.
