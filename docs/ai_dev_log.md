@@ -1,3 +1,8 @@
+## 2026-11-01 - Hosted training-test startup synchronisation
+
+- Initial polish gate41353463740 correctly blocked publication:55 mobile PASS,1 expected codec skip,2 failures in the newly included old training-feedback test. It started fake-clock advancement immediately after tapping Start, before asynchronous audio/session persistence finished on the hosted runner. Local tests had passed.
+- Corrected the test to wait for enabled Pause and the saved running checkpoint, then compute remaining time from engine duration/elapsed. No production timer/audio/interruption or eligibility code changed; all release checks remain enabled. Focused6 WebKit/Chromium training cases PASS after synchronisation; republishing follows.
+
 ## 2026-11-01 - Pre-week mobile polish pass
 
 - Owner reports the app works on the phone and plans a week of use; requested a thorough final polish pass first. Recommended Sol / Medium. Confirmed Little Strides repository; no Pitch changes, artwork, dependencies, catalogue eligibility, scheduler, numeric policies, rewards or data schemas changed.
